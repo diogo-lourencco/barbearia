@@ -17,11 +17,7 @@ function idValido(valor) {
 }
 
 function quantidadeValida(valor) {
-  if (
-    valor === null ||
-    valor === undefined ||
-    valor === ""
-  ) {
+  if (valor === null || valor === undefined || valor === "") {
     return false;
   }
 
@@ -31,9 +27,7 @@ function quantidadeValida(valor) {
     Number.isFinite(numero) &&
     numero > 0 &&
     numero <= 999999999 &&
-    Math.abs(
-      Math.round(numero * 1000) / 1000 - numero
-    ) < 0.0000001
+    Math.abs(Math.round(numero * 1000) / 1000 - numero) < 0.0000001
   );
 }
 
@@ -74,14 +68,13 @@ async function listar(req, res, next) {
          p.nome AS produto_nome,
          p.unidade
        FROM consumos c
-       JOIN produtos p
-         ON p.id = c.produto_id
+       JOIN produtos p ON p.id = c.produto_id
        ORDER BY c.criado_em DESC, c.id DESC`
     );
 
-    res.json(resultado.rows);
+    return res.json(resultado.rows);
   } catch (erro) {
-    next(erro);
+    return next(erro);
   }
 }
 
@@ -98,8 +91,6 @@ async function cadastrar(req, res, next) {
     data
   } = req.body || {};
 
-  // Aceita "motivo" do frontend novo e
-  // "observacoes" de clientes anteriores.
   const motivoFinal = String(
     motivo ?? observacoes ?? ""
   ).trim();
@@ -112,9 +103,7 @@ async function cadastrar(req, res, next) {
 
   if (!quantidadeValida(quantidade)) {
     return res.status(400).json({
-      erro:
-        "Informe uma quantidade positiva " +
-        "com até três casas decimais."
+      erro: "Informe uma quantidade positiva com até três casas decimais."
     });
   }
 
@@ -126,9 +115,7 @@ async function cadastrar(req, res, next) {
 
   if (motivoFinal.length > 2000) {
     return res.status(400).json({
-      erro:
-        "O motivo deve ter no máximo " +
-        "2000 caracteres."
+      erro: "O motivo deve ter no máximo 2000 caracteres."
     });
   }
 
@@ -142,22 +129,15 @@ async function cadastrar(req, res, next) {
     });
   }
 
-  // O esquema atual utiliza criado_em
-  // como data do registro.
-  //
-  // A data enviada pelo formulário é
-  // validada, mas não é gravada como
-  // data histórica nesta versão.
-
   let client;
+  let transacaoIniciada = false;
 
   try {
     client = await pool.connect();
 
     await client.query("BEGIN");
+    transacaoIniciada = true;
 
-    // Baixa o estoque utilizando a mesma
-    // conexão e transação do INSERT.
     const produto = await baixarEstoque(
       client,
       produto_id,
@@ -165,13 +145,12 @@ async function cadastrar(req, res, next) {
     );
 
     const resultado = await client.query(
-      `INSERT INTO consumos
-        (
-          produto_id,
-          quantidade,
-          observacoes,
-          criado_por
-        )
+      `INSERT INTO consumos (
+         produto_id,
+         quantidade,
+         observacoes,
+         criado_por
+       )
        VALUES ($1, $2, $3, $4)
        RETURNING
          id,
@@ -194,36 +173,134 @@ async function cadastrar(req, res, next) {
     );
 
     await client.query("COMMIT");
+    transacaoIniciada = false;
 
-    res.status(201).json({
-      mensagem:
-        "Consumo registrado e estoque atualizado!",
+    return res.status(201).json({
+      mensagem: "Consumo registrado e estoque atualizado!",
       consumo: resultado.rows[0],
       produto
     });
 
   } catch (erro) {
-    if (client) {
+    if (transacaoIniciada && client) {
       try {
         await client.query("ROLLBACK");
       } catch (rollbackErro) {
-        console.error(
-          "Erro ao desfazer consumo:",
-          rollbackErro
-        );
+        console.error("Erro no rollback:", rollbackErro);
       }
     }
 
-    next(erro);
+    return next(erro);
 
   } finally {
-    if (client) {
-      client.release();
-    }
+    if (client) client.release();
   }
 }
 
+// ==========================================
+// EXCLUIR CONSUMO E DEVOLVER AO ESTOQUE
+// ==========================================
+
+async function excluir(req, res, next) {
+  const { id } = req.params;
+
+  if (!idValido(id)) {
+    return res.status(400).json({
+      erro: "ID do consumo inválido."
+    });
+  }
+
+  let client;
+  let transacaoIniciada = false;
+
+  try {
+    client = await pool.connect();
+
+    await client.query("BEGIN");
+    transacaoIniciada = true;
+
+    // Bloqueia o registro para evitar exclusões simultâneas.
+    const consulta = await client.query(
+      `SELECT
+         c.id,
+         c.produto_id,
+         c.quantidade
+       FROM consumos c
+       WHERE c.id = $1
+       FOR UPDATE`,
+      [id]
+    );
+
+    if (!consulta.rowCount) {
+      await client.query("ROLLBACK");
+      transacaoIniciada = false;
+
+      return res.status(404).json({
+        erro: "Consumo não encontrado."
+      });
+    }
+
+    const consumo = consulta.rows[0];
+
+    // Devolve a quantidade ao produto.
+    const atualizacao = await client.query(
+      `UPDATE produtos
+       SET
+         quantidade = quantidade + $1,
+         atualizado_em = NOW()
+       WHERE id = $2
+       RETURNING id, nome, quantidade`,
+      [
+        consumo.quantidade,
+        consumo.produto_id
+      ]
+    );
+
+    if (!atualizacao.rowCount) {
+      throw new Error(
+        "Produto vinculado ao consumo não encontrado."
+      );
+    }
+
+    // Exclui o consumo.
+    await client.query(
+      `DELETE FROM consumos WHERE id = $1`,
+      [id]
+    );
+
+    await client.query("COMMIT");
+    transacaoIniciada = false;
+
+    return res.json({
+      mensagem:
+        "Consumo excluído e quantidade devolvida ao estoque.",
+      consumo_id: Number(id),
+      quantidade_devolvida: consumo.quantidade,
+      produto: atualizacao.rows[0]
+    });
+
+  } catch (erro) {
+    if (transacaoIniciada && client) {
+      try {
+        await client.query("ROLLBACK");
+      } catch (rollbackErro) {
+        console.error("Erro no rollback:", rollbackErro);
+      }
+    }
+
+    return next(erro);
+
+  } finally {
+    if (client) client.release();
+  }
+}
+
+// ==========================================
+// EXPORTAÇÕES
+// ==========================================
+
 module.exports = {
   listar,
-  cadastrar
+  cadastrar,
+  excluir
 };

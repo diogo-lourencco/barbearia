@@ -3,6 +3,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
   const autorizado = await WJ.init("consumo");
+
   if (!autorizado) return;
 
   const $ = id => document.getElementById(id);
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let showAllMonths = false;
   let saving = false;
   let loading = false;
+  let deleting = false;
 
   // ==========================================
   // FUNÇÕES AUXILIARES
@@ -84,7 +86,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function getConsumedReason(item) {
-    return String(item.motivo || "-");
+    return String(
+      item.motivo ||
+      item.observacoes ||
+      "-"
+    );
   }
 
   // ==========================================
@@ -123,6 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         error,
         "Não foi possível carregar os dados."
       );
+
     } finally {
       loading = false;
     }
@@ -166,6 +173,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const placeholder = document.createElement("option");
 
     placeholder.value = "";
+
     placeholder.textContent = products.length
       ? "Selecione um produto"
       : "Nenhum produto cadastrado";
@@ -294,7 +302,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function getFilteredConsumption() {
     const selectedMonth = monthInput.value;
 
-    return consumption
+    return [...consumption]
       .filter(item => {
         if (showAllMonths) return true;
 
@@ -324,7 +332,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!rows.length) {
       table.innerHTML = `
         <tr>
-          <td colspan="4" class="empty-consumption">
+          <td colspan="5" class="empty-consumption">
             Nenhum consumo encontrado neste período.
           </td>
         </tr>
@@ -350,8 +358,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td>
           ${WJ.escape(getConsumedReason(item))}
         </td>
+
+        <td style="text-align:center;">
+          <button
+            type="button"
+            class="btn-delete-consumption"
+            data-consumption-id="${WJ.escape(String(item.id))}"
+            title="Excluir consumo"
+            aria-label="Excluir consumo"
+            style="
+              display:inline-flex;
+              align-items:center;
+              justify-content:center;
+              width:36px;
+              height:36px;
+              padding:0;
+              border:1px solid rgba(239,68,68,.35);
+              border-radius:10px;
+              background:transparent;
+              color:#ef4444;
+              cursor:pointer;
+              transition:background .2s ease;
+            "
+          >
+            <i
+              data-lucide="trash-2"
+              aria-hidden="true"
+              style="width:17px;height:17px;"
+            ></i>
+          </button>
+        </td>
       </tr>
     `).join("");
+
+    refreshIcons();
   }
 
   // ==========================================
@@ -374,13 +414,113 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 
   // ==========================================
+  // EXCLUIR CONSUMO
+  // ==========================================
+
+  async function deleteConsumption(id) {
+    if (deleting || saving) return;
+
+    const item = consumption.find(
+      registro => String(registro.id) === String(id)
+    );
+
+    if (!item) {
+      WJ.toast("Registro de consumo não encontrado.");
+      return;
+    }
+
+    const nome = getConsumedName(item);
+    const quantidade = formatQuantity(
+      getConsumedQuantity(item)
+    );
+
+    const confirmed = window.confirm(
+      `Deseja realmente excluir este consumo?\n\n` +
+      `Produto: ${nome}\n` +
+      `Quantidade: ${quantidade}\n\n` +
+      `A quantidade será devolvida ao estoque.\n` +
+      `Essa ação não poderá ser desfeita.`
+    );
+
+    if (!confirmed) return;
+
+    deleting = true;
+
+    const buttons = document.querySelectorAll(
+      ".btn-delete-consumption"
+    );
+
+    buttons.forEach(button => {
+      button.disabled = true;
+      button.style.opacity = "0.5";
+      button.style.cursor = "not-allowed";
+    });
+
+    try {
+      const result = await WJ.api(
+        `/consumo/${encodeURIComponent(id)}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      await loadData();
+
+      WJ.toast(
+        result?.mensagem ||
+        "Consumo excluído e estoque atualizado."
+      );
+
+    } catch (error) {
+      showError(
+        error,
+        "Não foi possível excluir o consumo."
+      );
+
+    } finally {
+      deleting = false;
+
+      document.querySelectorAll(
+        ".btn-delete-consumption"
+      ).forEach(button => {
+        button.disabled = false;
+        button.style.opacity = "";
+        button.style.cursor = "";
+      });
+    }
+  }
+
+  // ==========================================
+  // EVENTO DA LIXEIRA NO HISTÓRICO
+  // ==========================================
+
+  table.addEventListener("click", async event => {
+    const button = event.target.closest(
+      ".btn-delete-consumption"
+    );
+
+    if (!button || !table.contains(button)) {
+      return;
+    }
+
+    const id = button.dataset.consumptionId;
+
+    if (!id) {
+      WJ.toast("ID do consumo não encontrado.");
+      return;
+    }
+
+    await deleteConsumption(id);
+  });
+
+  // ==========================================
   // REGISTRAR CONSUMO NO POSTGRESQL
   // ==========================================
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
 
-    if (saving) return;
+    if (saving || deleting) return;
 
     const productId = productInput.value;
     const quantity = Number(quantityInput.value);
@@ -426,7 +566,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         `Estoque insuficiente. Disponível: ` +
         formatQuantity(available)
       );
-
       return;
     }
 
@@ -438,8 +577,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     saveButton.textContent = "Salvando...";
 
     try {
-      // O backend deve registrar o consumo
-      // e baixar o estoque em uma transação.
       await WJ.api("/consumo", {
         method: "POST",
         body: JSON.stringify({
@@ -509,7 +646,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function escapeCSV(value) {
       let text = String(value ?? "");
 
-      // Evita execução de fórmulas no Excel.
+      // Evita interpretação como fórmula no Excel.
       if (/^\s*[=+\-@]/.test(text)) {
         text = "'" + text;
       }
@@ -543,7 +680,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       "text/csv;charset=utf-8"
     );
 
-    WJ.toast("Arquivo CSV preparado para download.");
+    WJ.toast(
+      "Arquivo CSV preparado para download."
+    );
   });
 
   // ==========================================
@@ -551,7 +690,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ==========================================
 
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && !saving) {
+    if (!document.hidden && !saving && !deleting) {
       loadData();
     }
   });
@@ -563,7 +702,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   let lastMonth = getCurrentMonth();
 
   setInterval(() => {
-    if (saving || document.hidden) return;
+    if (
+      saving ||
+      deleting ||
+      document.hidden
+    ) {
+      return;
+    }
 
     const currentMonth = getCurrentMonth();
 

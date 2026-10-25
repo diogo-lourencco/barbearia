@@ -2,6 +2,7 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", async () => {
+
   // =====================================
   // AUTENTICAÇÃO
   // =====================================
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const $ = id => document.getElementById(id);
 
   let atualizando = false;
+  let excluindo = false;
 
   // =====================================
   // FUNÇÕES AUXILIARES
@@ -38,6 +40,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function isRevenue(item) {
     return String(item.tipo || "").toLowerCase() === "receita";
+  }
+
+  function isAutomaticSale(item) {
+    return (
+      String(item.origem || "").toLowerCase() ===
+      "venda_produto"
+    );
   }
 
   function getMonthlyTransactions(transactions, month) {
@@ -75,12 +84,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Erro no Dashboard:", erro);
 
     WJ.toast(
-      erro?.message || "Não foi possível atualizar o Dashboard."
+      erro?.message ||
+      "Não foi possível atualizar o Dashboard."
     );
   }
 
   // =====================================
-  // CARREGAR DADOS DO POSTGRESQL
+  // CARREGAR DADOS
   // =====================================
 
   async function carregarDados() {
@@ -101,10 +111,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     }
 
-    return {
-      financeiro,
-      estoque
-    };
+    return { financeiro, estoque };
   }
 
   // =====================================
@@ -128,16 +135,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       totais.saldo >= 0
     );
 
-    // Caso exista um indicador de movimentações
-    // no HTML, ele será atualizado.
     const movementsElement =
       $("movements") ||
       $("transactionsCount") ||
       $("totalTransactions");
 
     if (movementsElement) {
-      movementsElement.textContent =
-        totais.movimentacoes;
+      movementsElement.textContent = totais.movimentacoes;
     }
   }
 
@@ -186,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // =====================================
-  // ÚLTIMAS MOVIMENTAÇÕES
+  // MOVIMENTAÇÕES RECENTES
   // =====================================
 
   function renderRecentTransactions(financeiro) {
@@ -202,10 +206,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     $("recent").innerHTML = recentes.map(item => {
       const receita = isRevenue(item);
+      const automatica = isAutomaticSale(item);
 
       return `
-        <div class="list-row">
-          <div>
+        <div
+          class="list-row"
+          style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+          "
+        >
+          <div style="flex:1;min-width:0;">
             <strong>
               ${WJ.escape(
                 item.descricao || "Movimentação"
@@ -215,12 +227,73 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="muted">
               ${WJ.escape(WJ.date(item.data))}
             </div>
+
+            ${automatica ? `
+              <div
+                class="muted"
+                style="font-size:11px;"
+              >
+                Venda de produto
+              </div>
+            ` : ""}
           </div>
 
-          <strong class="${receita ? "good" : "bad"}">
+          <strong
+            class="${receita ? "good" : "bad"}"
+            style="white-space:nowrap;"
+          >
             ${receita ? "+" : "-"}
             ${WJ.money(item.valor)}
           </strong>
+
+          <button
+            type="button"
+            class="btn-delete-movement"
+            data-id="${WJ.escape(String(item.id))}"
+            data-automatic="${automatica}"
+            title="${
+              automatica
+                ? "Cancelar venda"
+                : "Excluir movimentação"
+            }"
+            aria-label="${
+              automatica
+                ? "Cancelar venda"
+                : "Excluir movimentação"
+            }"
+            style="
+              width:36px;
+              height:36px;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              background:transparent;
+              color:#ef4444;
+              border:1px solid rgba(239,68,68,.35);
+              border-radius:10px;
+              cursor:pointer;
+              flex-shrink:0;
+            "
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 6h18"/>
+              <path d="M8 6V4h8v2"/>
+              <path d="M19 6l-1 14H6L5 6"/>
+              <path d="M10 11v5"/>
+              <path d="M14 11v5"/>
+            </svg>
+          </button>
         </div>
       `;
     }).join("") || `
@@ -229,6 +302,96 @@ document.addEventListener("DOMContentLoaded", async () => {
       </p>
     `;
   }
+
+  // =====================================
+  // EXCLUIR MOVIMENTAÇÃO
+  // =====================================
+
+  async function excluirMovimentacao(id, automatica) {
+    if (excluindo) return;
+
+    const mensagem = automatica
+      ? (
+        "Deseja cancelar esta venda?\n\n" +
+        "A movimentação financeira será removida " +
+        "e a quantidade vendida será devolvida " +
+        "ao estoque."
+      )
+      : (
+        "Deseja excluir esta movimentação?\n\n" +
+        "Essa ação não poderá ser desfeita."
+      );
+
+    if (!window.confirm(mensagem)) return;
+
+    excluindo = true;
+
+    const botoes = document.querySelectorAll(
+      ".btn-delete-movement"
+    );
+
+    botoes.forEach(botao => {
+      botao.disabled = true;
+      botao.style.opacity = "0.5";
+      botao.style.cursor = "not-allowed";
+    });
+
+    try {
+      const caminho = automatica
+        ? `/financeiro/${encodeURIComponent(id)}/cancelar-venda`
+        : `/financeiro/${encodeURIComponent(id)}`;
+
+      const resultado = await WJ.api(caminho, {
+        method: "DELETE"
+      });
+
+      WJ.toast(
+        resultado?.mensagem ||
+        "Movimentação removida com sucesso."
+      );
+
+      await renderDashboard();
+
+    } catch (erro) {
+      mostrarErro(erro);
+
+    } finally {
+      excluindo = false;
+
+      document.querySelectorAll(
+        ".btn-delete-movement"
+      ).forEach(botao => {
+        botao.disabled = false;
+        botao.style.opacity = "";
+        botao.style.cursor = "";
+      });
+    }
+  }
+
+  // =====================================
+  // EVENTO DOS BOTÕES
+  // =====================================
+
+  $("recent").addEventListener("click", async event => {
+    const botao = event.target.closest(
+      ".btn-delete-movement"
+    );
+
+    if (!botao || !$("recent").contains(botao)) {
+      return;
+    }
+
+    const id = botao.dataset.id;
+    const automatica =
+      botao.dataset.automatic === "true";
+
+    if (!id) {
+      WJ.toast("ID da movimentação não encontrado.");
+      return;
+    }
+
+    await excluirMovimentacao(id, automatica);
+  });
 
   // =====================================
   // GRÁFICO DOS ÚLTIMOS SEIS MESES
@@ -281,7 +444,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         >
           <div
             class="bar"
-            style="height: ${altura}%"
+            style="height:${altura}%"
           ></div>
 
           <small>
@@ -333,7 +496,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await renderDashboard();
 
   setInterval(() => {
-    if (!document.hidden) {
+    if (!document.hidden && !excluindo) {
       renderDashboard();
     }
   }, 60000);
@@ -341,14 +504,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.addEventListener(
     "visibilitychange",
     () => {
-      if (!document.hidden) {
+      if (!document.hidden && !excluindo) {
         renderDashboard();
       }
     }
   );
 
   window.addEventListener("pageshow", event => {
-    if (event.persisted) {
+    if (event.persisted && !excluindo) {
       renderDashboard();
     }
   });
