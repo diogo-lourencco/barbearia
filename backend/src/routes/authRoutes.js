@@ -1,4 +1,6 @@
 
+"use strict";
+
 const express = require("express");
 const { rateLimit } = require("express-rate-limit");
 
@@ -10,6 +12,10 @@ const {
 
 const router = express.Router();
 
+// =====================================
+// LIMITADOR DE TENTATIVAS DE LOGIN
+// =====================================
+
 const limiteLogin = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 10,
@@ -20,8 +26,17 @@ const limiteLogin = rateLimit({
   }
 });
 
+// =====================================
+// ROTAS DE AUTENTICAÇÃO
+// =====================================
+
+// Login com usuário e senha
 router.post("/login", limiteLogin, login);
+
+// Verificar sessão autenticada
 router.get("/me", verificarSessao);
+
+// Encerrar sessão
 router.post("/logout", logout);
 
 module.exports = router;

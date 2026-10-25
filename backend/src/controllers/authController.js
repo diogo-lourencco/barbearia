@@ -1,65 +1,92 @@
 
+"use strict";
+
 const argon2 = require("argon2");
 const pool = require("../config/database");
+
+// =====================================
+// DADOS PÚBLICOS DO USUÁRIO
+// =====================================
 
 function usuarioPublico(usuario) {
   return {
     id: usuario.id,
     nome: usuario.nome,
+    usuario: usuario.usuario,
     email: usuario.email,
     perfil: usuario.perfil
   };
 }
 
+// =====================================
+// LOGIN COM USUÁRIO E SENHA
+// =====================================
+
 async function login(req, res, next) {
   try {
-    const { email, senha } = req.body || {};
+    const { usuario, senha } = req.body || {};
 
     if (
-      typeof email !== "string" ||
+      typeof usuario !== "string" ||
       typeof senha !== "string" ||
-      !email.trim() ||
+      !usuario.trim() ||
       !senha
     ) {
       return res.status(400).json({
-        erro: "Informe e-mail e senha."
+        erro: "Informe seu usuário e sua senha."
       });
     }
 
+    const nomeUsuario = usuario.trim();
+
     const resultado = await pool.query(
-      `SELECT id, nome, email, senha_hash, perfil, ativo
+      `SELECT
+         id,
+         nome,
+         usuario,
+         email,
+         senha_hash,
+         perfil,
+         ativo
        FROM usuarios
-       WHERE LOWER(email) = LOWER($1)
+       WHERE LOWER(usuario) = LOWER($1)
        LIMIT 1`,
-      [email.trim()]
+      [nomeUsuario]
     );
 
-    const usuario = resultado.rows[0];
+    const usuarioEncontrado = resultado.rows[0];
 
-    if (!usuario || !usuario.ativo) {
+    if (!usuarioEncontrado || !usuarioEncontrado.ativo) {
       return res.status(401).json({
-        erro: "E-mail ou senha inválidos."
+        erro: "Usuário ou senha inválidos."
       });
     }
 
     const senhaValida = await argon2.verify(
-      usuario.senha_hash,
+      usuarioEncontrado.senha_hash,
       senha
     );
 
     if (!senhaValida) {
       return res.status(401).json({
-        erro: "E-mail ou senha inválidos."
+        erro: "Usuário ou senha inválidos."
       });
     }
 
+    // Renovar sessão após autenticação
     req.session.regenerate((erro) => {
-      if (erro) return next(erro);
+      if (erro) {
+        return next(erro);
+      }
 
-      req.session.usuario = usuarioPublico(usuario);
+      req.session.usuario = usuarioPublico(
+        usuarioEncontrado
+      );
 
       req.session.save((erroSalvar) => {
-        if (erroSalvar) return next(erroSalvar);
+        if (erroSalvar) {
+          return next(erroSalvar);
+        }
 
         return res.json({
           mensagem: "Login realizado com sucesso.",
@@ -67,10 +94,15 @@ async function login(req, res, next) {
         });
       });
     });
+
   } catch (erro) {
     next(erro);
   }
 }
+
+// =====================================
+// VERIFICAR SESSÃO
+// =====================================
 
 async function verificarSessao(req, res, next) {
   try {
@@ -81,38 +113,61 @@ async function verificarSessao(req, res, next) {
     }
 
     const resultado = await pool.query(
-      `SELECT id, nome, email, perfil
+      `SELECT
+         id,
+         nome,
+         usuario,
+         email,
+         perfil
        FROM usuarios
-       WHERE id = $1 AND ativo = TRUE`,
+       WHERE id = $1
+         AND ativo = TRUE`,
       [req.session.usuario.id]
     );
 
-    const usuario = resultado.rows[0];
+    const usuarioEncontrado = resultado.rows[0];
 
-    if (!usuario) {
-      return req.session.destroy(() => {
-        res.status(401).json({ autenticado: false });
+    if (!usuarioEncontrado) {
+      return req.session.destroy((erro) => {
+        if (erro) {
+          return next(erro);
+        }
+
+        return res.status(401).json({
+          autenticado: false
+        });
       });
     }
 
-    req.session.usuario = usuarioPublico(usuario);
+    req.session.usuario = usuarioPublico(
+      usuarioEncontrado
+    );
 
     return res.json({
       autenticado: true,
       usuario: req.session.usuario
     });
+
   } catch (erro) {
     next(erro);
   }
 }
 
+// =====================================
+// LOGOUT
+// =====================================
+
 function logout(req, res, next) {
   if (!req.session) {
-    return res.json({ mensagem: "Sessão encerrada." });
+    return res.json({
+      mensagem: "Sessão encerrada."
+    });
   }
 
   req.session.destroy((erro) => {
-    if (erro) return next(erro);
+    if (erro) {
+      return next(erro);
+    }
 
     res.clearCookie("wj.sid", {
       path: "/",
@@ -121,9 +176,15 @@ function logout(req, res, next) {
       secure: process.env.NODE_ENV === "production"
     });
 
-    res.json({ mensagem: "Logout realizado com sucesso." });
+    return res.json({
+      mensagem: "Logout realizado com sucesso."
+    });
   });
 }
+
+// =====================================
+// EXPORTAÇÕES
+// =====================================
 
 module.exports = {
   login,

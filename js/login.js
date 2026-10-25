@@ -3,21 +3,37 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
-  const emailInput = document.getElementById("username");
+  const usuarioInput = document.getElementById("username");
   const senhaInput = document.getElementById("password");
   const mostrarSenha = document.getElementById("showPassword");
   const botao = document.getElementById("loginButton");
   const mensagem = document.getElementById("loginMessage");
 
-  if (!form || !emailInput || !senhaInput || !botao || !mensagem) {
-    console.error("Elementos do formulário de login não encontrados.");
+  if (
+    !form ||
+    !usuarioInput ||
+    !senhaInput ||
+    !botao ||
+    !mensagem
+  ) {
+    console.error(
+      "Elementos do formulário de login não encontrados."
+    );
     return;
   }
+
+  // =====================================
+  // EXIBIR MENSAGENS
+  // =====================================
 
   function mostrarMensagem(texto) {
     mensagem.textContent = texto;
     mensagem.hidden = !texto;
   }
+
+  // =====================================
+  // ESTADO DO BOTÃO
+  // =====================================
 
   function carregando(ativo) {
     botao.disabled = ativo;
@@ -26,11 +42,19 @@ document.addEventListener("DOMContentLoaded", () => {
       : "Entrar no sistema";
   }
 
+  // =====================================
+  // MOSTRAR OU OCULTAR SENHA
+  // =====================================
+
   mostrarSenha?.addEventListener("change", () => {
     senhaInput.type = mostrarSenha.checked
       ? "text"
       : "password";
   });
+
+  // =====================================
+  // VERIFICAR SESSÃO EXISTENTE
+  // =====================================
 
   async function verificarSessao() {
     try {
@@ -51,16 +75,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // =====================================
+  // REALIZAR LOGIN COM USUÁRIO
+  // =====================================
+
   form.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
-    const email = emailInput.value.trim();
+    const usuario = usuarioInput.value.trim();
     const senha = senhaInput.value;
 
     mostrarMensagem("");
 
-    if (!email || !senha) {
-      mostrarMensagem("Informe seu e-mail e sua senha.");
+    if (!usuario || !senha) {
+      mostrarMensagem(
+        "Informe seu usuário e sua senha."
+      );
       return;
     }
 
@@ -74,16 +104,26 @@ document.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          email,
+          usuario,
           senha
         })
       });
 
-      const dados = await resposta.json();
+      let dados;
+
+      try {
+        dados = await resposta.json();
+      } catch {
+        mostrarMensagem(
+          "O servidor retornou uma resposta inválida."
+        );
+        return;
+      }
 
       if (!resposta.ok) {
         mostrarMensagem(
-          dados.erro || "Não foi possível realizar o login."
+          dados.erro ||
+          "Usuário ou senha inválidos."
         );
         return;
       }
@@ -95,8 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // A sessão é mantida pelo cookie HttpOnly do servidor.
-      // Não armazenamos senha ou token no localStorage.
+      // A sessão é mantida pelo cookie HttpOnly.
+      // Não armazenamos senhas ou tokens no localStorage.
       window.location.replace("/dashboard.html");
 
     } catch (erro) {
@@ -110,6 +150,10 @@ document.addEventListener("DOMContentLoaded", () => {
       carregando(false);
     }
   });
+
+  // =====================================
+  // INICIALIZAÇÃO
+  // =====================================
 
   verificarSessao();
 });
