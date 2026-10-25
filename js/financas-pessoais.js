@@ -1135,8 +1135,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderCards() {
     // CARTÕES CADASTRADOS
 
-    $("creditCards").innerHTML = db.cards.length
-      ? db.cards.map(card => `
+    $("creditCards").innerHTML = db.cards.some(card => !card.archived)
+      ? db.cards.filter(card => !card.archived).map(card => `
         <article class="tile">
           <span class="eyebrow">
             CARTÃO DE CRÉDITO
@@ -1190,8 +1190,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // FATURAS DO MÊS SELECIONADO
 
-    $("invoices").innerHTML = db.cards.length
-      ? db.cards.map(card => {
+    $("invoices").innerHTML = db.cards.some(card => !card.archived)
+      ? db.cards.filter(card => !card.archived).map(card => {
           const total = invoiceTotal(
             card.id,
             selectedMonth()
@@ -1757,7 +1757,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (
       type === "purchase" &&
-      !db.cards.length
+      !db.cards.some(card => !card.archived)
     ) {
       toast(
         "Cadastre um cartão primeiro."
@@ -2004,7 +2004,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           select(
             "cardId",
             "Cartão",
-            db.cards,
+            db.cards.filter(card => !card.archived),
             data.cardId
           ) +
 
@@ -2847,47 +2847,97 @@ document.addEventListener("DOMContentLoaded", async () => {
   // =====================================
 
   async function remove(collection, itemId) {
+    // Cartões com compras já quitadas são arquivados, e não apagados
+    // fisicamente: assim o nome do cartão, as compras e os pagamentos
+    // permanecem íntegros no histórico financeiro.
+    if (collection === "cards") {
+      const card = get("cards", itemId);
+      if (!card || card.archived) {
+        toast("Cartão não encontrado ou já excluído.");
+        return;
+      }
+
+      const purchases = db.purchases.filter(
+        item => item.cardId === itemId
+      );
+
+      const unpaid = purchases.some(purchase => {
+        const installments = Number(purchase.installments);
+        const start = String(purchase.date || "").slice(0, 7);
+        if (!/^\d{4}-\d{2}$/.test(start) ||
+            !Number.isInteger(installments) || installments < 1) {
+          return true; // Dados incompletos: bloquear por segurança.
+        }
+        for (let index = 0; index < installments; index++) {
+          const month = shiftMonth(start, index);
+          if (!paidInvoice(itemId, month)) return true;
+        }
+        return false;
+      });
+
+      if (unpaid) {
+        toast("Não é possível excluir: existem compras ou parcelas com faturas em aberto.");
+        return;
+      }
+
+      const hasHistory = purchases.length > 0 ||
+        db.invoicePayments.some(item => item.cardId === itemId);
+
+      const message = hasHistory
+        ? "Remover este cartão da lista? O histórico de compras e faturas pagas será preservado."
+        : "Deseja realmente excluir este cartão?";
+      if (!confirm(message)) return;
+
+      const success = await update(() => {
+        const current = get("cards", itemId);
+        if (!current) throw new Error("Cartão não encontrado.");
+
+        // Revalida após sincronização para evitar excluir um cartão
+        // que recebeu novas compras enquanto o usuário confirmava.
+        const hasOpen = db.purchases
+          .filter(item => item.cardId === itemId)
+          .some(purchase => {
+            const installments = Number(purchase.installments);
+            const start = String(purchase.date || "").slice(0, 7);
+            if (!/^\d{4}-\d{2}$/.test(start) ||
+                !Number.isInteger(installments) || installments < 1) return true;
+            for (let i = 0; i < installments; i++) {
+              if (!paidInvoice(itemId, shiftMonth(start, i))) return true;
+            }
+            return false;
+          });
+        if (hasOpen) throw new Error("Existem parcelas em aberto neste cartão.");
+
+        const keepHistory = db.purchases.some(item => item.cardId === itemId) ||
+          db.invoicePayments.some(item => item.cardId === itemId);
+        if (keepHistory) {
+          current.archived = true;
+        } else {
+          db.cards = db.cards.filter(item => item.id !== itemId);
+        }
+      });
+      if (success) toast("Cartão removido. Histórico preservado.");
+      return;
+    }
+
     const linked = {
       wallets: () =>
-        db.transactions.some(
-          item => item.walletId === itemId
-        ) ||
-        db.transfers.some(
-          item => item.from === itemId || item.to === itemId
-        ) ||
-        db.goalMoves.some(
-          item => item.walletId === itemId
-        ),
-
-      goals: () =>
-        db.goalMoves.some(
-          item => item.goalId === itemId
-        ),
-
-      cards: () =>
-        db.purchases.some(
-          item => item.cardId === itemId
-        )
+        db.transactions.some(item => item.walletId === itemId) ||
+        db.transfers.some(item => item.from === itemId || item.to === itemId) ||
+        db.goalMoves.some(item => item.walletId === itemId),
+      goals: () => db.goalMoves.some(item => item.goalId === itemId)
     };
 
     if (linked[collection]?.()) {
-      toast(
-        "Existem movimentações vinculadas a este registro."
-      );
+      toast("Existem movimentações vinculadas a este registro.");
       return;
     }
 
-    if (!confirm("Deseja realmente excluir este registro?")) {
-      return;
-    }
+    if (!confirm("Deseja realmente excluir este registro?")) return;
 
     await update(() => {
-      db[collection] = db[collection].filter(
-        item => item.id !== itemId
-      );
+      db[collection] = db[collection].filter(item => item.id !== itemId);
     });
-
-    // A exclusão é persistida antes da atualização da interface.
   }
 
   // =====================================
