@@ -2786,22 +2786,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       item => item.transactionId === itemId
     );
 
-    // Registros automáticos devem ter origem reconhecida.
-    // Não excluir um vínculo desconhecido, pois isso pode
-    // deixar saldos e estados financeiros inconsistentes.
-    if (transaction.linked && !bill && !invoice) {
-      toast(
-        "Origem do lançamento automático não identificada. " +
-        "A exclusão foi bloqueada para proteger seus dados."
-      );
-      return;
-    }
+    // Lançamentos antigos podem não ter o identificador da origem.
+    // Nesse caso, apenas a movimentação será excluída.
+    // Nenhuma conta ou fatura será alterada automaticamente.
+    const legacyOrphan = Boolean(transaction.linked && !bill && !invoice);
 
     const message = bill
       ? "Excluir a movimentação e reabrir a conta como pendente?"
       : invoice
         ? "Excluir a movimentação e marcar a fatura como não paga?"
-        : "Deseja realmente excluir esta movimentação?";
+        : legacyOrphan
+          ? "ATENÇÃO: este lançamento automático antigo não possui vínculo identificado. Excluir apenas esta movimentação? O saldo será recalculado, mas contas e faturas permanecerão inalteradas. Confira os registros após excluir."
+          : "Deseja realmente excluir esta movimentação?";
 
     if (!confirm(message)) return;
 
@@ -2818,9 +2814,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         item => item.transactionId === itemId
       );
 
-      if (current.linked && !currentBill && !currentInvoice) {
+      // Preserva a proteção caso o vínculo tenha mudado durante
+      // uma sincronização; somente registros já órfãos podem
+      // ser excluídos sem atualizar uma conta ou fatura.
+      if (current.linked && !currentBill && !currentInvoice && !legacyOrphan) {
         throw new Error(
-          "Origem automática não encontrada. Exclusão cancelada."
+          "O vínculo da movimentação mudou. Recarregue a página e tente novamente."
         );
       }
 
