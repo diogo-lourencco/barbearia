@@ -769,6 +769,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                       ></i>
                       Automático
                     </span>
+
+                    ${button(
+                      "delete-transaction",
+                      item.id,
+                      "Excluir"
+                    )}
                   `
                   : button(
                       "edit-transaction",
@@ -2187,475 +2193,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     editingId = "";
   }
 
-  
-  // =====================================
-  // ABRIR FORMULÁRIOS
-  // =====================================
-
-  function openModal(
-    type,
-    itemId = "",
-    defaults = {}
-  ) {
-    if (
-      [
-        "transaction",
-        "bill",
-        "transfer",
-        "contribution",
-        "invoice"
-      ].includes(type) &&
-      !db.wallets.length
-    ) {
-      toast(
-        "Cadastre uma conta ou carteira primeiro."
-      );
-
-      navigate("wallets");
-      return;
-    }
-
-    if (
-      type === "purchase" &&
-      !db.cards.length
-    ) {
-      toast(
-        "Cadastre um cartão primeiro."
-      );
-
-      navigate("cards");
-      return;
-    }
-
-    modalType = type;
-    editingId = itemId;
-
-    const collections = {
-      transaction: "transactions",
-      bill: "bills",
-      goal: "goals",
-      card: "cards",
-      recurring: "recurring",
-      wallet: "wallets"
-    };
-
-    const item = itemId
-      ? get(collections[type], itemId)
-      : null;
-
-    const data = {
-      ...defaults,
-      ...(item || {})
-    };
-
-    const titles = {
-      transaction: "movimentação",
-      bill: "conta",
-      goal: "meta financeira",
-      card: "cartão de crédito",
-      purchase: "compra parcelada",
-      recurring: "gasto fixo",
-      wallet: "conta ou carteira",
-      transfer: "transferência",
-      contribution: "movimentação da meta",
-      invoice: "pagamento de fatura"
-    };
-
-    $("modalTitle").textContent =
-      `${item ? "Editar" : "Nova"} ${titles[type]}`;
-
-    // =====================================
-    // CAMPOS REUTILIZÁVEIS
-    // =====================================
-
-    const valueInput = (
-      value = data.amount
-    ) =>
-      input(
-        "amount",
-        "Valor (R$)",
-        "number",
-        value || "",
-        'min="0.01" step="0.01"'
-      );
-
-    const dateInput = (
-      value = data.date
-    ) =>
-      input(
-        "date",
-        "Data",
-        "date",
-        value || today()
-      );
-
-    const walletInput = (
-      value = data.walletId
-    ) =>
-      select(
-        "walletId",
-        "Conta / carteira",
-        db.wallets,
-        value
-      );
-
-    let html = "";
-
-    // =====================================
-    // TIPOS DE FORMULÁRIO
-    // =====================================
-
-    switch (type) {
-
-      // MOVIMENTAÇÃO FINANCEIRA
-
-      case "transaction":
-        html =
-          enumSelect(
-            "type",
-            "Tipo",
-            [
-              "Receita",
-              "Despesa"
-            ],
-            data.type || "Despesa"
-          ) +
-
-          dateInput() +
-
-          input(
-            "description",
-            "Descrição",
-            "text",
-            data.description || ""
-          ) +
-
-          input(
-            "category",
-            "Categoria",
-            "text",
-            data.category || "Outros"
-          ) +
-
-          valueInput() +
-
-          walletInput() +
-
-          enumSelect(
-            "payment",
-            "Pagamento",
-            [
-              "Pix",
-              "Cartão de débito",
-              "Dinheiro",
-              "Transferência",
-              "Boleto"
-            ],
-            data.payment || "Pix"
-          );
-        break;
-
-      // CONTAS A PAGAR E RECEBER
-
-      case "bill":
-        html =
-          enumSelect(
-            "type",
-            "Tipo",
-            [
-              "Pagar",
-              "Receber"
-            ],
-            data.type || "Pagar"
-          ) +
-
-          input(
-            "due",
-            "Vencimento",
-            "date",
-            data.due || today()
-          ) +
-
-          input(
-            "description",
-            "Descrição",
-            "text",
-            data.description || ""
-          ) +
-
-          input(
-            "category",
-            "Categoria",
-            "text",
-            data.category || "Contas"
-          ) +
-
-          valueInput();
-        break;
-
-      case "goal":
-        html =
-          input(
-            "name",
-            "Nome da meta",
-            "text",
-            data.name || ""
-          ) +
-
-          input(
-            "target",
-            "Valor desejado",
-            "number",
-            data.target || "",
-            'min="0.01" step="0.01"'
-          ) +
-
-          `
-            <label>
-              Prazo (opcional)
-
-              <input
-                name="deadline"
-                type="date"
-                value="${
-                  escapeHTML(
-                    data.deadline || ""
-                  )
-                }"
-              >
-            </label>
-          `;
-        break;
-
-      // CARTÕES DE CRÉDITO
-
-      case "card":
-        html =
-          input(
-            "name",
-            "Nome do cartão",
-            "text",
-            data.name || ""
-          ) +
-
-          input(
-            "limit",
-            "Limite total",
-            "number",
-            data.limit || "",
-            'min="0.01" step="0.01"'
-          ) +
-
-          input(
-            "dueDay",
-            "Dia do vencimento",
-            "number",
-            data.dueDay || 10,
-            'min="1" max="28"'
-          );
-        break;
-
-      // COMPRAS PARCELADAS
-
-      case "purchase":
-        html =
-          select(
-            "cardId",
-            "Cartão",
-            db.cards,
-            data.cardId
-          ) +
-
-          dateInput() +
-
-          input(
-            "description",
-            "Descrição da compra"
-          ) +
-
-          valueInput() +
-
-          input(
-            "installments",
-            "Número de parcelas",
-            "number",
-            1,
-            'min="1" max="48"'
-          );
-        break;
-
-      // GASTOS FIXOS
-
-      case "recurring":
-        html =
-          input(
-            "name",
-            "Nome da despesa",
-            "text",
-            data.name || ""
-          ) +
-
-          input(
-            "category",
-            "Categoria",
-            "text",
-            data.category || "Assinaturas"
-          ) +
-
-          input(
-            "day",
-            "Dia do vencimento",
-            "number",
-            data.day || 10,
-            'min="1" max="28"'
-          ) +
-
-          valueInput();
-        break;
-
-      // CONTAS E CARTEIRAS
-
-      case "wallet":
-        html =
-          input(
-            "name",
-            "Nome da conta",
-            "text",
-            data.name || ""
-          ) +
-
-          enumSelect(
-            "kind",
-            "Tipo",
-            [
-              "Conta corrente",
-              "Poupança",
-              "Carteira",
-              "Conta digital",
-              "Outro"
-            ],
-            data.kind || "Conta corrente"
-          ) +
-
-          input(
-            "initial",
-            "Saldo inicial",
-            "number",
-            data.initial ?? 0,
-            'step="0.01"'
-          );
-        break;
-
-      // TRANSFERÊNCIAS
-
-      case "transfer":
-        html =
-          select(
-            "from",
-            "Conta de origem",
-            db.wallets
-          ) +
-
-          select(
-            "to",
-            "Conta de destino",
-            db.wallets
-          ) +
-
-          dateInput() +
-
-          valueInput();
-        break;
-
-      // MOVIMENTAÇÕES DAS METAS
-
-      case "contribution":
-        html =
-          select(
-            "goalId",
-            "Meta",
-            db.goals,
-            data.goalId
-          ) +
-
-          walletInput() +
-
-          dateInput() +
-
-          valueInput();
-        break;
-
-      // PAGAMENTO DE FATURA
-
-      case "invoice":
-        html =
-          `
-            <div class="wide muted">
-              Fatura:
-              ${
-                money(
-                  invoiceTotal(
-                    data.cardId,
-                    data.month
-                  )
-                )
-              }
-            </div>
-          ` +
-
-          walletInput() +
-
-          dateInput() +
-
-          enumSelect(
-            "payment",
-            "Pagamento",
-            [
-              "Pix",
-              "Transferência",
-              "Dinheiro",
-              "Boleto"
-            ],
-            "Pix"
-          );
-        break;
-    }
-
-    // =====================================
-    // EXIBIR FORMULÁRIO
-    // =====================================
-
-    $("modalFields").innerHTML = html;
-
-    $("modal").hidden = false;
-
-    refreshIcons();
-
-    // FOCAR NO PRIMEIRO CAMPO
-
-    const firstInput = $("modalFields").querySelector(
-      "input, select"
-    );
-
-    if (firstInput) {
-      firstInput.focus();
-    }
-  }
-
-  // =====================================
-  // FECHAR MODAL
-  // =====================================
-
-  function closeModal() {
-    $("modal").hidden = true;
-
-    $("modalForm").reset();
-
-    modalType = "";
-    editingId = "";
-  }
-
- 
   // =====================================
   // EVENTOS DO MODAL
   // =====================================
@@ -2917,7 +2454,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             break;
           }
 
-          
           // =====================================
           // GASTOS FIXOS
           // =====================================
@@ -3170,9 +2706,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   );
 
-  // CONFIRMAR CONTAS A PAGAR E RECEBER
-  // =====================================
-
   async function settleBill(item) {
     if (!db.wallets.length) {
       toast("Cadastre uma conta primeiro.");
@@ -3233,6 +2766,81 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // A confirmação é exibida somente após o salvamento no servidor.
+  }
+
+  // =====================================
+  // EXCLUSÃO DE MOVIMENTAÇÕES AUTOMÁTICAS
+  // =====================================
+
+  async function removeTransaction(itemId) {
+    const transaction = get("transactions", itemId);
+    if (!transaction) {
+      toast("Movimentação não encontrada.");
+      return;
+    }
+
+    const bill = db.bills.find(
+      item => item.transactionId === itemId
+    );
+    const invoice = db.invoicePayments.find(
+      item => item.transactionId === itemId
+    );
+
+    // Registros automáticos devem ter origem reconhecida.
+    // Não excluir um vínculo desconhecido, pois isso pode
+    // deixar saldos e estados financeiros inconsistentes.
+    if (transaction.linked && !bill && !invoice) {
+      toast(
+        "Origem do lançamento automático não identificada. " +
+        "A exclusão foi bloqueada para proteger seus dados."
+      );
+      return;
+    }
+
+    const message = bill
+      ? "Excluir a movimentação e reabrir a conta como pendente?"
+      : invoice
+        ? "Excluir a movimentação e marcar a fatura como não paga?"
+        : "Deseja realmente excluir esta movimentação?";
+
+    if (!confirm(message)) return;
+
+    const success = await update(() => {
+      const current = get("transactions", itemId);
+      if (!current) {
+        throw new Error("Movimentação não encontrada.");
+      }
+
+      const currentBill = db.bills.find(
+        item => item.transactionId === itemId
+      );
+      const currentInvoice = db.invoicePayments.find(
+        item => item.transactionId === itemId
+      );
+
+      if (current.linked && !currentBill && !currentInvoice) {
+        throw new Error(
+          "Origem automática não encontrada. Exclusão cancelada."
+        );
+      }
+
+      if (currentBill) {
+        currentBill.status = "pending";
+        delete currentBill.transactionId;
+      }
+
+      if (currentInvoice) {
+        db.invoicePayments = db.invoicePayments.filter(
+          item => item.transactionId !== itemId
+        );
+      }
+
+      db.transactions = db.transactions.filter(
+        item => item.id !== itemId
+      );
+    });
+
+    if (success) toast("Movimentação excluída com sucesso.");
   }
 
   // =====================================
@@ -3309,6 +2917,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    if (action === "delete-transaction") {
+      await removeTransaction(itemId);
+      return;
+    }
+
     if (action.startsWith("delete-")) {
       const type = action.replace("delete-", "");
       const collection = collections[type];
@@ -3363,6 +2976,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         break;
 
       // =====================================
+
       // PAGAR FATURA
       // =====================================
 
