@@ -15,8 +15,16 @@
   <title>Minhas Finanças</title>
 
   <!-- ÍCONES DA ABA -->
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="apple-touch-icon" href="assets/logo.png">
+  <link
+    rel="icon"
+    type="image/png"
+    href="assets/logo.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="assets/logo.png"
+  >
 
   <!-- ESTILOS -->
   <link
@@ -24,13 +32,59 @@
     href="css/financas-pessoais.css"
   >
 
+  <!-- ESTILO DO BOTÃO DE RETORNO -->
+  <style>
+    #nav .back-to-barbershop {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(242, 140, 40, 0.35);
+      border-radius: 10px;
+      background: rgba(242, 140, 40, 0.08);
+      color: #F28C28;
+      font: inherit;
+      font-weight: 600;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    #nav .back-to-barbershop:hover {
+      background: rgba(242, 140, 40, 0.16);
+      border-color: #F28C28;
+    }
+
+    #nav .back-to-barbershop:focus-visible {
+      outline: 2px solid #F28C28;
+      outline-offset: 2px;
+    }
+
+    #nav .back-to-barbershop svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    #nav .nav-divider {
+      height: 1px;
+      margin: 4px 0 14px;
+      background: rgba(255, 255, 255, 0.10);
+    }
+  </style>
+
   <!-- ÍCONES LUCIDE -->
   <script
     defer
     src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
   ></script>
 
-  <!-- SISTEMA GLOBAL: CARREGAR PRIMEIRO -->
+  <!-- SISTEMA GLOBAL -->
   <script
     defer
     src="js/global.js"
@@ -69,7 +123,10 @@
     href="assets/icon-180.png"
   >
 
-  <script defer src="js/pwa.js"></script>
+  <script
+    defer
+    src="js/pwa.js"
+  ></script>
 </head>
 
 <body>
@@ -100,6 +157,22 @@
         id="nav"
         aria-label="Menu principal"
       >
+
+        <!-- VOLTAR PARA BARBEARIA -->
+        <a
+          href="dashboard.html"
+          target="_top"
+          class="back-to-barbershop"
+          aria-label="Voltar para Barbearia"
+        >
+          <i data-lucide="arrow-left"></i>
+          <span>Voltar para Barbearia</span>
+        </a>
+
+        <div
+          class="nav-divider"
+          aria-hidden="true"
+        ></div>
 
         <button
           type="button"
@@ -164,6 +237,7 @@
 
         <div class="side-security">
           <i data-lucide="lock-keyhole"></i>
+
           <span>
             Dados pessoais separados da barbearia
           </span>
@@ -231,9 +305,7 @@
 
       <main id="pages">
 
-        <!-- =====================================
-             DASHBOARD
-        ====================================== -->
+        <!-- DASHBOARD -->
 
         <section
           class="page active"
@@ -349,9 +421,7 @@
 
         </section>
 
-        <!-- =====================================
-             MOVIMENTAÇÕES
-        ====================================== -->
+        <!-- MOVIMENTAÇÕES -->
 
         <section
           class="page"
@@ -443,9 +513,7 @@
 
         </section>
 
-        <!-- =====================================
-             CONTAS A PAGAR E RECEBER
-        ====================================== -->
+        <!-- CONTAS A PAGAR E RECEBER -->
 
         <section
           class="page"
@@ -506,9 +574,7 @@
 
         </section>
 
-        <!-- =====================================
-             METAS FINANCEIRAS
-        ====================================== -->
+        <!-- METAS FINANCEIRAS -->
 
         <section
           class="page"
@@ -548,9 +614,7 @@
 
         </section>
 
-        <!-- =====================================
-             CARTÕES DE CRÉDITO
-        ====================================== -->
+        <!-- CARTÕES DE CRÉDITO -->
 
         <section
           class="page"
@@ -621,9 +685,7 @@
 
         </section>
 
-        <!-- =====================================
-             GASTOS FIXOS
-        ====================================== -->
+        <!-- GASTOS FIXOS -->
 
         <section
           class="page"
@@ -684,9 +746,7 @@
 
         </section>
 
-        <!-- =====================================
-             CONTAS E CARTEIRAS
-        ====================================== -->
+        <!-- CONTAS E CARTEIRAS -->
 
         <section
           class="page"
@@ -740,9 +800,11 @@
           <article class="panel">
 
             <div class="panel-title">
+
               <h2>
                 Transferências recentes
               </h2>
+
             </div>
 
             <div id="transferList"></div>
@@ -753,15 +815,11 @@
 
       </main>
 
-      <!-- RODAPÉ -->
-
     </div>
 
   </div>
 
-  <!-- =====================================
-       MODAL DE CADASTRO
-  ====================================== -->
+  <!-- MODAL DE CADASTRO -->
 
   <div
     class="modal-backdrop"
@@ -851,9 +909,7 @@
     aria-live="polite"
   ></div>
 
-  <!-- =====================================
-       MENU MOBILE
-  ====================================== -->
+  <!-- MENU MOBILE -->
 
   <script>
     document.addEventListener(
