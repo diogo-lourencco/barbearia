@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta name="theme-color" content="#17191D">
+
+  <title>Financeiro</title>
+
+  <!-- LOGO NA ABA DO NAVEGADOR -->
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
+
+  <!-- ESTILOS -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/financeiro.css">
+
+  <!-- ÍCONES PROFISSIONAIS -->
+  <script
+    defer
+    src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
+  ></script>
+
+  <!-- SCRIPTS DO SISTEMA -->
+  <script defer src="js/global.js"></script>
+  <script defer src="js/financeiro.js"></script>
+  <!-- Instalação no iPhone / PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
+  <meta name="theme-color" content="#17191D">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+  <script src="js/pwa.js" defer></script>
+</head>
+
+<body>
+
+  <div class="layout">
+
+    <main class="main">
+
+      <div class="content">
+
+        <!-- CABEÇALHO -->
+
+        <header class="heading">
+
+          <div>
+
+            <span class="page-kicker">
+              GESTÃO FINANCEIRA
+            </span>
+
+            <h1>Controle financeiro</h1>
+
+            <p class="muted">
+              Gerencie receitas, despesas e atendimentos
+              da Barbearia WJ.
+            </p>
+
+          </div>
+
+          <button
+            class="btn"
+            id="newTransaction"
+            type="button"
+          >
+            <i data-lucide="plus"></i>
+            <span>Nova movimentação</span>
+          </button>
+
+        </header>
+
+        <!-- INDICADORES FINANCEIROS -->
+
+        <section class="cards finance-cards">
+
+          <!-- RECEITAS -->
+
+          <article class="card finance-stat">
+
+            <div class="stat-header">
+
+              <span>Receitas</span>
+
+              <span class="stat-icon revenue-icon">
+                <i data-lucide="trending-up"></i>
+              </span>
+
+            </div>
+
+            <strong
+              class="metric good"
+              id="totalRevenue"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Entradas no período selecionado
+            </small>
+
+          </article>
+
+          <!-- DESPESAS -->
+
+          <article class="card finance-stat">
+
+            <div class="stat-header">
+
+              <span>Despesas</span>
+
+              <span class="stat-icon expense-icon">
+                <i data-lucide="trending-down"></i>
+              </span>
+
+            </div>
+
+            <strong
+              class="metric bad"
+              id="totalExpenses"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Saídas no período selecionado
+            </small>
+
+          </article>
+
+          <!-- SALDO -->
+
+          <article class="card finance-stat">
+
+            <div class="stat-header">
+
+              <span>Saldo</span>
+
+              <span class="stat-icon balance-icon">
+                <i data-lucide="wallet"></i>
+              </span>
+
+            </div>
+
+            <strong
+              class="metric accent"
+              id="totalBalance"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Receitas menos despesas
+            </small>
+
+          </article>
+
+          <!-- MOVIMENTAÇÕES -->
+
+          <article class="card finance-stat">
+
+            <div class="stat-header">
+
+              <span>Movimentações</span>
+
+              <span class="stat-icon">
+                <i data-lucide="arrow-left-right"></i>
+              </span>
+
+            </div>
+
+            <strong
+              class="metric"
+              id="totalTransactions"
+            >
+              0
+            </strong>
+
+            <small>
+              Registros no período selecionado
+            </small>
+
+          </article>
+
+        </section>
+
+        <!-- FORMULÁRIO -->
+
+        <section
+          class="card form-section"
+          id="transactionSection"
+          hidden
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2 id="formTitle">
+                Nova movimentação
+              </h2>
+
+              <p class="muted">
+                Registre um atendimento ou uma despesa.
+              </p>
+
+            </div>
+
+            <button
+              class="close-form"
+              id="closeForm"
+              type="button"
+              aria-label="Fechar formulário"
+            >
+              <i data-lucide="x"></i>
+            </button>
+
+          </div>
+
+          <form id="transactionForm">
+
+            <input
+              type="hidden"
+              id="transactionId"
+            >
+
+            <div class="form-grid">
+
+              <!-- TIPO -->
+
+              <div class="field">
+
+                <label for="transactionType">
+                  Tipo de movimentação
+                </label>
+
+                <select
+                  id="transactionType"
+                  required
+                >
+                  <option value="Receita">
+                    Receita
+                  </option>
+
+                  <option value="Despesa">
+                    Despesa
+                  </option>
+                </select>
+
+              </div>
+
+              <!-- DATA -->
+
+              <div class="field">
+
+                <label for="transactionDate">
+                  Data
+                </label>
+
+                <input
+                  type="date"
+                  id="transactionDate"
+                  required
+                >
+
+              </div>
+
+              <!-- CLIENTE -->
+
+              <div
+                class="field"
+                data-client-field
+              >
+
+                <label for="clientName">
+                  Nome do cliente
+                </label>
+
+                <input
+                  type="text"
+                  id="clientName"
+                  placeholder="Ex.: João Silva"
+                  maxlength="100"
+                  autocomplete="name"
+                >
+
+              </div>
+
+              <!-- WHATSAPP -->
+
+              <div
+                class="field"
+                data-client-field
+              >
+
+                <label for="clientWhatsapp">
+                  WhatsApp do cliente
+                </label>
+
+                <input
+                  type="tel"
+                  id="clientWhatsapp"
+                  placeholder="(11) 99999-9999"
+                  maxlength="20"
+                  autocomplete="tel"
+                >
+
+              </div>
+
+              <!-- DESCRIÇÃO -->
+
+              <div class="field full">
+
+                <label for="transactionDescription">
+                  Descrição do serviço ou despesa
+                </label>
+
+                <input
+                  type="text"
+                  id="transactionDescription"
+                  placeholder="Ex.: Corte masculino + barba"
+                  maxlength="120"
+                  required
+                >
+
+              </div>
+
+              <!-- CATEGORIA -->
+
+              <div class="field">
+
+                <label for="transactionCategory">
+                  Categoria
+                </label>
+
+                <select
+                  id="transactionCategory"
+                  required
+                ></select>
+
+              </div>
+
+              <!-- VALOR -->
+
+              <div class="field">
+
+                <label for="transactionValue">
+                  Valor (R$)
+                </label>
+
+                <input
+                  type="number"
+                  id="transactionValue"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0,00"
+                  required
+                >
+
+              </div>
+
+              <!-- PAGAMENTO -->
+
+              <div class="field full payment-field">
+
+                <label for="transactionPayment">
+                  Forma de pagamento
+                </label>
+
+                <select
+                  id="transactionPayment"
+                  required
+                >
+
+                  <option value="">
+                    Selecione a forma de pagamento
+                  </option>
+
+                  <option value="Pix">
+                    Pix
+                  </option>
+
+                  <option value="Cartão">
+                    Cartão
+                  </option>
+
+                  <option value="Dinheiro">
+                    Dinheiro
+                  </option>
+
+                </select>
+
+                <small class="payment-hint">
+                  Informe como o valor foi recebido ou pago.
+                </small>
+
+              </div>
+
+              <!-- OBSERVAÇÕES -->
+
+              <div class="field full">
+
+                <label for="transactionNotes">
+                  Observações
+                </label>
+
+                <textarea
+                  id="transactionNotes"
+                  rows="3"
+                  maxlength="300"
+                  placeholder="Informações adicionais (opcional)"
+                ></textarea>
+
+              </div>
+
+            </div>
+
+            <p
+              class="client-hint"
+              id="clientHint"
+            >
+              O WhatsApp será usado apenas para abrir
+              a mensagem de agradecimento.
+              Informe o número com DDD.
+            </p>
+
+            <!-- AÇÕES DO FORMULÁRIO -->
+
+            <div class="form-actions">
+
+              <button
+                class="btn alt"
+                type="button"
+                id="cancelForm"
+              >
+                Cancelar
+              </button>
+
+              <button
+                class="btn"
+                type="submit"
+                id="saveTransaction"
+              >
+                <i data-lucide="save"></i>
+                <span>Salvar movimentação</span>
+              </button>
+
+            </div>
+
+          </form>
+
+        </section>
+
+        <!-- HISTÓRICO -->
+
+        <section class="card history-section">
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>
+                Histórico de movimentações
+              </h2>
+
+              <p class="muted">
+                Consulte atendimentos, pagamentos e despesas.
+              </p>
+
+            </div>
+
+            <button
+              class="btn alt"
+              type="button"
+              id="exportCSV"
+            >
+              <i data-lucide="download"></i>
+              <span>Exportar CSV</span>
+            </button>
+
+          </div>
+
+          <!-- FILTROS -->
+
+          <div class="finance-filters">
+
+            <!-- PESQUISA -->
+
+            <div class="field search-field">
+
+              <label for="searchTransaction">
+                Pesquisar
+              </label>
+
+              <input
+                type="search"
+                id="searchTransaction"
+                placeholder="Cliente, serviço ou categoria"
+              >
+
+            </div>
+
+            <!-- TIPO -->
+
+            <div class="field">
+
+              <label for="filterType">
+                Tipo
+              </label>
+
+              <select id="filterType">
+
+                <option value="">
+                  Todos
+                </option>
+
+                <option value="Receita">
+                  Receitas
+                </option>
+
+                <option value="Despesa">
+                  Despesas
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- MÊS -->
+
+            <div class="field">
+
+              <label for="filterMonth">
+                Mês
+              </label>
+
+              <input
+                type="month"
+                id="filterMonth"
+              >
+
+            </div>
+
+            <!-- LIMPAR FILTROS -->
+
+            <button
+              class="btn alt clear-filters"
+              type="button"
+              id="clearFilters"
+            >
+              <i data-lucide="filter-x"></i>
+              <span>Limpar filtros</span>
+            </button>
+
+          </div>
+
+          <!-- TABELA -->
+
+          <div class="table-wrap">
+
+            <table class="finance-table">
+
+              <thead>
+
+                <tr>
+                  <th>Data</th>
+                  <th>Cliente</th>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
+                  <th>Pagamento</th>
+                  <th>Valor</th>
+                  <th>Ações</th>
+                </tr>
+
+              </thead>
+
+              <tbody id="transactionTable"></tbody>
+
+            </table>
+
+          </div>
+
+          <!-- RODAPÉ DO HISTÓRICO -->
+
+          <div class="history-footer">
+
+            <span id="resultsCount">
+              0 movimentações
+            </span>
+
+            <span>
+              Barbearia WJ - Financeiro
+            </span>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- INICIALIZAÇÃO DOS ÍCONES -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+
+</body>
+</html>

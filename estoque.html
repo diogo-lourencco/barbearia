@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta name="theme-color" content="#17191D">
+
+  <title>Estoque</title>
+
+  <!-- LOGO NA ABA DO NAVEGADOR -->
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
+
+  <!-- ESTILOS -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/estoque.css">
+
+  <!-- ÍCONES PROFISSIONAIS -->
+  <script
+    defer
+    src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
+  ></script>
+
+  <!-- SCRIPTS DO SISTEMA -->
+  <script defer src="js/global.js"></script>
+  <script defer src="js/estoque.js"></script>
+
+  <!-- Instalação no iPhone / PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
+  <meta name="theme-color" content="#17191D">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+  <script src="js/pwa.js" defer></script>
+</head>
+
+<body>
+
+  <div class="layout">
+
+    <main class="main">
+
+      <div class="content stock-page">
+
+        <!-- CABEÇALHO -->
+
+        <header class="heading stock-heading">
+
+          <div>
+
+            <span class="page-eyebrow">
+              GESTÃO DE PRODUTOS
+            </span>
+
+            <h1>Controle de estoque</h1>
+
+            <p class="muted">
+              Gerencie produtos, acompanhe quantidades
+              e organize reposições.
+            </p>
+
+          </div>
+
+          <a
+            href="consumo.html"
+            class="stock-header-link"
+          >
+            <span>Registrar consumo</span>
+            <i data-lucide="arrow-right"></i>
+          </a>
+
+        </header>
+
+        <!-- INDICADORES -->
+
+        <section class="stock-stats">
+
+          <!-- PRODUTOS CADASTRADOS -->
+
+          <article class="card stock-stat">
+
+            <div class="stat-top">
+
+              <span>Produtos cadastrados</span>
+
+              <div class="stat-icon">
+                <i data-lucide="package"></i>
+              </div>
+
+            </div>
+
+            <strong
+              class="stat-value"
+              id="stockTotal"
+            >
+              0
+            </strong>
+
+            <small>
+              Total de produtos no sistema
+            </small>
+
+          </article>
+
+          <!-- PRODUTOS EM ALERTA -->
+
+          <article class="card stock-stat">
+
+            <div class="stat-top">
+
+              <span>Produtos em alerta</span>
+
+              <div class="stat-icon">
+                <i data-lucide="triangle-alert"></i>
+              </div>
+
+            </div>
+
+            <strong
+              class="stat-value warning-value"
+              id="stockLow"
+            >
+              0
+            </strong>
+
+            <small>
+              Produtos que precisam de reposição
+            </small>
+
+          </article>
+
+          <!-- VALOR ESTIMADO -->
+
+          <article class="card stock-stat">
+
+            <div class="stat-top">
+
+              <span>Valor estimado em estoque</span>
+
+              <div class="stat-icon">
+                <i data-lucide="wallet"></i>
+              </div>
+
+            </div>
+
+            <strong
+              class="stat-value money-value"
+              id="stockValue"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Quantidade atual × custo por unidade
+            </small>
+
+          </article>
+
+        </section>
+
+        <!-- FORMULÁRIO E INFORMAÇÕES -->
+
+        <div class="stock-layout">
+
+          <!-- CADASTRO DE PRODUTO -->
+
+          <section
+            class="card stock-panel"
+            id="stockFormPanel"
+          >
+
+            <div class="panel-heading">
+
+              <div class="panel-icon">
+                <i data-lucide="package-plus"></i>
+              </div>
+
+              <div>
+
+                <h2 id="stockFormTitle">
+                  Cadastrar produto
+                </h2>
+
+                <p>
+                  Preencha as informações do material.
+                </p>
+
+              </div>
+
+            </div>
+
+            <form
+              id="stockForm"
+              class="stock-form"
+            >
+
+              <input
+                id="stockId"
+                type="hidden"
+              >
+
+              <!-- NOME -->
+
+              <div class="stock-field">
+
+                <label for="stockName">
+                  Nome do produto
+                </label>
+
+                <input
+                  id="stockName"
+                  type="text"
+                  maxlength="120"
+                  placeholder="Ex.: Pomada modeladora"
+                  required
+                >
+
+              </div>
+
+              <!-- UNIDADE E QUANTIDADE -->
+
+              <div class="stock-form-row">
+
+                <div class="stock-field">
+
+                  <label for="stockUnit">
+                    Unidade de medida
+                  </label>
+
+                  <select id="stockUnit">
+
+                    <option value="unid.">
+                      Unidade
+                    </option>
+
+                    <option value="frascos">
+                      Frasco
+                    </option>
+
+                    <option value="caixas">
+                      Caixa
+                    </option>
+
+                    <option value="ml">
+                      Mililitro (ml)
+                    </option>
+
+                    <option value="litros">
+                      Litro
+                    </option>
+
+                    <option value="potes">
+                      Pote
+                    </option>
+
+                  </select>
+
+                </div>
+
+                <div class="stock-field">
+
+                  <label for="stockQty">
+                    Quantidade atual
+                  </label>
+
+                  <input
+                    id="stockQty"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="0"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+              <!-- ESTOQUE MÍNIMO E CUSTO -->
+
+              <div class="stock-form-row">
+
+                <div class="stock-field">
+
+                  <label for="stockMin">
+                    Estoque mínimo
+                  </label>
+
+                  <input
+                    id="stockMin"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="0"
+                    required
+                  >
+
+                </div>
+
+                <div class="stock-field">
+
+                  <label for="stockPrice">
+                    Custo por unidade (R$)
+                  </label>
+
+                  <input
+                    id="stockPrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+              <!-- BOTÕES -->
+
+              <div class="stock-form-actions">
+
+                <button
+                  class="btn stock-save"
+                  type="submit"
+                >
+
+                  <i data-lucide="save"></i>
+
+                  <span id="stockSaveText">
+                    Salvar produto
+                  </span>
+
+                </button>
+
+                <button
+                  class="btn alt stock-clear"
+                  type="button"
+                  id="cancelStock"
+                >
+
+                  <i data-lucide="rotate-ccw"></i>
+
+                  <span>Limpar</span>
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </section>
+
+          <!-- CONTROLE INTELIGENTE -->
+
+          <section class="card stock-panel stock-info-panel">
+
+            <div class="panel-heading">
+
+              <div class="panel-icon info-icon">
+                <i data-lucide="chart-no-axes-combined"></i>
+              </div>
+
+              <div>
+
+                <h2>Controle inteligente</h2>
+
+                <p>
+                  Acompanhe a situação dos materiais.
+                </p>
+
+              </div>
+
+            </div>
+
+            <!-- MONITORAMENTO -->
+
+            <div class="stock-info-block">
+
+              <div class="info-label">
+
+                <span class="info-dot"></span>
+
+                MONITORAMENTO ATIVO
+
+              </div>
+
+              <p>
+                O sistema identifica automaticamente produtos
+                cuja quantidade está igual ou abaixo
+                do estoque mínimo.
+              </p>
+
+            </div>
+
+            <!-- ALERTA DE REPOSIÇÃO -->
+
+            <div class="stock-tip">
+
+              <span class="tip-icon">
+                <i data-lucide="triangle-alert"></i>
+              </span>
+
+              <div>
+
+                <strong>
+                  Alerta de reposição
+                </strong>
+
+                <p>
+                  Produtos com estoque baixo aparecem destacados
+                  na tabela e no Dashboard.
+                </p>
+
+              </div>
+
+            </div>
+
+            <!-- INTEGRAÇÃO -->
+
+            <div class="stock-tip">
+
+              <span class="tip-icon">
+                <i data-lucide="arrow-down-to-line"></i>
+              </span>
+
+              <div>
+
+                <strong>
+                  Integração com consumo
+                </strong>
+
+                <p>
+                  Cada utilização registrada desconta
+                  automaticamente a quantidade disponível.
+                </p>
+
+              </div>
+
+            </div>
+
+            <a
+              href="consumo.html"
+              class="stock-info-link"
+            >
+
+              <span>
+                Acessar consumo de materiais
+              </span>
+
+              <i data-lucide="arrow-right"></i>
+
+            </a>
+
+          </section>
+
+        </div>
+
+        <!-- HISTÓRICO DE ESTOQUE -->
+
+        <section class="card stock-history">
+
+          <div class="history-heading">
+
+            <div>
+
+              <span class="section-eyebrow">
+                INVENTÁRIO
+              </span>
+
+              <h2>Produtos cadastrados</h2>
+
+              <p>
+                Consulte, edite e reponha
+                os materiais da barbearia.
+              </p>
+
+            </div>
+
+            <span class="history-badge">
+              Estoque geral
+            </span>
+
+          </div>
+
+          <!-- FILTROS -->
+
+          <div class="stock-toolbar">
+
+            <!-- PESQUISA -->
+
+            <div class="stock-search">
+
+              <span class="search-symbol">
+                <i data-lucide="search"></i>
+              </span>
+
+              <input
+                id="searchStock"
+                type="search"
+                placeholder="Pesquisar produto..."
+                aria-label="Pesquisar produtos"
+              >
+
+            </div>
+
+            <!-- SITUAÇÃO -->
+
+            <select
+              id="filterStock"
+              aria-label="Filtrar situação"
+            >
+
+              <option value="Todos">
+                Todos os produtos
+              </option>
+
+              <option value="Baixo">
+                Estoque baixo
+              </option>
+
+              <option value="Normal">
+                Estoque normal
+              </option>
+
+            </select>
+
+          </div>
+
+          <!-- TABELA -->
+
+          <div class="table-wrap stock-table-wrap">
+
+            <table class="stock-table">
+
+              <thead>
+
+                <tr>
+                  <th>PRODUTO</th>
+                  <th>QUANTIDADE</th>
+                  <th>MÍNIMO</th>
+                  <th>CUSTO UNIT.</th>
+                  <th>SITUAÇÃO</th>
+                  <th>AÇÕES</th>
+                </tr>
+
+              </thead>
+
+              <tbody id="stockRows"></tbody>
+
+            </table>
+
+          </div>
+
+          <!-- RODAPÉ -->
+
+          <div class="stock-table-footer">
+
+            <span id="stockResults">
+              0 produtos encontrados
+            </span>
+
+            <span>
+              Controle atualizado automaticamente
+            </span>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- INICIALIZAÇÃO DOS ÍCONES -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+
+</body>
+</html>

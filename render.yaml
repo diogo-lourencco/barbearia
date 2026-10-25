@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: barbearia-wj-pwa
+    runtime: static
+    buildCommand: echo "Site estático pronto"
+    staticPublishPath: .

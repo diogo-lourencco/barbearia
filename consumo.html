@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta name="theme-color" content="#17191D">
+
+  <title>Consumo de Materiais</title>
+
+  <!-- LOGO NA ABA DO NAVEGADOR -->
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
+
+  <!-- ESTILOS -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/consumo.css">
+
+  <!-- ÍCONES LUCIDE -->
+  <script
+    defer
+    src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
+  ></script>
+
+  <!-- SCRIPTS DO SISTEMA -->
+  <script defer src="js/global.js"></script>
+  <script defer src="js/consumo.js"></script>
+
+  <!-- Instalação no iPhone / PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
+  <meta name="theme-color" content="#17191D">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+  <script src="js/pwa.js" defer></script>
+</head>
+
+<body>
+
+  <div class="layout">
+
+    <main class="main">
+
+      <div class="content consumption-page">
+
+        <!-- CABEÇALHO -->
+
+        <header class="heading consumption-heading">
+
+          <div>
+
+            <span class="page-eyebrow">
+              CONTROLE DE MATERIAIS
+            </span>
+
+            <h1>Consumo de materiais</h1>
+
+            <p class="muted">
+              Registre a utilização de produtos
+              e acompanhe seu estoque.
+            </p>
+
+          </div>
+
+          <div class="month-display">
+
+            <span>PERÍODO ATUAL</span>
+
+            <strong id="currentMonth">
+              Carregando...
+            </strong>
+
+          </div>
+
+        </header>
+
+        <!-- INDICADORES -->
+
+        <section class="consumption-stats">
+
+          <!-- REGISTROS DO MÊS -->
+
+          <article class="card stat-card">
+
+            <div class="stat-top">
+
+              <span>Registros do mês</span>
+
+              <div class="stat-icon">
+                <i data-lucide="clipboard-list"></i>
+              </div>
+
+            </div>
+
+            <strong
+              class="stat-value"
+              id="consumeCount"
+            >
+              0
+            </strong>
+
+            <small>
+              Utilizações registradas no período
+            </small>
+
+          </article>
+
+          <!-- QUANTIDADE CONSUMIDA -->
+
+          <article class="card stat-card">
+
+            <div class="stat-top">
+
+              <span>Quantidade consumida</span>
+
+              <div class="stat-icon">
+                <i data-lucide="package-minus"></i>
+              </div>
+
+            </div>
+
+            <strong
+              class="stat-value"
+              id="consumeQuantity"
+            >
+              0
+            </strong>
+
+            <small>
+              Total utilizado no mês atual
+            </small>
+
+          </article>
+
+          <!-- PRODUTOS EM ALERTA -->
+
+          <article class="card stat-card warning-stat">
+
+            <div class="stat-top">
+
+              <span>Produtos em alerta</span>
+
+              <div class="stat-icon">
+                <i data-lucide="triangle-alert"></i>
+              </div>
+
+            </div>
+
+            <strong
+              class="stat-value"
+              id="consumeLow"
+            >
+              0
+            </strong>
+
+            <small>
+              Monitoramento do estoque geral
+            </small>
+
+          </article>
+
+        </section>
+
+        <!-- FORMULÁRIO E CONTROLE DE ESTOQUE -->
+
+        <div class="consumption-layout">
+
+          <!-- REGISTRAR CONSUMO -->
+
+          <section class="card consumption-panel">
+
+            <div class="panel-heading">
+
+              <div class="panel-heading-icon">
+                <i data-lucide="package-minus"></i>
+              </div>
+
+              <div>
+
+                <h2>Registrar consumo</h2>
+
+                <p>
+                  Informe o produto e a quantidade utilizada.
+                </p>
+
+              </div>
+
+            </div>
+
+            <form
+              id="consumeForm"
+              class="consumption-form"
+            >
+
+              <!-- PRODUTO -->
+
+              <div class="form-field">
+
+                <label for="consumeProduct">
+                  Produto
+                </label>
+
+                <select
+                  id="consumeProduct"
+                  required
+                ></select>
+
+              </div>
+
+              <!-- QUANTIDADE E DATA -->
+
+              <div class="form-row">
+
+                <div class="form-field">
+
+                  <label for="consumeQty">
+                    Quantidade utilizada
+                  </label>
+
+                  <input
+                    id="consumeQty"
+                    type="number"
+                    min="0.01"
+                    step="any"
+                    placeholder="Ex.: 2"
+                    required
+                  >
+
+                </div>
+
+                <div class="form-field">
+
+                  <label for="consumeDate">
+                    Data do consumo
+                  </label>
+
+                  <input
+                    id="consumeDate"
+                    type="date"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+              <!-- MOTIVO -->
+
+              <div class="form-field">
+
+                <label for="consumeReason">
+                  Motivo / serviço
+                </label>
+
+                <input
+                  id="consumeReason"
+                  type="text"
+                  maxlength="150"
+                  placeholder="Ex.: Corte masculino"
+                  required
+                >
+
+              </div>
+
+              <!-- SALVAR -->
+
+              <button
+                class="btn save-consumption"
+                id="saveConsume"
+                type="submit"
+              >
+
+                <i data-lucide="save"></i>
+
+                <span>
+                  Registrar consumo
+                </span>
+
+              </button>
+
+            </form>
+
+          </section>
+
+          <!-- CONTROLE DE ESTOQUE -->
+
+          <section class="card consumption-panel stock-panel">
+
+            <div class="panel-heading">
+
+              <div class="panel-heading-icon stock-icon">
+                <i data-lucide="boxes"></i>
+              </div>
+
+              <div>
+
+                <h2>Controle de estoque</h2>
+
+                <p>
+                  Acompanhe a disponibilidade dos produtos.
+                </p>
+
+              </div>
+
+            </div>
+
+            <!-- BAIXA AUTOMÁTICA -->
+
+            <div class="stock-info">
+
+              <div class="stock-info-title">
+
+                <span class="status-dot"></span>
+
+                BAIXA AUTOMÁTICA
+
+              </div>
+
+              <p>
+                Ao registrar um consumo, a quantidade utilizada
+                é descontada automaticamente do estoque.
+              </p>
+
+            </div>
+
+            <!-- VISUALIZAÇÃO DO ESTOQUE -->
+
+            <div
+              class="stock-preview"
+              id="stockPreview"
+            >
+              Selecione um produto para visualizar
+              o estoque disponível.
+            </div>
+
+            <!-- AVISO -->
+
+            <div class="stock-notice">
+
+              <i
+                data-lucide="shield-alert"
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                O sistema impede retiradas maiores
+                que a quantidade disponível.
+              </span>
+
+            </div>
+
+            <!-- GERENCIAR PRODUTOS -->
+
+            <a
+              href="estoque.html"
+              class="btn alt stock-management"
+            >
+
+              <span>Gerenciar produtos</span>
+
+              <i data-lucide="arrow-right"></i>
+
+            </a>
+
+          </section>
+
+        </div>
+
+        <!-- HISTÓRICO DE CONSUMO -->
+
+        <section class="card consumption-history">
+
+          <div class="history-top">
+
+            <div>
+
+              <span class="section-eyebrow">
+                REGISTROS
+              </span>
+
+              <h2>Histórico de consumo</h2>
+
+              <p>
+                Consulte e exporte as utilizações
+                de materiais.
+              </p>
+
+            </div>
+
+            <!-- FILTRO DE MÊS -->
+
+            <div class="history-filter">
+
+              <label for="consumeMonth">
+                Selecionar mês
+              </label>
+
+              <input
+                id="consumeMonth"
+                type="month"
+              >
+
+            </div>
+
+          </div>
+
+          <!-- BARRA DE AÇÕES -->
+
+          <div class="history-toolbar">
+
+            <div class="history-toolbar-left">
+
+              <button
+                class="btn alt"
+                id="showAllConsumption"
+                type="button"
+              >
+
+                <i data-lucide="calendar-range"></i>
+
+                <span>
+                  Ver todos os meses
+                </span>
+
+              </button>
+
+              <span
+                id="consumeResults"
+                class="history-count"
+              >
+                0 registros
+              </span>
+
+            </div>
+
+            <!-- EXPORTAR CSV -->
+
+            <button
+              class="btn alt export-button"
+              id="exportConsumptionCSV"
+              type="button"
+            >
+
+              <i data-lucide="download"></i>
+
+              <span>
+                Exportar CSV
+              </span>
+
+            </button>
+
+          </div>
+
+          <!-- TABELA -->
+
+          <div class="table-wrap">
+
+            <table class="consumption-table">
+
+              <thead>
+
+                <tr>
+                  <th>DATA</th>
+                  <th>PRODUTO</th>
+                  <th>QUANTIDADE</th>
+                  <th>MOTIVO / SERVIÇO</th>
+                </tr>
+
+              </thead>
+
+              <tbody id="consumeRows"></tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- INICIALIZAÇÃO DOS ÍCONES -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (
+        window.lucide &&
+        typeof window.lucide.createIcons === "function"
+      ) {
+        window.lucide.createIcons();
+      }
+    });
+  </script>
+
+</body>
+</html>

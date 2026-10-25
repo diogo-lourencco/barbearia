@@ -1,0 +1,784 @@
+/* ==========================================
+   BARBEARIA WJ - CONSUMO DE MATERIAIS
+   TEMA GRAFITE + LARANJA
+========================================== */
+
+.consumption-page {
+  --cons-bg: #17191D;
+  --cons-panel: #24272D;
+  --cons-soft: #30343A;
+  --cons-accent: #F28C28;
+  --cons-text: #F7F7F7;
+  --cons-muted: #ADB0B7;
+  --cons-border: #3C4048;
+  --cons-green: #45D3A1;
+  --cons-red: #FF7A85;
+
+  width: 100%;
+  padding-bottom: 32px;
+}
+
+.consumption-page *,
+.consumption-page *::before,
+.consumption-page *::after {
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   ÍCONES LUCIDE
+========================================== */
+
+.consumption-page svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+
+.consumption-page button svg,
+.consumption-page a svg {
+  pointer-events: none;
+}
+
+/* ==========================================
+   CABEÇALHO
+========================================== */
+
+.consumption-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.consumption-page .page-eyebrow,
+.consumption-page .section-eyebrow {
+  display: inline-block;
+  color: var(--cons-accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.consumption-heading h1 {
+  margin: 0 0 9px;
+  color: var(--cons-text);
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.consumption-heading p {
+  margin: 0;
+  color: var(--cons-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   PERÍODO ATUAL
+========================================== */
+
+.month-display {
+  min-width: 185px;
+  padding: 15px 20px;
+  background: var(--cons-panel);
+  border: 1px solid var(--cons-border);
+  border-radius: 13px;
+  text-align: right;
+}
+
+.month-display span {
+  display: block;
+  color: var(--cons-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.month-display strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--cons-accent);
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+/* ==========================================
+   INDICADORES
+========================================== */
+
+.consumption-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.consumption-stats .stat-card {
+  min-width: 0;
+  min-height: 153px;
+  padding: 22px;
+  border: 1px solid var(--cons-border);
+  border-radius: 16px;
+  background: var(--cons-panel);
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.consumption-stats .stat-card:hover {
+  border-color: var(--cons-accent);
+  transform: translateY(-2px);
+}
+
+.consumption-page .stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.consumption-page .stat-top > span {
+  color: var(--cons-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.consumption-page .stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+
+  border-radius: 11px;
+  background: rgba(242, 140, 40, 0.12);
+  color: var(--cons-accent);
+}
+
+.consumption-page .stat-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.consumption-page .stat-value {
+  display: block;
+  margin: 12px 0 7px;
+  color: var(--cons-text);
+  font-size: 35px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.consumption-page .stat-card small {
+  color: var(--cons-muted);
+  font-size: 11px;
+}
+
+.consumption-page .warning-stat .stat-value {
+  color: var(--cons-accent);
+}
+
+/* ==========================================
+   PAINÉIS
+========================================== */
+
+.consumption-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(0, 0.9fr);
+
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.consumption-panel {
+  min-width: 0;
+  padding: 26px !important;
+  border: 1px solid var(--cons-border);
+  border-radius: 16px;
+  background: var(--cons-panel);
+}
+
+.consumption-page .panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 21px;
+  margin-bottom: 23px;
+  border-bottom: 1px solid var(--cons-border);
+}
+
+.consumption-page .panel-heading-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--cons-accent);
+  color: #17191D;
+  border-radius: 12px;
+}
+
+.consumption-page .panel-heading-icon svg {
+  width: 23px;
+  height: 23px;
+  stroke-width: 2.2;
+}
+
+.consumption-page .stock-icon {
+  background: rgba(242, 140, 40, 0.13);
+  color: var(--cons-accent);
+}
+
+.consumption-page .panel-heading h2 {
+  margin: 0 0 6px;
+  color: var(--cons-text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.consumption-page .panel-heading p {
+  margin: 0;
+  color: var(--cons-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   FORMULÁRIO
+========================================== */
+
+.consumption-form {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.consumption-form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.consumption-form label,
+.consumption-page .history-filter label {
+  color: var(--cons-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.consumption-form input,
+.consumption-form select,
+.consumption-page .history-filter input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 47px;
+  padding: 11px 14px;
+
+  background: var(--cons-soft);
+  border: 1px solid var(--cons-border);
+  border-radius: 10px;
+  color: var(--cons-text);
+
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.consumption-form input::placeholder {
+  color: #858A93;
+}
+
+.consumption-form input:focus,
+.consumption-form select:focus,
+.consumption-page .history-filter input:focus {
+  border-color: var(--cons-accent);
+  box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+}
+
+.consumption-form select option {
+  background: var(--cons-panel);
+  color: var(--cons-text);
+}
+
+.consumption-form input[type="date"],
+.consumption-page .history-filter input[type="month"] {
+  color-scheme: dark;
+}
+
+.consumption-page .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* ==========================================
+   BOTÃO REGISTRAR CONSUMO
+========================================== */
+
+.save-consumption {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 100%;
+  min-height: 49px;
+  margin-top: 4px;
+  padding: 12px 18px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: var(--cons-accent);
+  color: #17191D;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+
+  cursor: pointer;
+
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.save-consumption svg {
+  width: 18px;
+  height: 18px;
+}
+
+.save-consumption span {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1.2;
+}
+
+.save-consumption:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.save-consumption:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================
+   CONTROLE DE ESTOQUE
+========================================== */
+
+.stock-info {
+  padding: 17px;
+  border: 1px solid rgba(69, 211, 161, 0.2);
+  background: rgba(69, 211, 161, 0.06);
+  border-radius: 12px;
+}
+
+.stock-info-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--cons-green);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cons-green);
+}
+
+.stock-info p {
+  margin: 12px 0 0;
+  color: var(--cons-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   VISUALIZAÇÃO DO ESTOQUE
+========================================== */
+
+.stock-preview {
+  min-height: 100px;
+  margin-top: 18px;
+  padding: 19px;
+
+  border: 1px solid var(--cons-border);
+  border-radius: 12px;
+
+  background: var(--cons-soft);
+  color: var(--cons-muted);
+
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.stock-preview strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--cons-text);
+  font-size: 15px;
+}
+
+.stock-preview .good {
+  color: var(--cons-green);
+}
+
+.stock-preview .bad {
+  color: var(--cons-red);
+}
+
+/* ==========================================
+   AVISO DE ESTOQUE
+========================================== */
+
+.stock-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+
+  margin-top: 17px;
+  padding: 13px 15px;
+
+  border-left: 3px solid var(--cons-accent);
+  border-radius: 0 9px 9px 0;
+
+  background: rgba(242, 140, 40, 0.06);
+  color: var(--cons-muted);
+
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.stock-notice svg {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  color: var(--cons-accent);
+}
+
+.stock-notice span {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ==========================================
+   GERENCIAR PRODUTOS
+========================================== */
+
+.stock-management {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 46px;
+  margin-top: 20px;
+  padding: 13px 16px;
+
+  border: 1px solid var(--cons-border);
+  border-radius: 10px;
+
+  background: var(--cons-soft);
+  color: var(--cons-text);
+
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.stock-management:hover {
+  border-color: var(--cons-accent);
+}
+
+.stock-management span {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.stock-management svg {
+  width: 18px;
+  height: 18px;
+  color: var(--cons-accent);
+}
+
+/* ==========================================
+   HISTÓRICO
+========================================== */
+
+.consumption-history {
+  padding: 26px !important;
+  border: 1px solid var(--cons-border);
+  border-radius: 16px;
+  background: var(--cons-panel);
+}
+
+.history-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.history-top h2 {
+  margin: 0 0 8px;
+  color: var(--cons-text);
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.history-top p {
+  margin: 0;
+  color: var(--cons-muted);
+  font-size: 12px;
+}
+
+/* ==========================================
+   FILTRO DE MÊS
+========================================== */
+
+.history-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 205px;
+}
+
+/* ==========================================
+   BARRA DE AÇÕES
+========================================== */
+
+.history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+
+  padding: 20px 0;
+  margin-top: 20px;
+
+  border-top: 1px solid var(--cons-border);
+}
+
+.history-toolbar-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.history-count {
+  color: var(--cons-muted);
+  font-size: 12px;
+}
+
+.history-toolbar .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 43px;
+  padding: 11px 16px;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.history-toolbar .btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.history-toolbar .btn span {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.export-button {
+  border-color: rgba(242, 140, 40, 0.45) !important;
+  color: var(--cons-accent) !important;
+}
+
+/* ==========================================
+   TABELA
+========================================== */
+
+.consumption-history .table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--cons-border);
+  border-radius: 12px;
+}
+
+.consumption-table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+.consumption-table thead {
+  background: var(--cons-soft);
+}
+
+.consumption-table th {
+  padding: 16px;
+  color: var(--cons-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.consumption-table td {
+  padding: 17px 16px;
+  border-top: 1px solid var(--cons-border);
+  color: var(--cons-text);
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.consumption-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.consumption-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.consumption-table td:nth-child(2) {
+  font-weight: 700;
+}
+
+.consumption-table td:nth-child(3) {
+  color: var(--cons-accent);
+  font-weight: 800;
+}
+
+.empty-consumption {
+  padding: 38px 16px !important;
+  text-align: center !important;
+  color: var(--cons-muted) !important;
+}
+
+#consumeResults {
+  font-size: 12px;
+}
+
+/* ==========================================
+   RESPONSIVIDADE
+========================================== */
+
+@media (max-width: 1100px) {
+  .consumption-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 850px) {
+  .consumption-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .consumption-stats .stat-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .consumption-heading {
+    align-items: stretch;
+    gap: 18px;
+  }
+
+  .month-display {
+    width: 100%;
+    text-align: left;
+  }
+
+  .consumption-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .consumption-stats .stat-card:last-child {
+    grid-column: auto;
+  }
+
+  .consumption-stats .stat-card {
+    min-height: 130px;
+    padding: 18px;
+  }
+
+  .consumption-panel,
+  .consumption-history {
+    padding: 18px !important;
+  }
+
+  .consumption-page .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .history-filter {
+    width: 100%;
+  }
+
+  .history-toolbar,
+  .history-toolbar-left {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .history-toolbar .btn {
+    width: 100%;
+  }
+
+  .history-count {
+    text-align: center;
+  }
+}

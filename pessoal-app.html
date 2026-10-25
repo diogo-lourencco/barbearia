@@ -1,0 +1,939 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta name="theme-color" content="#17191D">
+
+  <title>Minhas Finanças</title>
+
+  <!-- ÍCONES DA ABA -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+
+  <!-- ESTILOS -->
+  <link
+    rel="stylesheet"
+    href="css/financas-pessoais.css"
+  >
+
+  <!-- ÍCONES LUCIDE -->
+  <script
+    defer
+    src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
+  ></script>
+
+  <!-- SISTEMA GLOBAL: CARREGAR PRIMEIRO -->
+  <script
+    defer
+    src="js/global.js"
+  ></script>
+
+  <!-- SISTEMA DE FINANÇAS PESSOAIS -->
+  <script
+    defer
+    src="js/financas-pessoais.js"
+  ></script>
+
+  <!-- PWA -->
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Barbearia WJ"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="assets/icon-180.png"
+  >
+
+  <script defer src="js/pwa.js"></script>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- MENU LATERAL -->
+
+    <aside
+      class="sidebar"
+      id="personalSidebar"
+    >
+
+      <div class="brand">
+
+        <span class="brand-icon">
+          <i data-lucide="wallet"></i>
+        </span>
+
+        <div>
+          <b>Minhas Finanças</b>
+          <small>ESPAÇO PESSOAL</small>
+        </div>
+
+      </div>
+
+      <nav
+        id="nav"
+        aria-label="Menu principal"
+      >
+
+        <button
+          type="button"
+          data-page="dashboard"
+          class="active"
+        >
+          <i data-lucide="layout-dashboard"></i>
+          <span>Visão geral</span>
+        </button>
+
+        <button
+          type="button"
+          data-page="transactions"
+        >
+          <i data-lucide="arrow-left-right"></i>
+          <span>Movimentações</span>
+        </button>
+
+        <button
+          type="button"
+          data-page="bills"
+        >
+          <i data-lucide="calendar-clock"></i>
+          <span>Contas a pagar/receber</span>
+        </button>
+
+        <button
+          type="button"
+          data-page="goals"
+        >
+          <i data-lucide="target"></i>
+          <span>Metas financeiras</span>
+        </button>
+
+        <button
+          type="button"
+          data-page="cards"
+        >
+          <i data-lucide="credit-card"></i>
+          <span>Cartões de crédito</span>
+        </button>
+
+        <button
+          type="button"
+          data-page="recurring"
+        >
+          <i data-lucide="repeat"></i>
+          <span>Gastos fixos</span>
+        </button>
+
+        <button
+          type="button"
+          data-page="wallets"
+        >
+          <i data-lucide="wallet-cards"></i>
+          <span>Contas e carteiras</span>
+        </button>
+
+      </nav>
+
+      <div class="side-foot">
+
+        <div class="side-security">
+          <i data-lucide="lock-keyhole"></i>
+          <span>
+            Dados pessoais separados da barbearia
+          </span>
+        </div>
+
+      </div>
+
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+
+    <div class="main">
+
+      <!-- CABEÇALHO -->
+
+      <header class="topbar">
+
+        <div class="topbar-heading">
+
+          <button
+            type="button"
+            class="mobile-menu-toggle"
+            id="mobileMenuToggle"
+            aria-label="Abrir menu"
+            aria-controls="personalSidebar"
+            aria-expanded="false"
+          >
+            <i data-lucide="menu"></i>
+          </button>
+
+          <div>
+
+            <span class="eyebrow">
+              PAINEL FINANCEIRO PESSOAL
+            </span>
+
+            <h1 id="pageTitle">
+              Visão geral
+            </h1>
+
+            <p id="pageSubtitle">
+              Acompanhe seu dinheiro e seus objetivos.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="top-actions">
+
+          <label class="month-label">
+            Mês de referência
+
+            <input
+              type="month"
+              id="month"
+            >
+          </label>
+
+        </div>
+
+      </header>
+
+      <!-- PÁGINAS -->
+
+      <main id="pages">
+
+        <!-- =====================================
+             DASHBOARD
+        ====================================== -->
+
+        <section
+          class="page active"
+          id="page-dashboard"
+        >
+
+          <div
+            class="stats"
+            id="stats"
+          ></div>
+
+          <div class="dashboard-grid">
+
+            <!-- GRÁFICO -->
+
+            <article class="panel">
+
+              <div class="panel-title">
+
+                <h2>
+                  Fluxo dos últimos 6 meses
+                </h2>
+
+                <span class="muted">
+                  Receitas e despesas efetivadas
+                </span>
+
+              </div>
+
+              <div
+                id="chart"
+                class="chart"
+              ></div>
+
+            </article>
+
+            <!-- VENCIMENTOS -->
+
+            <article class="panel">
+
+              <div class="panel-title">
+
+                <h2>
+                  Próximos vencimentos
+                </h2>
+
+                <button
+                  type="button"
+                  class="text-button"
+                  data-go="bills"
+                >
+                  <span>Ver contas</span>
+                  <i data-lucide="arrow-right"></i>
+                </button>
+
+              </div>
+
+              <div id="upcoming"></div>
+
+            </article>
+
+            <!-- METAS -->
+
+            <article class="panel">
+
+              <div class="panel-title">
+
+                <h2>
+                  Metas em andamento
+                </h2>
+
+                <button
+                  type="button"
+                  class="text-button"
+                  data-go="goals"
+                >
+                  <span>Ver metas</span>
+                  <i data-lucide="arrow-right"></i>
+                </button>
+
+              </div>
+
+              <div id="goalOverview"></div>
+
+            </article>
+
+            <!-- MOVIMENTAÇÕES -->
+
+            <article class="panel">
+
+              <div class="panel-title">
+
+                <h2>
+                  Últimas movimentações
+                </h2>
+
+                <button
+                  type="button"
+                  class="text-button"
+                  data-go="transactions"
+                >
+                  <span>Ver histórico</span>
+                  <i data-lucide="arrow-right"></i>
+                </button>
+
+              </div>
+
+              <div id="recent"></div>
+
+            </article>
+
+          </div>
+
+        </section>
+
+        <!-- =====================================
+             MOVIMENTAÇÕES
+        ====================================== -->
+
+        <section
+          class="page"
+          id="page-transactions"
+        >
+
+          <div class="section-top">
+
+            <div>
+              <h2>Movimentações</h2>
+              <p>
+                Receitas e despesas efetivadas.
+              </p>
+            </div>
+
+            <div class="toolbar">
+
+              <button
+                type="button"
+                class="btn ghost"
+                id="csvBtn"
+              >
+                <i data-lucide="download"></i>
+                <span>Exportar CSV</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn"
+                data-add="transaction"
+              >
+                <i data-lucide="plus"></i>
+                <span>Nova movimentação</span>
+              </button>
+
+            </div>
+
+          </div>
+
+          <div class="filters">
+
+            <input
+              id="txSearch"
+              type="search"
+              placeholder="Buscar descrição ou categoria"
+            >
+
+            <select id="txType">
+              <option value="">
+                Todos os tipos
+              </option>
+              <option value="Receita">
+                Receita
+              </option>
+              <option value="Despesa">
+                Despesa
+              </option>
+            </select>
+
+            <select id="txWallet">
+              <option value="">
+                Todas as contas
+              </option>
+            </select>
+
+          </div>
+
+          <div class="panel table-scroll">
+
+            <table>
+
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Conta</th>
+                  <th>Pagamento</th>
+                  <th>Valor</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+
+              <tbody id="txRows"></tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+        <!-- =====================================
+             CONTAS A PAGAR E RECEBER
+        ====================================== -->
+
+        <section
+          class="page"
+          id="page-bills"
+        >
+
+          <div class="section-top">
+
+            <div>
+
+              <h2>
+                Contas a pagar e receber
+              </h2>
+
+              <p>
+                Controle vencimentos e confirme quando
+                o dinheiro entrar ou sair.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="btn"
+              data-add="bill"
+            >
+              <i data-lucide="plus"></i>
+              <span>Nova conta</span>
+            </button>
+
+          </div>
+
+          <div
+            class="mini-stats"
+            id="billStats"
+          ></div>
+
+          <div class="panel table-scroll">
+
+            <table>
+
+              <thead>
+                <tr>
+                  <th>Vencimento</th>
+                  <th>Descrição</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+
+              <tbody id="billRows"></tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+        <!-- =====================================
+             METAS FINANCEIRAS
+        ====================================== -->
+
+        <section
+          class="page"
+          id="page-goals"
+        >
+
+          <div class="section-top">
+
+            <div>
+
+              <h2>
+                Metas financeiras
+              </h2>
+
+              <p>
+                Separe dinheiro das suas contas para
+                conquistar objetivos.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="btn"
+              data-add="goal"
+            >
+              <i data-lucide="plus"></i>
+              <span>Nova meta</span>
+            </button>
+
+          </div>
+
+          <div
+            class="tile-grid"
+            id="goalCards"
+          ></div>
+
+        </section>
+
+        <!-- =====================================
+             CARTÕES DE CRÉDITO
+        ====================================== -->
+
+        <section
+          class="page"
+          id="page-cards"
+        >
+
+          <div class="section-top">
+
+            <div>
+
+              <h2>
+                Cartões de crédito
+              </h2>
+
+              <p>
+                Controle limites, compras parceladas
+                e faturas.
+              </p>
+
+            </div>
+
+            <div class="toolbar">
+
+              <button
+                type="button"
+                class="btn ghost"
+                data-add="purchase"
+              >
+                <i data-lucide="shopping-bag"></i>
+                <span>Compra</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn"
+                data-add="card"
+              >
+                <i data-lucide="plus"></i>
+                <span>Novo cartão</span>
+              </button>
+
+            </div>
+
+          </div>
+
+          <div
+            class="tile-grid"
+            id="creditCards"
+          ></div>
+
+          <article class="panel">
+
+            <div class="panel-title">
+
+              <h2>
+                Faturas do mês selecionado
+              </h2>
+
+              <span class="muted">
+                Pague pela conta escolhida
+              </span>
+
+            </div>
+
+            <div id="invoices"></div>
+
+          </article>
+
+        </section>
+
+        <!-- =====================================
+             GASTOS FIXOS
+        ====================================== -->
+
+        <section
+          class="page"
+          id="page-recurring"
+        >
+
+          <div class="section-top">
+
+            <div>
+
+              <h2>
+                Gastos fixos e assinaturas
+              </h2>
+
+              <p>
+                Organize os compromissos mensais
+                e gere a cobrança do mês.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="btn"
+              data-add="recurring"
+            >
+              <i data-lucide="plus"></i>
+              <span>Novo gasto fixo</span>
+            </button>
+
+          </div>
+
+          <div
+            class="mini-stats"
+            id="recurringStats"
+          ></div>
+
+          <div class="panel table-scroll">
+
+            <table>
+
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Dia</th>
+                  <th>Valor</th>
+                  <th>Situação no mês</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+
+              <tbody id="recurringRows"></tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+        <!-- =====================================
+             CONTAS E CARTEIRAS
+        ====================================== -->
+
+        <section
+          class="page"
+          id="page-wallets"
+        >
+
+          <div class="section-top">
+
+            <div>
+
+              <h2>
+                Contas e carteiras
+              </h2>
+
+              <p>
+                Veja saldos, organize suas contas
+                e transfira valores.
+              </p>
+
+            </div>
+
+            <div class="toolbar">
+
+              <button
+                type="button"
+                class="btn ghost"
+                data-add="transfer"
+              >
+                <i data-lucide="arrow-left-right"></i>
+                <span>Transferir</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn"
+                data-add="wallet"
+              >
+                <i data-lucide="plus"></i>
+                <span>Nova conta</span>
+              </button>
+
+            </div>
+
+          </div>
+
+          <div
+            class="tile-grid"
+            id="walletCards"
+          ></div>
+
+          <article class="panel">
+
+            <div class="panel-title">
+              <h2>
+                Transferências recentes
+              </h2>
+            </div>
+
+            <div id="transferList"></div>
+
+          </article>
+
+        </section>
+
+      </main>
+
+      <!-- RODAPÉ -->
+
+    </div>
+
+  </div>
+
+  <!-- =====================================
+       MODAL DE CADASTRO
+  ====================================== -->
+
+  <div
+    class="modal-backdrop"
+    id="modal"
+    hidden
+  >
+
+    <div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+    >
+
+      <div class="modal-head">
+
+        <div>
+
+          <span class="eyebrow">
+            MINHAS FINANÇAS
+          </span>
+
+          <h2 id="modalTitle">
+            Novo registro
+          </h2>
+
+        </div>
+
+        <button
+          type="button"
+          id="closeModal"
+          class="icon-btn"
+          aria-label="Fechar"
+        >
+          <i data-lucide="x"></i>
+        </button>
+
+      </div>
+
+      <form id="modalForm">
+
+        <div
+          id="modalFields"
+          class="form-grid"
+        ></div>
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            id="cancelModal"
+            class="btn ghost"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn"
+          >
+            <i data-lucide="save"></i>
+            <span>Salvar</span>
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- FUNDO DO MENU MOBILE -->
+
+  <div
+    class="mobile-menu-backdrop"
+    id="mobileMenuBackdrop"
+    hidden
+  ></div>
+
+  <!-- NOTIFICAÇÕES -->
+
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+  <!-- =====================================
+       MENU MOBILE
+  ====================================== -->
+
+  <script>
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        const menuButton =
+          document.getElementById("mobileMenuToggle");
+
+        const sidebar =
+          document.getElementById("personalSidebar");
+
+        const backdrop =
+          document.getElementById("mobileMenuBackdrop");
+
+        const nav =
+          document.getElementById("nav");
+
+        function refreshIcons() {
+          if (
+            window.lucide &&
+            typeof window.lucide.createIcons === "function"
+          ) {
+            window.lucide.createIcons();
+          }
+        }
+
+        function closeMenu() {
+          sidebar.classList.remove("mobile-open");
+          backdrop.hidden = true;
+
+          menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+        }
+
+        menuButton.addEventListener(
+          "click",
+          () => {
+            const isOpen =
+              sidebar.classList.toggle("mobile-open");
+
+            backdrop.hidden = !isOpen;
+
+            menuButton.setAttribute(
+              "aria-expanded",
+              String(isOpen)
+            );
+          }
+        );
+
+        backdrop.addEventListener(
+          "click",
+          closeMenu
+        );
+
+        nav.addEventListener(
+          "click",
+          event => {
+            if (
+              event.target.closest("[data-page]")
+            ) {
+              closeMenu();
+            }
+          }
+        );
+
+        document.addEventListener(
+          "keydown",
+          event => {
+            if (event.key === "Escape") {
+              closeMenu();
+            }
+          }
+        );
+
+        refreshIcons();
+      }
+    );
+  </script>
+
+</body>
+</html>

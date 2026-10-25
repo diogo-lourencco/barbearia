@@ -1,0 +1,16 @@
+BARBEARIA WJ — PWA PARA IPHONE (DEMONSTRAÇÃO)
+
+O que foi adicionado:
+- manifest.webmanifest, service-worker.js e js/pwa.js
+- Ícones 180, 192 e 512 px derivados da logo existente
+- Metadados de instalação em todas as páginas
+- render.yaml para publicação estática na Render
+
+Como instalar no iPhone:
+1. Publique a pasta em HTTPS.
+2. Abra o endereço pelo Safari no iPhone.
+3. Compartilhar > Adicionar à Tela de Início > Adicionar.
+
+ATENÇÃO: Esta versão NÃO possui backend, PostgreSQL, autenticação segura ou limite de 30 dias. O login é demonstrativo e não valida a senha. Os dados continuam no localStorage de cada navegador; não são sincronizados. Não utilize para informações reais do cliente antes de implementar backend e segurança. O cache não torna os dados de negócio disponíveis offline.
+
+Para Render: publique o projeto em repositório GitHub e crie um Static Site, ou utilize o arquivo render.yaml.

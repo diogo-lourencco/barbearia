@@ -1,0 +1,897 @@
+/* ==========================================
+   BARBEARIA WJ - ESTOQUE
+   TEMA GRAFITE E LARANJA
+========================================== */
+
+.stock-page {
+  --stock-panel: #24272D;
+  --stock-soft: #30343A;
+  --stock-accent: #F28C28;
+  --stock-text: #F7F7F7;
+  --stock-muted: #ADB0B7;
+  --stock-line: #3C4048;
+  --stock-green: #45D3A1;
+  --stock-red: #FF7A85;
+
+  width: 100%;
+  padding-bottom: 32px;
+}
+
+.stock-page *,
+.stock-page *::before,
+.stock-page *::after {
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   PADRONIZAÇÃO DOS ÍCONES
+========================================== */
+
+.stock-page svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+
+.stock-page button svg,
+.stock-page a svg {
+  pointer-events: none;
+}
+
+/* ==========================================
+   CABEÇALHO
+========================================== */
+
+.stock-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.stock-page .page-eyebrow,
+.stock-page .section-eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--stock-accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.stock-heading h1 {
+  margin: 0 0 9px;
+  color: var(--stock-text);
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.stock-heading p {
+  margin: 0;
+  color: var(--stock-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   BOTÃO REGISTRAR CONSUMO
+========================================== */
+
+.stock-header-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  min-height: 46px;
+  padding: 12px 18px;
+
+  flex-shrink: 0;
+
+  border: 1px solid var(--stock-accent);
+  border-radius: 11px;
+
+  background: var(--stock-accent);
+  color: #17191D;
+
+  text-decoration: none;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.stock-header-link:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.stock-header-link span {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.stock-header-link svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ==========================================
+   INDICADORES
+========================================== */
+
+.stock-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.stock-stat {
+  min-width: 0;
+  min-height: 155px;
+  padding: 22px !important;
+
+  border: 1px solid var(--stock-line);
+  border-radius: 16px;
+
+  background: var(--stock-panel);
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.stock-stat:hover {
+  border-color: var(--stock-accent);
+  transform: translateY(-2px);
+}
+
+.stock-page .stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stock-page .stat-top > span {
+  color: var(--stock-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stock-page .stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+
+  border-radius: 11px;
+  background: rgba(242, 140, 40, 0.12);
+  color: var(--stock-accent);
+}
+
+.stock-page .stat-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.stock-page .stat-value {
+  display: block;
+  margin: 14px 0 9px;
+
+  color: var(--stock-text);
+  font-size: 35px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.stock-page .warning-value {
+  color: var(--stock-accent);
+}
+
+.stock-page .money-value {
+  color: var(--stock-green);
+  font-size: clamp(23px, 2.5vw, 32px);
+  overflow-wrap: anywhere;
+}
+
+.stock-stat small {
+  color: var(--stock-muted);
+  font-size: 11px;
+}
+
+/* ==========================================
+   PAINÉIS
+========================================== */
+
+.stock-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(0, 0.9fr);
+
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.stock-panel {
+  min-width: 0;
+  padding: 26px !important;
+
+  border: 1px solid var(--stock-line);
+  border-radius: 16px;
+
+  background: var(--stock-panel);
+}
+
+.stock-page .panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding-bottom: 21px;
+  margin-bottom: 23px;
+
+  border-bottom: 1px solid var(--stock-line);
+}
+
+.stock-page .panel-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+
+  border-radius: 12px;
+  background: var(--stock-accent);
+  color: #17191D;
+}
+
+.stock-page .panel-icon svg {
+  width: 23px;
+  height: 23px;
+  stroke-width: 2.2;
+}
+
+.stock-page .info-icon {
+  background: rgba(242, 140, 40, 0.13);
+  color: var(--stock-accent);
+}
+
+.stock-page .panel-heading h2 {
+  margin: 0 0 6px;
+  color: var(--stock-text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.stock-page .panel-heading p {
+  margin: 0;
+  color: var(--stock-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   FORMULÁRIO
+========================================== */
+
+.stock-form {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.stock-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.stock-field label {
+  color: var(--stock-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stock-field input,
+.stock-field select {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+
+  background: var(--stock-soft);
+  color: var(--stock-text);
+
+  border: 1px solid var(--stock-line);
+  border-radius: 10px;
+
+  outline: none;
+  font: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.stock-field input::placeholder {
+  color: #858A93;
+}
+
+.stock-field input:focus,
+.stock-field select:focus {
+  border-color: var(--stock-accent);
+  box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+}
+
+.stock-field select option {
+  background: var(--stock-panel);
+}
+
+.stock-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ==========================================
+   BOTÕES DO FORMULÁRIO
+========================================== */
+
+.stock-form-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.stock-form-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-height: 48px;
+  padding: 12px 18px;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.stock-form-actions .btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.stock-save {
+  flex: 1;
+  min-width: 0;
+  background: var(--stock-accent);
+  color: #17191D;
+}
+
+.stock-save span {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.stock-clear {
+  min-width: 105px;
+}
+
+/* ==========================================
+   INFORMAÇÕES
+========================================== */
+
+.stock-info-block {
+  padding: 18px;
+
+  border: 1px solid rgba(69, 211, 161, 0.2);
+  border-radius: 12px;
+
+  background: rgba(69, 211, 161, 0.06);
+}
+
+.info-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: var(--stock-green);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+}
+
+.info-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: var(--stock-green);
+}
+
+.stock-info-block p {
+  margin: 12px 0 0;
+  color: var(--stock-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   DICAS DE ESTOQUE
+========================================== */
+
+.stock-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  margin-top: 16px;
+  padding: 16px;
+
+  border: 1px solid var(--stock-line);
+  border-radius: 12px;
+
+  background: var(--stock-soft);
+}
+
+.tip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 33px;
+  height: 33px;
+  flex-shrink: 0;
+
+  border-radius: 9px;
+  background: rgba(242, 140, 40, 0.13);
+  color: var(--stock-accent);
+}
+
+.tip-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.stock-tip strong {
+  color: var(--stock-text);
+  font-size: 12px;
+}
+
+.stock-tip p {
+  margin: 7px 0 0;
+  color: var(--stock-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   LINK PARA CONSUMO
+========================================== */
+
+.stock-info-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-top: 20px;
+  padding: 14px 16px;
+
+  border: 1px solid var(--stock-line);
+  border-radius: 10px;
+
+  background: var(--stock-soft);
+  color: var(--stock-text);
+
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.stock-info-link:hover {
+  border-color: var(--stock-accent);
+  color: var(--stock-accent);
+}
+
+.stock-info-link span {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.stock-info-link svg {
+  width: 18px;
+  height: 18px;
+  color: var(--stock-accent);
+}
+
+/* ==========================================
+   HISTÓRICO
+========================================== */
+
+.stock-history {
+  padding: 26px !important;
+
+  border: 1px solid var(--stock-line);
+  border-radius: 16px;
+
+  background: var(--stock-panel);
+}
+
+.history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.history-heading h2 {
+  margin: 0 0 8px;
+  color: var(--stock-text);
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.history-heading p {
+  margin: 0;
+  color: var(--stock-muted);
+  font-size: 12px;
+}
+
+.history-badge {
+  padding: 9px 12px;
+
+  border: 1px solid rgba(242, 140, 40, 0.25);
+  border-radius: 9px;
+
+  background: rgba(242, 140, 40, 0.09);
+  color: var(--stock-accent);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   BARRA DE PESQUISA E FILTROS
+========================================== */
+
+.stock-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  margin: 23px 0 20px;
+  padding-top: 20px;
+
+  border-top: 1px solid var(--stock-line);
+}
+
+.stock-search {
+  position: relative;
+  flex: 2;
+  min-width: 200px;
+}
+
+.search-symbol {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transform: translateY(-50%);
+
+  color: var(--stock-muted);
+  pointer-events: none;
+}
+
+.search-symbol svg {
+  width: 18px;
+  height: 18px;
+}
+
+.stock-search input,
+.stock-toolbar select {
+  width: 100%;
+  height: 46px;
+
+  border: 1px solid var(--stock-line);
+  border-radius: 10px;
+
+  background: var(--stock-soft);
+  color: var(--stock-text);
+
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.stock-search input {
+  padding: 0 15px 0 42px;
+}
+
+.stock-search input::placeholder {
+  color: #858A93;
+}
+
+.stock-toolbar select {
+  flex: 1;
+  min-width: 180px;
+  padding: 0 14px;
+}
+
+.stock-search input:focus,
+.stock-toolbar select:focus {
+  border-color: var(--stock-accent);
+  box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+}
+
+/* ==========================================
+   TABELA
+========================================== */
+
+.stock-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+
+  border: 1px solid var(--stock-line);
+  border-radius: 12px;
+}
+
+.stock-table {
+  width: 100%;
+  min-width: 790px;
+  border-collapse: collapse;
+}
+
+.stock-table thead {
+  background: var(--stock-soft);
+}
+
+.stock-table th {
+  padding: 16px 13px;
+
+  color: var(--stock-muted);
+  text-align: left;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  white-space: nowrap;
+}
+
+.stock-table td {
+  padding: 15px 13px;
+
+  border-top: 1px solid var(--stock-line);
+  color: var(--stock-text);
+
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.stock-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.stock-table td:first-child {
+  font-weight: 700;
+}
+
+/* ==========================================
+   SITUAÇÃO DO ESTOQUE
+========================================== */
+
+.stock-table .pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 11px;
+  border-radius: 8px;
+
+  background: rgba(69, 211, 161, 0.1);
+  color: var(--stock-green);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.stock-table .pill.warn {
+  background: rgba(242, 140, 40, 0.12);
+  color: var(--stock-accent);
+}
+
+/* ==========================================
+   BOTÕES DA TABELA
+========================================== */
+
+.stock-table .actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.stock-table .actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  min-height: 34px;
+  padding: 8px 10px;
+
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.stock-table .actions .btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.stock-table .actions .btn.danger {
+  background: rgba(255, 122, 133, 0.1);
+  color: var(--stock-red);
+
+  border: 1px solid rgba(255, 122, 133, 0.25);
+}
+
+.stock-table .actions .btn.danger:hover {
+  background: rgba(255, 122, 133, 0.18);
+}
+
+/* ==========================================
+   ESTOQUE VAZIO
+========================================== */
+
+.stock-empty {
+  padding: 35px 15px !important;
+  color: var(--stock-muted) !important;
+  text-align: center !important;
+}
+
+/* ==========================================
+   RODAPÉ DA TABELA
+========================================== */
+
+.stock-table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  margin-top: 16px;
+
+  color: var(--stock-muted);
+  font-size: 11px;
+}
+
+/* ==========================================
+   RESPONSIVIDADE
+========================================== */
+
+@media (max-width: 1100px) {
+  .stock-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 850px) {
+  .stock-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stock-stats .stock-stat:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .stock-heading {
+    align-items: stretch;
+    gap: 18px;
+  }
+
+  .stock-header-link {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stock-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stock-stats .stock-stat:last-child {
+    grid-column: auto;
+  }
+
+  .stock-stat {
+    min-height: 130px;
+    padding: 18px !important;
+  }
+
+  .stock-panel,
+  .stock-history {
+    padding: 18px !important;
+  }
+
+  .stock-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-form-actions {
+    flex-direction: column;
+  }
+
+  .stock-form-actions .btn {
+    width: 100%;
+  }
+
+  .stock-clear {
+    min-width: 0;
+  }
+
+  .stock-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stock-search,
+  .stock-toolbar select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .stock-table-footer {
+    align-items: flex-start;
+  }
+}

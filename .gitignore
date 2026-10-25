@@ -1,0 +1,26 @@
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Dependências
+node_modules/
+**/node_modules/
+
+# Logs
+*.log
+logs/
+
+# Backups
+*.backup
+*.dump
+*.sql
+backups/
+
+# Arquivos temporários
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
