@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -116,7 +115,6 @@
           </button>
 
           <div>
-            <span class="eyebrow">PAINEL FINANCEIRO PESSOAL</span>
             <h1 id="pageTitle">Visão geral</h1>
             <p id="pageSubtitle">
               Acompanhe seu dinheiro e seus objetivos.
@@ -138,7 +136,41 @@
 
         <section class="page active" id="page-dashboard">
 
+          <!-- Leitura rápida e ações do dia -->
+          <div class="finance-quick-header">
+            <div>
+              <span class="eyebrow">SEU DINHEIRO EM POUCOS SEGUNDOS</span>
+              <p id="financeReferenceLabel" class="finance-reference"></p>
+            </div>
+            <div class="finance-quick-actions">
+              <button type="button" class="btn" data-quick-add="income">
+                <i data-lucide="plus-circle"></i> Recebi dinheiro
+              </button>
+              <button type="button" class="btn ghost" data-quick-add="expense">
+                <i data-lucide="minus-circle"></i> Gastei dinheiro
+              </button>
+              <button type="button" class="btn ghost" data-quick-add="bill">
+                <i data-lucide="calendar-plus"></i> Agendar conta
+              </button>
+            </div>
+          </div>
+
           <div id="stats" class="stats"></div>
+
+          <section class="panel finance-deadline-panel" aria-labelledby="financeAlertsTitle">
+            <div class="panel-title finance-alerts-title">
+              <div>
+                <h2 id="financeAlertsTitle"><i data-lucide="bell-ring"></i> Alertas de datas</h2>
+                <span class="muted">Vencimentos reais, independentemente do mês selecionado.</span>
+              </div>
+              <button id="financeExportCalendar" type="button" class="btn ghost">
+                <i data-lucide="calendar-days"></i> Adicionar ao calendário (.ics)
+              </button>
+            </div>
+            <div id="financeAlertSummary" class="finance-alert-summary" role="status" aria-live="polite"></div>
+            <div id="financeDeadlineAlerts" class="finance-deadline-list"></div>
+            <p class="finance-alert-note">Os alertas aparecem ao abrir o sistema. Para receber lembretes fora dele, importe o arquivo .ics no seu calendário e confira se os avisos foram ativados.</p>
+          </section>
 
           <div class="dashboard-grid">
 
@@ -271,6 +303,17 @@
           </div>
 
           <div id="billStats" class="mini-stats"></div>
+
+          <div class="finance-bill-filter">
+            <label for="financeBillFilter">Mostrar contas</label>
+            <select id="financeBillFilter">
+              <option value="pending">Pendentes (prioridade)</option>
+              <option value="urgent">Vencidas ou até 7 dias</option>
+              <option value="all">Todas</option>
+              <option value="done">Concluídas</option>
+            </select>
+            <small>A lista é ordenada pelos próximos vencimentos.</small>
+          </div>
 
           <div class="panel table-scroll">
             <table>

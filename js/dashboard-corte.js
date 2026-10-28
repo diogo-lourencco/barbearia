@@ -115,63 +115,115 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div class="wj-corte-campos">
 
-          <div class="wj-corte-campo">
+          <fieldset
+            class="wj-corte-pagamentos wj-corte-servicos-grupo"
+            aria-describedby="wjCorteServicosAjuda"
+          >
+            <legend>Quais serviços foram realizados?</legend>
 
-            <label for="wjCorteServico">
-              Qual serviço foi realizado?
-            </label>
+            <small id="wjCorteServicosAjuda">
+              Selecione um ou mais serviços.
+            </small>
 
-            <select
-              id="wjCorteServico"
-              name="servico"
-              required
+            <div class="wj-corte-servicos-grid">
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Corte masculino"
+                >
+                <span>Corte masculino</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Barba"
+                >
+                <span>Barba</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Corte + barba"
+                >
+                <span>Corte + barba</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Sobrancelha"
+                >
+                <span>Sobrancelha</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Progressiva"
+                >
+                <span>Progressiva</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Alisante"
+                >
+                <span>Alisante</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Luzes"
+                >
+                <span>Luzes</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Platinado"
+                >
+                <span>Platinado</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Hidratação"
+                >
+                <span>Hidratação</span>
+              </label>
+
+              <label class="wj-corte-servico">
+                <input
+                  type="checkbox"
+                  name="servicos"
+                  value="Outros serviços"
+                >
+                <span>Outros serviços</span>
+              </label>
+              
+            <small
+              id="wjCorteServicosContador"
+              role="status"
+              aria-live="polite"
             >
-              <option value="Corte masculino">
-                Corte masculino
-              </option>
-
-              <option value="Barba">
-                Barba
-              </option>
-
-              <option value="Corte + barba">
-                Corte + barba
-              </option>
-
-              <option value="Sobrancelha">
-                Sobrancelha
-              </option>
-
-              <option value="Corte masculino">
-                Progressiva
-              </option>
-
-              <option value="Corte masculino">
-                Alisante
-              </option>
-
-              <option value="Corte masculino">
-                Luzes
-              </option>
-
-              <option value="Corte masculino">
-                Platinado
-              </option>
-
-              <option value="Corte masculino">
-                Hidratação
-              </option>
-
-              <option value="Outros serviços">
-                Outros serviços
-              </option>
-
-              <option value="Corte masculino">
-                Outras receitas
-              </option>
-            </select>
-
-          </div>
+              Nenhum serviço selecionado.
+            </small>
+          </fieldset>
 
           <div class="wj-corte-campo">
 
@@ -279,6 +331,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
           </div>
 
+          <div class="wj-corte-campo">
+
+            <label for="wjCorteWhatsapp">
+              WhatsApp do cliente
+              <small>(opcional)</small>
+            </label>
+
+            <input
+              id="wjCorteWhatsapp"
+              name="whatsapp"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              placeholder="(11) 99999-9999"
+              maxlength="20"
+            >
+
+          </div>
+
         </div>
 
         <div
@@ -318,7 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <i data-lucide="check-circle-2"></i>
 
             <span id="wjSalvarCorteTexto">
-              Salvar corte
+              Salvar atendimento
             </span>
           </button>
 
@@ -344,8 +415,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const form = $("wjCorteForm");
   const valorInput = $("wjCorteValor");
-  const servicoInput = $("wjCorteServico");
+  const servicosInputs = Array.from(
+    form.querySelectorAll('input[name="servicos"]')
+  );
+  const servicosContador = $("wjCorteServicosContador");
   const clienteInput = $("wjCorteCliente");
+  const whatsappInput = $("wjCorteWhatsapp");
 
   const salvarBotao = $("wjSalvarCorte");
   const salvarTexto = $("wjSalvarCorteTexto");
@@ -356,6 +431,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const dialog = modal.querySelector(
     ".wj-corte-dialog"
   );
+
+  /* =====================================
+     SELEÇÃO DE VÁRIOS SERVIÇOS
+  ===================================== */
+
+  function obterServicosSelecionados() {
+    return servicosInputs
+      .filter((input) => input.checked)
+      .map((input) => input.value);
+  }
+
+  function atualizarContadorServicos() {
+    const quantidade = obterServicosSelecionados().length;
+
+    servicosContador.textContent = quantidade === 0
+      ? "Nenhum serviço selecionado."
+      : quantidade === 1
+        ? "1 serviço selecionado."
+        : `${quantidade} serviços selecionados.`;
+  }
+
+  servicosInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      atualizarContadorServicos();
+      limparErro();
+    });
+  });
 
   /* =====================================
      VALOR EM REAIS
@@ -421,6 +523,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================
+     WHATSAPP DO CLIENTE
+  ===================================== */
+
+  function normalizarWhatsapp(numero) {
+    const digitos = String(numero || "").replace(/\D/g, "");
+
+    if (!digitos) return "";
+
+    // Número brasileiro com DDD (celular ou fixo).
+    if (digitos.length === 10 || digitos.length === 11) {
+      return "55" + digitos;
+    }
+
+    // Número informado com código do Brasil (+55).
+    if (
+      digitos.startsWith("55") &&
+      (digitos.length === 12 || digitos.length === 13)
+    ) {
+      return digitos;
+    }
+
+    return null;
+  }
+
+  /* =====================================
      MENSAGENS
   ===================================== */
 
@@ -447,9 +574,10 @@ document.addEventListener("DOMContentLoaded", () => {
     focoAnterior = document.activeElement;
 
     form.reset();
+    atualizarContadorServicos();
 
     salvarBotao.disabled = false;
-    salvarTexto.textContent = "Salvar corte";
+    salvarTexto.textContent = "Salvar atendimento";
 
     limparErro();
     atualizarResumo();
@@ -587,7 +715,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================
-     SALVAR CORTE NO POSTGRESQL
+     SALVAR ATENDIMENTO NO POSTGRESQL
   ===================================== */
 
   form.addEventListener("submit", async (event) => {
@@ -598,24 +726,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     limparErro();
 
-    const servico = servicoInput.value;
+    const servicos = obterServicosSelecionados();
 
-    const servicosPermitidos = [
-      "Corte masculino",
-      "Barba",
-      "Corte + barba",
-      "Sobrancelha",
-      "Outros serviços"
-    ];
-
-    if (!servicosPermitidos.includes(servico)) {
-
-      mostrarErro(
-        "Selecione um serviço válido."
-      );
-
+    if (servicos.length === 0) {
+      mostrarErro("Selecione pelo menos um serviço realizado.");
+      servicosInputs[0].focus();
       return;
     }
+
+    // O Financeiro aceita somente uma categoria por receita.
+    // Quando há vários serviços, a descrição registra todos eles.
+    const categoria = servicos.length === 1
+      ? servicos[0]
+      : "Outros serviços";
 
     const valor = converterValor(
       valorInput.value
@@ -654,6 +777,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const cliente = clienteInput.value.trim();
+    const whatsapp = normalizarWhatsapp(whatsappInput.value);
+
+    if (whatsapp === null) {
+      mostrarErro("Informe um WhatsApp válido com DDD.");
+      whatsappInput.focus();
+      return;
+    }
 
     // Campos compatíveis com o
     // financeiroController.js do backend.
@@ -665,18 +795,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       cliente_nome: cliente,
 
-      cliente_whatsapp: "",
+      cliente_whatsapp: whatsapp,
 
-      descricao: `Atendimento: ${servico}`,
+      descricao: `Atendimento: ${servicos.join(", ")}`,
 
-      categoria: servico,
+      categoria,
 
       pagamento,
 
       valor,
 
       observacoes:
-        "Registrado pelo botão Novo corte"
+        `Registrado pelo Novo atendimento. Serviços: ${servicos.join(", ")}`
 
     };
 
@@ -696,12 +826,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       });
 
-      salvarTexto.textContent = "Corte salvo!";
+      salvarTexto.textContent = "Atendimento salvo!";
 
       limparErro();
 
       WJ.toast(
-        `Corte registrado: +${WJ.money(valor)}`
+        `Atendimento registrado: +${WJ.money(valor)}`
       );
 
       // Recarrega os dados financeiros do

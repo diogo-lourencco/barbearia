@@ -1,3 +1,4 @@
+
 .wj-corte-destaque {
   display: flex;
   align-items: center;
@@ -289,6 +290,89 @@ body.wj-corte-modal-aberto {
 
 .wj-corte-valor-area input:focus-visible {
   outline: 0;
+}
+
+/* SELEÇÃO DE MÚLTIPLOS SERVIÇOS */
+
+.wj-corte-servicos-grupo {
+  display: grid;
+  gap: 11px;
+}
+
+.wj-corte-servicos-grupo legend {
+  margin-bottom: 4px;
+}
+
+.wj-corte-servicos-grupo > small {
+  display: block;
+  color: #a6a9b0;
+  font-size: 11px;
+}
+
+.wj-corte-servicos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.wj-corte-servico {
+  position: relative;
+  display: block;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.wj-corte-servico input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.wj-corte-servico > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 49px;
+  padding: 10px 12px;
+  border: 1px solid #4a4d55;
+  border-radius: 12px;
+  background: #30343a;
+  color: #dadce0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.wj-corte-servico > span::before {
+  content: "";
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  border: 1px solid #858993;
+  border-radius: 5px;
+}
+
+.wj-corte-servico input:checked + span {
+  border-color: #f28c28;
+  background: rgba(242, 140, 40, 0.12);
+  color: #ffae5f;
+}
+
+.wj-corte-servico input:checked + span::before {
+  content: "✓";
+  border-color: #f28c28;
+  background: #f28c28;
+  color: #17191d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.wj-corte-servico input:focus-visible + span {
+  outline: 2px solid #f28c28;
+  outline-offset: 3px;
 }
 
 /* FORMAS DE PAGAMENTO */

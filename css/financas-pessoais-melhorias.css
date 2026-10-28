@@ -105,7 +105,6 @@ body {
 
   .main {
     min-width: 0;
-
     padding:
       calc(18px + env(safe-area-inset-top, 0px))
       13px
@@ -292,7 +291,6 @@ body {
 
   .modal-backdrop {
     align-items: center;
-
     padding:
       max(12px, env(safe-area-inset-top, 0px))
       12px
@@ -408,5 +406,306 @@ body {
   .personal-bottom-nav *,
   .page .table-scroll * {
     transition: none !important;
+  }
+}
+
+/* ==========================================
+   RESUMO OBJETIVO E ALERTAS DE PRAZOS
+========================================== */
+
+.finance-quick-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 19px;
+  padding: 16px 18px;
+  background: #24272d;
+  border: 1px solid #3c4048;
+  border-radius: 14px;
+}
+
+.finance-reference {
+  margin: 7px 0 0;
+  color: #adb0b7;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.finance-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.finance-quick-actions .btn,
+#financeExportCalendar {
+  min-height: 39px;
+  font-size: 12px;
+}
+
+.finance-deadline-panel {
+  border-color: rgba(242, 140, 40, .35);
+  margin: 0 0 19px;
+}
+
+.finance-alerts-title {
+  align-items: flex-start;
+}
+
+.finance-alerts-title h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.finance-alerts-title h2 svg {
+  width: 19px;
+  height: 19px;
+  color: #f28c28;
+}
+
+.finance-alert-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.finance-alert-count {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #444953;
+  border-radius: 11px;
+  background: #30343a;
+}
+
+.finance-alert-count strong {
+  font-size: clamp(17px, 2vw, 23px);
+  color: #f7f7f7;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.finance-alert-count span {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #adb0b7;
+}
+
+.finance-alert-count.critical {
+  border-color: rgba(255, 122, 133, .55);
+  background: rgba(255, 122, 133, .09);
+}
+
+.finance-alert-count.critical strong {
+  color: #ff7a85;
+}
+
+.finance-deadline-list {
+  display: grid;
+  gap: 9px;
+}
+
+.finance-deadline-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid #3c4048;
+  border-left: 4px solid #5b626e;
+  border-radius: 11px;
+  background: #292d33;
+}
+
+.finance-deadline-item.late {
+  border-left-color: #ff7a85;
+}
+
+.finance-deadline-item.today {
+  border-left-color: #f28c28;
+}
+
+.finance-deadline-item.soon {
+  border-left-color: #f3be70;
+}
+
+.finance-deadline-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 210px;
+}
+
+.finance-deadline-main strong {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.finance-deadline-main small {
+  color: #adb0b7;
+  font-size: 11px;
+}
+
+.finance-deadline-side {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.finance-deadline-side > strong {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.finance-deadline-side .small-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+}
+
+.finance-deadline-tag {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: #3b424a;
+  color: #d7dce4;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.finance-deadline-tag.late {
+  background: rgba(255, 122, 133, .17);
+  color: #ffabb3;
+}
+
+.finance-deadline-tag.today,
+.finance-deadline-tag.soon {
+  background: rgba(242, 140, 40, .16);
+  color: #ffbe80;
+}
+
+.finance-alert-note,
+.finance-extra-alerts {
+  margin: 14px 0 0;
+  color: #aeb2bb;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.finance-all-clear {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 16px;
+  background: rgba(69, 211, 161, .06);
+  border-radius: 10px;
+  color: #9fe8cd;
+  font-size: 12px;
+}
+
+.finance-all-clear svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.finance-bill-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.finance-bill-filter label {
+  color: #adb0b7;
+  font-size: 12px;
+}
+
+.finance-bill-filter select {
+  max-width: 270px;
+}
+
+.finance-bill-filter small {
+  color: #adb0b7;
+  font-size: 11px;
+}
+
+.finance-goal-deadline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 1000px) {
+  .finance-alert-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .finance-quick-header {
+    padding: 14px;
+  }
+
+  .finance-quick-actions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .finance-quick-actions .btn {
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .finance-quick-actions .btn:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .finance-alerts-title {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #financeExportCalendar {
+    width: 100%;
+  }
+
+  .finance-alert-summary {
+    gap: 8px;
+  }
+
+  .finance-alert-count {
+    padding: 10px;
+  }
+
+  .finance-alert-count strong {
+    font-size: 17px;
+  }
+
+  .finance-deadline-side {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .finance-deadline-side .small-btn {
+    font-size: 11px;
   }
 }

@@ -1,4 +1,3 @@
-
 "use strict";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -69,7 +68,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     "modalTitle", "modalFields", "modalForm",
     "closeModal", "cancelModal", "csvBtn",
     "mobileMenuToggle", "personalSidebar",
-    "mobileMenuBackdrop", "toast"
+    "mobileMenuBackdrop", "toast",
+    "financeReferenceLabel", "financeAlertSummary",
+    "financeDeadlineAlerts", "financeExportCalendar",
+    "financeBillFilter"
   ];
 
   const ausentes = obrigatorios.filter(id => !$(id));
@@ -497,6 +499,215 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* =====================================================
+     PRAZOS E ALERTAS (DATAS LOCAIS SEM FUSO)
+  ===================================================== */
+
+  function diferencaDias(data, referencia = hoje()) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data))) return NaN;
+    const utc = texto => {
+      const [ano, mes, dia] = texto.split("-").map(Number);
+      return Date.UTC(ano, mes - 1, dia);
+    };
+    return Math.round((utc(data) - utc(referencia)) / 86400000);
+  }
+
+  function rotuloPrazo(dias) {
+    if (!Number.isFinite(dias)) return "Data inválida";
+    if (dias < 0) return `Atrasado há ${-dias} dia${dias === -1 ? "" : "s"}`;
+    if (dias === 0) return "Vence hoje";
+    if (dias === 1) return "Vence amanhã";
+    return `Faltam ${dias} dias`;
+  }
+
+  function urgenciaPrazo(dias) {
+    if (dias < 0) return "late";
+    if (dias === 0) return "today";
+    if (dias <= 3) return "soon";
+    return "future";
+  }
+
+  // Faturas são calculadas por mês de compra, como no módulo atual.
+  // Gera apenas os meses com parcelas efetivamente registradas.
+  function mesesComFaturas() {
+    const mesesPorCartao = new Map();
+    db.purchases.forEach(compra => {
+      if (!encontrar("cards", compra.cardId)) return;
+      const inicio = String(compra.date || "").slice(0, 7);
+      if (!/^\d{4}-\d{2}$/.test(inicio)) return;
+      const lista = mesesPorCartao.get(compra.cardId) || new Set();
+      const numero = Math.min(48, Math.max(0, Number(compra.installments) || 0));
+      for (let indice = 0; indice < numero; indice++) {
+        lista.add(deslocarMes(inicio, indice));
+      }
+      mesesPorCartao.set(compra.cardId, lista);
+    });
+    return mesesPorCartao;
+  }
+
+  function prazosPendentes(incluirFuturos = false) {
+    const alertas = [];
+
+    db.bills.forEach(item => {
+      if (item.status === "done" || !item.due) return;
+      const dias = diferencaDias(item.due);
+      if (!Number.isFinite(dias) || (!incluirFuturos && dias > 7)) return;
+      alertas.push({
+        tipo: "bill", id: String(item.id), data: item.due,
+        dias, titulo: item.description, valor: Number(item.amount),
+        classe: item.type === "Receber" ? "receive" : "pay",
+        natureza: item.type === "Receber" ? "A receber" : "A pagar"
+      });
+    });
+
+    for (const [cartaoId, meses] of mesesComFaturas()) {
+      const cartao = encontrar("cards", cartaoId);
+      if (!cartao || cartao.archived) continue;
+      for (const mes of meses) {
+        const data = `${mes}-${String(cartao.dueDay).padStart(2, "0")}`;
+        const dias = diferencaDias(data);
+        if (!Number.isFinite(dias) || (!incluirFuturos && dias > 7)) continue;
+        if (faturaPaga(cartaoId, mes)) continue;
+        const valor = Math.round(valorFatura(cartaoId, mes) * 100) / 100;
+        if (!(valor > 0)) continue;
+        alertas.push({
+          tipo: "invoice", id: String(cartaoId), mes, data,
+          dias, titulo: `Fatura: ${cartao.name} (${mes.slice(5)}/${mes.slice(0, 4)})`,
+          valor, classe: "pay", natureza: "Cartão"
+        });
+      }
+    }
+
+    db.goals.forEach(item => {
+      if (!item.deadline) return;
+      const falta = Number(item.target) - saldoMeta(item.id);
+      if (!(falta > 0.005)) return;
+      const dias = diferencaDias(item.deadline);
+      if (!Number.isFinite(dias) || (!incluirFuturos && dias > 7)) return;
+      alertas.push({
+        tipo: "goal", id: String(item.id), data: item.deadline,
+        dias, titulo: item.name, valor: falta,
+        classe: "goal", natureza: "Meta: falta guardar"
+      });
+    });
+
+    return alertas.sort((a, b) =>
+      a.dias - b.dias || a.data.localeCompare(b.data) ||
+      a.titulo.localeCompare(b.titulo, "pt-BR")
+    );
+  }
+
+  function renderAlertas() {
+    const itens = prazosPendentes();
+    const atrasados = itens.filter(item => item.dias < 0);
+    const hojeItens = itens.filter(item => item.dias === 0);
+    const proximos = itens.filter(item => item.dias > 0);
+    const aPagar = itens.filter(item => item.classe === "pay" && item.dias >= 0)
+      .reduce((soma, item) => soma + item.valor, 0);
+
+    $("financeAlertSummary").innerHTML = `
+      <div class="finance-alert-count ${atrasados.length ? "critical" : ""}">
+        <strong>${atrasados.length}</strong><span>Atrasados</span>
+      </div>
+      <div class="finance-alert-count ${hojeItens.length ? "critical" : ""}">
+        <strong>${hojeItens.length}</strong><span>Vencem hoje</span>
+      </div>
+      <div class="finance-alert-count">
+        <strong>${proximos.length}</strong><span>Próximos 7 dias</span>
+      </div>
+      <div class="finance-alert-count">
+        <strong>${reais(aPagar)}</strong><span>A pagar nos próximos 7 dias (inclui cartão)</span>
+      </div>
+    `;
+
+    $("financeDeadlineAlerts").innerHTML = itens.length
+      ? itens.slice(0, 12).map(item => {
+          const botaoAlerta = item.tipo === "bill"
+            ? botao("settle-bill", item.id,
+                item.classe === "receive" ? "Confirmar recebimento" : "Confirmar pagamento")
+            : item.tipo === "invoice"
+              ? `<button type="button" class="small-btn" data-action="pay-alert-invoice"
+                   data-id="${esc(item.id)}" data-month="${esc(item.mes)}">
+                   <i data-lucide="credit-card"></i><span>Ver e pagar</span>
+                 </button>`
+              : botao("contribute", item.id, "Guardar dinheiro");
+          return `
+            <div class="finance-deadline-item ${urgenciaPrazo(item.dias)}">
+              <div class="finance-deadline-main">
+                <span class="finance-deadline-tag ${urgenciaPrazo(item.dias)}">
+                  ${esc(rotuloPrazo(item.dias))}
+                </span>
+                <strong>${esc(item.titulo)}</strong>
+                <small>${esc(item.natureza)} · ${dataBR(item.data)}</small>
+              </div>
+              <div class="finance-deadline-side">
+                <strong>${reais(item.valor)}</strong>
+                ${botaoAlerta}
+              </div>
+            </div>`;
+        }).join("") + (itens.length > 12
+          ? `<p class="finance-extra-alerts">Mais ${itens.length - 12} compromissos. Confira Contas, Cartões e Metas.</p>`
+          : "")
+      : `<div class="finance-all-clear"><i data-lucide="check-circle-2"></i>
+          Nenhuma conta, fatura ou meta atrasada ou com prazo nos próximos 7 dias.</div>`;
+  }
+
+  function textoICal(valor) {
+    return String(valor ?? "").replace(/\\/g, "\\\\")
+      .replace(/\n/g, "\\n")
+      .replace(/;/g, "\\;")
+      .replace(/,/g, "\\,");
+  }
+
+  function exportarAlertasICal() {
+    const eventos = prazosPendentes(true);
+    if (!eventos.length) {
+      aviso("Cadastre contas, metas com prazo ou compras no cartão primeiro.");
+      return;
+    }
+
+    const agora = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    const proximoDia = data => {
+      const [ano, mes, dia] = data.split("-").map(Number);
+      return new Date(Date.UTC(ano, mes - 1, dia + 1))
+        .toISOString().slice(0, 10).replace(/-/g, "");
+    };
+    const linhas = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Barbearia WJ//Minhas Financas//PT-BR",
+      "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:Minhas Financas - prazos"
+    ];
+
+    eventos.forEach(item => {
+      const identificador = [item.tipo, item.id, item.mes || ""]
+        .join("-").replace(/[^a-zA-Z0-9_-]/g, "-");
+      linhas.push(
+        "BEGIN:VEVENT",
+        `UID:wj-financas-${identificador}@local`,
+        `DTSTAMP:${agora}`,
+        `DTSTART;VALUE=DATE:${item.data.replace(/-/g, "")}`,
+        `DTEND;VALUE=DATE:${proximoDia(item.data)}`,
+        `SUMMARY:${textoICal(`${item.natureza}: ${item.titulo}`)}`,
+        `DESCRIPTION:${textoICal(`${reais(item.valor)} | ${rotuloPrazo(item.dias)}. Confirme no aplicativo Minhas Finanças.`)}`,
+        "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY",
+        "DESCRIPTION:Compromisso financeiro amanhã", "END:VALARM",
+        "END:VEVENT"
+      );
+    });
+    linhas.push("END:VCALENDAR", "");
+    const arquivo = new Blob([linhas.join("\r\n")], {
+      type: "text/calendar;charset=utf-8"
+    });
+    const url = URL.createObjectURL(arquivo);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `minhas-financas-prazos-${hoje()}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    aviso(`${eventos.length} compromisso(s) exportados. Importe no calendário para configurar avisos.`);
+  }
+
+  /* =====================================================
      CARTÕES E PARCELAS
   ===================================================== */
 
@@ -683,6 +894,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function renderDashboard() {
     const totais = totaisMes();
+    $("financeReferenceLabel").textContent =
+      `Resumo de ${monthInput.value.split("-").reverse().join("/")}. ` +
+      "Contas futuras não entram nas despesas até serem confirmadas.";
+    renderAlertas();
 
     const disponivel = db.wallets.reduce(
       (soma, carteira) =>
@@ -691,14 +906,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
     const cards = [
-      ["Receitas do mês", totais.receitas, "green"],
-      ["Despesas do mês", totais.despesas, "red"],
-      [
-        "Resultado do mês",
-        totais.receitas - totais.despesas,
-        "orange"
-      ],
-      ["Disponível nas contas", disponivel, ""]
+      ["Entrou no mês", totais.receitas, "green", "Receitas confirmadas"],
+      ["Saiu no mês", totais.despesas, "red", "Despesas já registradas"],
+      ["Sobrou no mês", totais.receitas - totais.despesas,
+        totais.receitas >= totais.despesas ? "green" : "red",
+        "Entradas menos saídas no período"],
+      ["Saldo nas contas", disponivel, "", "Saldos atuais de suas carteiras"]
     ];
 
     $("stats").innerHTML = cards.map(item => `
@@ -707,7 +920,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <strong class="${item[2]}">
           ${reais(item[1])}
         </strong>
-        <small>Calculado automaticamente</small>
+        <small>${esc(item[3])}</small>
       </article>
     `).join("");
 
@@ -764,7 +977,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       ? proximas.map(item =>
           linha(
             item.description,
-            `${dataBR(item.due)} · ${item.type}`,
+            `${dataBR(item.due)} · ${item.type} · ${rotuloPrazo(diferencaDias(item.due))}`,
             `<strong>${reais(item.amount)}</strong>`
           )
         ).join("")
@@ -834,6 +1047,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const carteira = $("txWallet").value;
 
     $("txWallet").innerHTML = `
+
       <option value="">Todas as contas</option>
 
       ${db.wallets.map(item => `
@@ -912,96 +1126,65 @@ document.addEventListener("DOMContentLoaded", async () => {
   ===================================================== */
 
   function renderBills() {
-    const pendentes = db.bills.filter(
-      item => item.status !== "done"
-    );
-
-    const total = tipo => pendentes
-      .filter(item => item.type === tipo)
-      .reduce(
-        (soma, item) => soma + Number(item.amount),
-        0
-      );
-
-    const vencidas = pendentes
-      .filter(item => item.due < hoje())
-      .reduce(
-        (soma, item) => soma + Number(item.amount),
-        0
-      );
+    const pendentes = db.bills.filter(item => item.status !== "done");
+    const filtro = $("financeBillFilter").value;
+    const soma = itens => itens.reduce((total, item) => total + Number(item.amount), 0);
+    const aPagar = pendentes.filter(item => item.type === "Pagar");
+    const aReceber = pendentes.filter(item => item.type === "Receber");
+    const atrasados = pendentes.filter(item => diferencaDias(item.due) < 0);
+    const proximos = pendentes.filter(item => {
+      const dias = diferencaDias(item.due);
+      return dias >= 0 && dias <= 7;
+    });
 
     $("billStats").innerHTML = [
-      ["A pagar", reais(total("Pagar"))],
-      ["A receber", reais(total("Receber"))],
-      ["Vencidas", reais(vencidas)]
+      ["A pagar (pendente)", reais(soma(aPagar))],
+      ["A receber (pendente)", reais(soma(aReceber))],
+      ["Vencidas", `${atrasados.length} · ${reais(soma(atrasados))}`],
+      ["Vencem em até 7 dias", `${proximos.length} · ${reais(soma(proximos))}`]
     ].map(item => `
-      <div class="mini-stat">
-        <span>${item[0]}</span>
-        <strong>${item[1]}</strong>
-      </div>
+      <div class="mini-stat"><span>${item[0]}</span><strong>${item[1]}</strong></div>
     `).join("");
 
-    $("billRows").innerHTML = db.bills.length
-      ? db.bills
-          .slice()
-          .sort((a, b) => a.due.localeCompare(b.due))
-          .map(item => {
-            const pago = item.status === "done";
-            const atrasado = !pago && item.due < hoje();
+    const registros = db.bills
+      .filter(item => {
+        const dias = diferencaDias(item.due);
+        if (filtro === "done") return item.status === "done";
+        if (filtro === "pending") return item.status !== "done";
+        if (filtro === "urgent") return item.status !== "done" && dias <= 7;
+        return true;
+      })
+      .slice()
+      .sort((a, b) => {
+        const pendencia = Number(a.status === "done") - Number(b.status === "done");
+        return pendencia || String(a.due).localeCompare(String(b.due));
+      });
 
-            return `
-              <tr>
-                <td>${dataBR(item.due)}</td>
-                <td>${esc(item.description)}</td>
-                <td>${esc(item.type)}</td>
-                <td>${reais(item.amount)}</td>
-
-                <td>
-                  <span class="pill ${
-                    pago ? "good" : atrasado ? "bad" : "warn"
-                  }">
-                    ${pago
-                      ? "Concluída"
-                      : atrasado
-                        ? "Vencida"
-                        : "Pendente"
-                    }
-                  </span>
-                </td>
-
-                <td>
-                  <div class="row-actions">
-
-                    ${!pago
-                      ? botao(
-                          "settle-bill",
-                          item.id,
-                          "Confirmar"
-                        ) + botao(
-                          "edit-bill",
-                          item.id,
-                          "Editar"
-                        )
-                      : ""
-                    }
-
-                    ${botao(
-                      "delete-bill",
-                      item.id,
-                      "Excluir"
-                    )}
-                  </div>
-                </td>
-              </tr>
-            `;
-          }).join("")
-      : `
-        <tr>
-          <td colspan="6" class="empty">
-            Nenhuma conta cadastrada.
-          </td>
-        </tr>
-      `;
+    $("billRows").innerHTML = registros.length
+      ? registros.map(item => {
+          const concluida = item.status === "done";
+          const dias = diferencaDias(item.due);
+          const classe = concluida ? "good" : dias <= 0 ? "bad" : dias <= 7 ? "warn" : "";
+          const situacao = concluida ? "Concluída" :
+            dias > 7 ? "Pendente" : rotuloPrazo(dias);
+          return `
+            <tr>
+              <td>${dataBR(item.due)}</td>
+              <td>${esc(item.description)}</td>
+              <td>${esc(item.type)}</td>
+              <td>${reais(item.amount)}</td>
+              <td><span class="pill ${classe}">${esc(situacao)}</span></td>
+              <td><div class="row-actions">
+                ${!concluida
+                  ? botao("settle-bill", item.id,
+                      item.type === "Receber" ? "Receber" : "Pagar") +
+                    botao("edit-bill", item.id, "Editar")
+                  : ""}
+                ${botao("delete-bill", item.id, "Excluir")}
+              </div></td>
+            </tr>`;
+        }).join("")
+      : `<tr><td colspan="6" class="empty">Nenhuma conta neste filtro.</td></tr>`;
   }
 
   /* =====================================================
@@ -1036,6 +1219,15 @@ document.addEventListener("DOMContentLoaded", async () => {
               </div>
 
               <p>${percentual.toFixed(0)}% alcançado</p>
+              ${item.deadline ? `
+                <p class="finance-goal-deadline">
+                  Prazo: ${dataBR(item.deadline)}
+                  ${saldo + 0.005 < Number(item.target)
+                    ? `· <span class="finance-deadline-tag ${urgenciaPrazo(diferencaDias(item.deadline))}">
+                        ${esc(rotuloPrazo(diferencaDias(item.deadline)))}
+                      </span>`
+                    : '· <span class="green">Meta alcançada</span>'}
+                </p>` : ""}
 
               <div class="row-actions">
                 ${botao("contribute", item.id, "Guardar")}
@@ -1386,6 +1578,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.querySelectorAll(
       "#personalBottomNav [data-go]"
+
     ).forEach(item => {
       const ativo = item.dataset.go === destino;
 
@@ -1901,6 +2094,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       abrirModal(item.dataset.add);
     });
   });
+
+  document.querySelectorAll("[data-quick-add]").forEach(item => {
+    item.addEventListener("click", () => {
+      const tipo = item.dataset.quickAdd;
+      if (tipo === "bill") {
+
+        abrirModal("bill");
+      } else {
+        abrirModal("transaction", "", {
+          type: tipo === "income" ? "Receita" : "Despesa"
+        });
+      }
+    });
+  });
+
+  $("financeExportCalendar").addEventListener("click", exportarAlertasICal);
+  $("financeBillFilter").addEventListener("change", renderBills);
 
   /* =====================================================
      GRAVAR FORMULÁRIOS
@@ -2420,6 +2630,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const pergunta = conta
+
       ? "Excluir a movimentação e reabrir a conta?"
       : fatura
         ? "Excluir o pagamento e reabrir a fatura?"
@@ -2632,6 +2843,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     switch (acao) {
+      case "pay-alert-invoice": {
+        const mes = elemento.dataset.month;
+        if (!/^\d{4}-\d{2}$/.test(mes || "")) return;
+        monthInput.value = mes;
+        navegar("cards");
+        contextoFatura = { cardId: id, month: mes };
+        abrirModal("invoice", "", contextoFatura);
+        break;
+      }
+
       case "settle-bill":
         await confirmarConta(id);
         break;
