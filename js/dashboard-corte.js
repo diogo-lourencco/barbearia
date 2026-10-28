@@ -1,7 +1,7 @@
-
 "use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const dashboard = document.querySelector(".dashboard-page");
 
   if (!dashboard || typeof WJ === "undefined") return;
@@ -33,6 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
       <div>
         <strong>Atendeu um cliente?</strong>
 
+        <p>
+          Registre o corte e a entrada no
+          Financeiro em poucos segundos.
+        </p>
       </div>
 
     </div>
@@ -53,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   /* =====================================
-     FORMULÁRIO MODAL
+     FORMULÁRIO
   ===================================== */
 
   const modal = document.createElement("div");
@@ -330,32 +334,39 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   /* =====================================
-     FORMATAÇÃO DO VALOR
+     VALOR EM REAIS
   ===================================== */
 
   function converterValor(texto) {
+
     const valor = String(texto || "")
       .trim()
       .replace(/\s/g, "");
 
     if (!valor) return NaN;
 
-    let normalizado = valor;
+    let normalizado;
 
-    // Aceita 1.234,56
-    if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(valor)) {
+    // Exemplo: 1.234,56
+    if (
+      /^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(valor)
+    ) {
+
       normalizado = valor
         .replace(/\./g, "")
         .replace(",", ".");
 
-    // Aceita 35,00 ou 35.00 ou 35
+    // Exemplos: 35 / 35,00 / 35.00
     } else if (
       /^\d+(?:[.,]\d{1,2})?$/.test(valor)
     ) {
+
       normalizado = valor.replace(",", ".");
 
     } else {
+
       return NaN;
+
     }
 
     const numero = Number(normalizado);
@@ -374,6 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function atualizarResumo() {
+
     const valor = converterValor(
       valorInput.value
     );
@@ -384,26 +396,37 @@ document.addEventListener("DOMContentLoaded", () => {
         : "R$ 0,00";
   }
 
+  /* =====================================
+     MENSAGENS
+  ===================================== */
+
   function mostrarErro(mensagem) {
+
     erroElemento.textContent = mensagem;
     erroElemento.hidden = false;
   }
 
   function limparErro() {
+
     erroElemento.textContent = "";
     erroElemento.hidden = true;
   }
 
   /* =====================================
-     ABRIR E FECHAR
+     ABRIR O FORMULÁRIO
   ===================================== */
 
   function abrirModal() {
+
     if (salvando) return;
 
     focoAnterior = document.activeElement;
 
     form.reset();
+
+    salvarBotao.disabled = false;
+    salvarTexto.textContent = "Salvar corte";
+
     limparErro();
     atualizarResumo();
 
@@ -413,12 +436,30 @@ document.addEventListener("DOMContentLoaded", () => {
       "wj-corte-modal-aberto"
     );
 
+    // Evita que o iPhone role a página ou
+    // abra o teclado ao exibir o formulário.
     requestAnimationFrame(() => {
-      servicoInput.focus();
+
+      dialog.scrollTop = 0;
+
+      try {
+        dialog.focus({
+          preventScroll: true
+        });
+      } catch {
+        dialog.focus();
+      }
+
     });
+
   }
 
+  /* =====================================
+     FECHAR O FORMULÁRIO
+  ===================================== */
+
   function fecharModal() {
+
     if (salvando) return;
 
     modal.hidden = true;
@@ -431,9 +472,21 @@ document.addEventListener("DOMContentLoaded", () => {
       focoAnterior &&
       typeof focoAnterior.focus === "function"
     ) {
-      focoAnterior.focus();
+
+      try {
+        focoAnterior.focus({
+          preventScroll: true
+        });
+      } catch {
+        focoAnterior.focus();
+      }
+
     }
   }
+
+  /* =====================================
+     BOTÕES DE ABRIR E FECHAR
+  ===================================== */
 
   $("wjAbrirCorte").addEventListener(
     "click",
@@ -458,15 +511,18 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   /* =====================================
-     ACESSIBILIDADE DO MODAL
+     ACESSIBILIDADE DO FORMULÁRIO
   ===================================== */
 
   document.addEventListener("keydown", (event) => {
+
     if (modal.hidden) return;
 
     if (event.key === "Escape") {
+
       event.preventDefault();
       fecharModal();
+
       return;
     }
 
@@ -491,6 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
       event.shiftKey &&
       document.activeElement === primeiro
     ) {
+
       event.preventDefault();
       ultimo.focus();
 
@@ -498,16 +555,19 @@ document.addEventListener("DOMContentLoaded", () => {
       !event.shiftKey &&
       document.activeElement === ultimo
     ) {
+
       event.preventDefault();
       primeiro.focus();
     }
+
   });
 
   /* =====================================
-     SALVAR NO POSTGRESQL
+     SALVAR CORTE NO POSTGRESQL
   ===================================== */
 
   form.addEventListener("submit", async (event) => {
+
     event.preventDefault();
 
     if (salvando) return;
@@ -525,7 +585,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     if (!servicosPermitidos.includes(servico)) {
-      mostrarErro("Selecione um serviço válido.");
+
+      mostrarErro(
+        "Selecione um serviço válido."
+      );
+
       return;
     }
 
@@ -534,11 +598,13 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (!Number.isFinite(valor)) {
+
       mostrarErro(
         "Informe um valor válido, como 35,00."
       );
 
       valorInput.focus();
+
       return;
     }
 
@@ -555,40 +621,55 @@ document.addEventListener("DOMContentLoaded", () => {
         pagamento
       )
     ) {
+
       mostrarErro(
         "Selecione Pix, Cartão ou Dinheiro."
       );
+
       return;
     }
 
     const cliente = clienteInput.value.trim();
 
+    // Campos compatíveis com o
+    // financeiroController.js do backend.
     const dados = {
+
       tipo: "receita",
+
       data: WJ.today(),
 
       cliente_nome: cliente,
+
       cliente_whatsapp: "",
 
       descricao: `Atendimento: ${servico}`,
+
       categoria: servico,
 
       pagamento,
+
       valor,
 
       observacoes:
         "Registrado pelo botão Novo corte"
+
     };
 
     salvando = true;
-    salvarBotao.disabled = true;
 
+    salvarBotao.disabled = true;
     salvarTexto.textContent = "Salvando...";
 
     try {
+
+      // Grava a receita no PostgreSQL.
       await WJ.api("/financeiro", {
+
         method: "POST",
+
         body: JSON.stringify(dados)
+
       });
 
       salvarTexto.textContent = "Corte salvo!";
@@ -599,13 +680,16 @@ document.addEventListener("DOMContentLoaded", () => {
         `Corte registrado: +${WJ.money(valor)}`
       );
 
-      // Atualiza o dashboard a partir dos dados
-      // reais do servidor, após o salvamento.
+      // Recarrega os dados financeiros do
+      // dashboard após o cadastro confirmado.
       window.setTimeout(() => {
+
         window.location.reload();
+
       }, 900);
 
     } catch (erro) {
+
       console.error(
         "Erro ao registrar corte:",
         erro
@@ -614,27 +698,29 @@ document.addEventListener("DOMContentLoaded", () => {
       mostrarErro(
         erro?.message ||
         "Não foi possível confirmar o cadastro. " +
-        "Verifique o Financeiro antes de tentar novamente."
+        "Confira o Financeiro antes de tentar novamente."
       );
 
       salvando = false;
+
       salvarBotao.disabled = false;
 
       salvarTexto.textContent = "Tentar salvar";
+
     }
+
   });
 
   /* =====================================
-     EVENTOS DE VALOR
+     ATUALIZAR O RESUMO DO VALOR
   ===================================== */
 
-  valorInput.addEventListener(
-    "input",
-    () => {
-      atualizarResumo();
-      limparErro();
-    }
-  );
+  valorInput.addEventListener("input", () => {
+
+    atualizarResumo();
+    limparErro();
+
+  });
 
   /* =====================================
      ÍCONES
@@ -644,8 +730,11 @@ document.addEventListener("DOMContentLoaded", () => {
     window.lucide &&
     typeof window.lucide.createIcons === "function"
   ) {
+
     window.lucide.createIcons({
       nodes: [destaque, modal]
     });
+
   }
+
 });

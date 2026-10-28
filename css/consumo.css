@@ -782,3 +782,144 @@
     text-align: center;
   }
 }
+
+/* ==========================================
+   CORREÇÃO DO NOVO CORTE NO CELULAR
+   Formulário compacto e sem cortar o topo
+========================================== */
+
+@media (max-width: 760px) {
+
+  .wj-corte-modal {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+      max(12px, env(safe-area-inset-top))
+      12px
+      max(12px, env(safe-area-inset-bottom));
+
+    overflow: hidden;
+  }
+
+  .wj-corte-dialog {
+    width: 100%;
+    max-width: 430px;
+
+    max-height: calc(100dvh - 32px);
+
+    margin: 0;
+    padding: 0;
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
+    border: 1px solid #454850;
+    border-radius: 17px;
+  }
+
+  /* Título e botão fechar sempre visíveis */
+
+  .wj-corte-cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+
+    padding: 13px 15px;
+
+    background: #24272d;
+    border-bottom: 1px solid #3c4048;
+  }
+
+  .wj-corte-cabecalho h2 {
+    font-size: 17px;
+  }
+
+  .wj-corte-modal-icone {
+    width: 36px;
+    height: 36px;
+  }
+
+  .wj-corte-modal-icone svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  /* Reduzir altura dos campos */
+
+  .wj-corte-campos {
+    gap: 12px;
+    padding: 14px 15px 0;
+  }
+
+  .wj-corte-campo {
+    gap: 6px;
+  }
+
+  .wj-corte-campo > input,
+  .wj-corte-campo > select {
+    min-height: 43px;
+    padding: 9px 12px;
+    font-size: 16px;
+  }
+
+  .wj-corte-valor-area input {
+    min-height: 46px;
+    padding: 8px 0;
+    font-size: 22px;
+  }
+
+  /* Pagamentos menores e mais organizados */
+
+  .wj-corte-pagamentos legend {
+    margin-bottom: 8px;
+  }
+
+  .wj-corte-pagamento-grid {
+    gap: 7px;
+  }
+
+  .wj-corte-pagamento > span {
+    min-height: 63px;
+    gap: 5px;
+    padding: 8px 4px;
+  }
+
+  .wj-corte-pagamento svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  /* Resumo e botões */
+
+  .wj-corte-resumo {
+    margin: 13px 15px 0;
+    padding: 11px 13px;
+  }
+
+  .wj-corte-resumo strong {
+    font-size: 18px;
+  }
+
+  .wj-corte-acoes {
+    margin: 13px 15px 0;
+    gap: 8px;
+  }
+
+  .wj-corte-cancelar,
+  .wj-corte-salvar {
+    min-height: 45px;
+    padding: 9px;
+  }
+
+  .wj-corte-rodape {
+    margin: 10px 15px 15px;
+    font-size: 10px;
+  }
+
+}
