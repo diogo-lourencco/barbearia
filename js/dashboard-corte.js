@@ -33,10 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <div>
         <strong>Atendeu um cliente?</strong>
 
-        <p>
-          Registre o corte e a entrada no
-          Financeiro em poucos segundos.
-        </p>
       </div>
 
     </div>
