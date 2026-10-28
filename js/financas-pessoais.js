@@ -55,6 +55,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   let contextoFatura = null;
 
   const monthInput = $("month");
+  const monthSelect = $("financeMonthSelect");
+  const yearInput = $("financeYearInput");
+  const monthPrev = $("financeMonthPrev");
+  const monthNext = $("financeMonthNext");
+  const monthCurrent = $("financeMonthCurrent");
+  const periodFeedback = $("financePeriodFeedback");
 
   const obrigatorios = [
     "month", "stats", "chart", "upcoming",
@@ -149,6 +155,108 @@ document.addEventListener("DOMContentLoaded", async () => {
       data.getFullYear(),
       String(data.getMonth() + 1).padStart(2, "0")
     ].join("-");
+  }
+
+  /* =====================================================
+     SELETOR DE MÊS E ANO
+     Mantém #month como referência única das outras telas.
+  ===================================================== */
+
+  const nomesMeses = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+
+  function periodoValido(periodo) {
+    const resultado = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(String(periodo));
+    if (!resultado) return false;
+    const ano = Number(resultado[1]);
+    return ano >= 1900 && ano <= 2100;
+  }
+
+  // A caixa personalizada é opcional. Se o HTML ainda usa o campo
+  // nativo #month, o restante do Financeiro continua funcionando.
+  const seletorPersonalizadoDisponivel = [
+    monthSelect, yearInput, monthPrev, monthNext,
+    monthCurrent, periodFeedback
+  ].every(Boolean);
+
+  function sincronizarSeletorPeriodo() {
+    if (!seletorPersonalizadoDisponivel) return;
+
+    const valor = periodoValido(monthInput.value)
+      ? monthInput.value
+      : mesAtual();
+
+    if (monthInput.value !== valor) monthInput.value = valor;
+
+    const [ano, mes] = valor.split("-").map(Number);
+    monthSelect.value = String(mes);
+    yearInput.value = String(ano);
+    periodFeedback.textContent = `Exibindo ${nomesMeses[mes - 1]} de ${ano}`;
+
+    monthPrev.disabled = ano === 1900 && mes === 1;
+    monthNext.disabled = ano === 2100 && mes === 12;
+    monthCurrent.disabled = valor === mesAtual();
+  }
+
+  function selecionarPeriodo(ano, mes) {
+    if (
+      !Number.isInteger(ano) || ano < 1900 || ano > 2100 ||
+      !Number.isInteger(mes) || mes < 1 || mes > 12
+    ) {
+      aviso("Selecione um mês e um ano entre 1900 e 2100.");
+      sincronizarSeletorPeriodo();
+      return;
+    }
+
+    const novo = `${ano}-${String(mes).padStart(2, "0")}`;
+    if (monthInput.value === novo) {
+      sincronizarSeletorPeriodo();
+      return;
+    }
+
+    monthInput.value = novo;
+    // Dispara o fluxo original: atualiza indicadores, gráficos e listas.
+    monthInput.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function mudarMes(diferenca) {
+    const periodo = periodoValido(monthInput.value)
+      ? monthInput.value
+      : mesAtual();
+    const [ano, mes] = periodo.split("-").map(Number);
+    const indice = ano * 12 + (mes - 1) + diferenca;
+    const novoAno = Math.floor(indice / 12);
+    const novoMes = indice - novoAno * 12 + 1;
+    selecionarPeriodo(novoAno, novoMes);
+  }
+
+  if (seletorPersonalizadoDisponivel) {
+    monthPrev.addEventListener("click", () => mudarMes(-1));
+    monthNext.addEventListener("click", () => mudarMes(1));
+    monthCurrent.addEventListener("click", () => {
+      const [ano, mes] = mesAtual().split("-").map(Number);
+      selecionarPeriodo(ano, mes);
+    });
+
+    monthSelect.addEventListener("change", () => {
+      const ano = Number(yearInput.value);
+      selecionarPeriodo(ano, Number(monthSelect.value));
+    });
+
+    yearInput.addEventListener("change", () => {
+      const texto = yearInput.value.trim();
+      const ano = /^\d{4}$/.test(texto) ? Number(texto) : NaN;
+      selecionarPeriodo(ano, Number(monthSelect.value));
+    });
+
+    yearInput.addEventListener("keydown", evento => {
+      if (evento.key === "Enter") {
+        evento.preventDefault();
+        yearInput.blur();
+      }
+    });
   }
 
   function valorValido(valor) {
@@ -1047,7 +1155,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const carteira = $("txWallet").value;
 
     $("txWallet").innerHTML = `
-
       <option value="">Todas as contas</option>
 
       ${db.wallets.map(item => `
@@ -1472,6 +1579,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   ===================================================== */
 
   function renderizar() {
+    sincronizarSeletorPeriodo();
     renderDashboard();
     renderTransactions();
     renderBills();
@@ -1578,7 +1686,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.querySelectorAll(
       "#personalBottomNav [data-go]"
-
     ).forEach(item => {
       const ativo = item.dataset.go === destino;
 
@@ -2099,7 +2206,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     item.addEventListener("click", () => {
       const tipo = item.dataset.quickAdd;
       if (tipo === "bill") {
-
         abrirModal("bill");
       } else {
         abrirModal("transaction", "", {
@@ -2630,7 +2736,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const pergunta = conta
-
       ? "Excluir a movimentação e reabrir a conta?"
       : fatura
         ? "Excluir o pagamento e reabrir a fatura?"
@@ -2685,7 +2790,255 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* =====================================================
-     EXCLUIR REGISTROS E ARQUIVAR CARTÃO
+     EXCLUIR CONTAS E METAS COM SEGURANÇA
+     - Mostra o impacto antes de excluir.
+     - Oferece backup local antes da exclusão com vínculos.
+     - Evita referências quebradas no Financeiro.
+  ===================================================== */
+
+  function mesmoId(a, b) {
+    return String(a) === String(b);
+  }
+
+  function dependenciasCarteira(id) {
+    const transacoes = db.transactions.filter(
+      item => mesmoId(item.walletId, id)
+    );
+
+    const idsTransacoes = new Set(
+      transacoes.map(item => String(item.id))
+    );
+
+    const transferencias = db.transfers.filter(
+      item => mesmoId(item.from, id) || mesmoId(item.to, id)
+    );
+
+    const movimentosMetas = db.goalMoves.filter(
+      item => mesmoId(item.walletId, id)
+    );
+
+    const contasPagas = db.bills.filter(
+      item => item.transactionId != null &&
+        idsTransacoes.has(String(item.transactionId))
+    );
+
+    const faturasPagas = db.invoicePayments.filter(
+      item => item.transactionId != null &&
+        idsTransacoes.has(String(item.transactionId))
+    );
+
+    return {
+      transacoes,
+      idsTransacoes,
+      transferencias,
+      movimentosMetas,
+      contasPagas,
+      faturasPagas
+    };
+  }
+
+  function backupAntesDaExclusao() {
+    const dados = JSON.stringify({
+      formato: "WJ_FINANCAS_BACKUP_V1",
+      criadoEm: new Date().toISOString(),
+      revisao,
+      dados: db
+    }, null, 2);
+
+    const blob = new Blob([dados], {
+      type: "application/json;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `backup-financas-antes-exclusao-${hoje()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+
+  function confirmarExclusao(nome, detalhes, temVinculos) {
+    const avisoImpacto = detalhes.length
+      ? `\n\nO que será alterado:\n- ${detalhes.join("\n- ")}`
+      : "";
+
+    const mensagem = temVinculos
+      ? `Excluir definitivamente "${nome}"?${avisoImpacto}\n\n` +
+        "Esses dados serão removidos e os saldos serão recalculados. " +
+        "Esta ação não pode ser desfeita pelo aplicativo. " +
+        "Um arquivo JSON de segurança será baixado antes da exclusão."
+      : `Excluir definitivamente "${nome}"?${avisoImpacto}`;
+
+    if (!window.confirm(mensagem)) return false;
+
+    if (temVinculos) {
+      const resposta = window.prompt(
+        'Para confirmar a exclusão definitiva, digite EXCLUIR:',
+        ""
+      );
+
+      if (resposta?.trim().toUpperCase() !== "EXCLUIR") {
+        aviso("Exclusão cancelada. Nenhum dado foi alterado.");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  async function excluirCarteira(id) {
+    const carteira = encontrar("wallets", id);
+    if (!carteira) {
+      aviso("Conta ou carteira não encontrada.");
+      return;
+    }
+
+    const vinculos = dependenciasCarteira(id);
+    const qtd = vinculos.transacoes.length +
+      vinculos.transferencias.length +
+      vinculos.movimentosMetas.length;
+
+    // Não deixar metas afetadas com saldo negativo após a exclusão.
+    const idsMetasAfetadas = new Set(
+      vinculos.movimentosMetas.map(mov => String(mov.goalId))
+    );
+
+    const metasInconsistentes = db.goals.filter(meta => {
+      if (!idsMetasAfetadas.has(String(meta.id))) return false;
+
+      const saldoRestante = db.goalMoves
+        .filter(mov => mesmoId(mov.goalId, meta.id) &&
+          !mesmoId(mov.walletId, id))
+        .reduce((total, mov) => total +
+          (mov.kind === "withdraw" ? -1 : 1) * Number(mov.amount), 0);
+
+      return saldoRestante < -0.005;
+    });
+
+    if (metasInconsistentes.length) {
+      mostrarErro(
+        `Não é seguro excluir esta conta ainda: existem retiradas em ` +
+        `metas que dependem dela (${metasInconsistentes.map(m => m.name).join(", ")}). ` +
+        `Exclua ou ajuste essas metas primeiro, depois tente novamente.`
+      );
+      aviso("Verifique as metas vinculadas antes de excluir a conta.");
+      return;
+    }
+
+    const detalhes = [
+      `Saldo atual da conta: ${reais(saldoCarteira(id))}`,
+      vinculos.transacoes.length ?
+        `${vinculos.transacoes.length} movimentação(ões) serão removidas do histórico` : "",
+      vinculos.transferencias.length ?
+        `${vinculos.transferencias.length} transferência(s) serão desfeitas, inclusive nas outras contas` : "",
+      vinculos.movimentosMetas.length ?
+        `${vinculos.movimentosMetas.length} aporte(s)/retirada(s) de metas serão desfeitos` : "",
+      vinculos.contasPagas.length ?
+        `${vinculos.contasPagas.length} conta(s) pagas/recebidas voltarão a ficar pendentes` : "",
+      vinculos.faturasPagas.length ?
+        `${vinculos.faturasPagas.length} fatura(s) voltarão a ficar em aberto` : ""
+    ].filter(Boolean);
+
+    if (!confirmarExclusao(carteira.name, detalhes, qtd > 0)) return;
+
+    if (qtd > 0) {
+      try {
+        backupAntesDaExclusao();
+      } catch (erro) {
+        mostrarErro("Não foi possível preparar o backup; exclusão cancelada.");
+        return;
+      }
+    }
+
+    const sucesso = await atualizar(() => {
+      if (!encontrar("wallets", id)) {
+        throw new Error("Conta ou carteira não encontrada.");
+      }
+
+      const atual = dependenciasCarteira(id);
+
+      // Reabrir obrigações cujas transações serão removidas.
+      db.bills.forEach(conta => {
+        if (conta.transactionId != null &&
+          atual.idsTransacoes.has(String(conta.transactionId))) {
+          conta.status = "pending";
+          delete conta.transactionId;
+        }
+      });
+
+      // Não deixar faturas marcadas como pagas sem a despesa correspondente.
+      db.invoicePayments = db.invoicePayments.filter(
+        item => !atual.idsTransacoes.has(String(item.transactionId))
+      );
+
+      db.transactions = db.transactions.filter(
+        item => !mesmoId(item.walletId, id)
+      );
+      db.transfers = db.transfers.filter(
+        item => !mesmoId(item.from, id) && !mesmoId(item.to, id)
+      );
+      db.goalMoves = db.goalMoves.filter(
+        item => !mesmoId(item.walletId, id)
+      );
+      db.wallets = db.wallets.filter(
+        item => !mesmoId(item.id, id)
+      );
+    });
+
+    if (sucesso) aviso("Conta excluída e vínculos atualizados.");
+  }
+
+  async function excluirMeta(id) {
+    const meta = encontrar("goals", id);
+    if (!meta) {
+      aviso("Meta financeira não encontrada.");
+      return;
+    }
+
+    const movimentos = db.goalMoves.filter(
+      item => mesmoId(item.goalId, id)
+    );
+
+    const detalhes = movimentos.length ? [
+      `Saldo reservado na meta: ${reais(saldoMeta(id))}`,
+      `${movimentos.length} aporte(s)/retirada(s) serão desfeitos`,
+      "Os saldos das carteiras envolvidas serão recalculados"
+    ] : [];
+
+    if (!confirmarExclusao(meta.name, detalhes, movimentos.length > 0)) return;
+
+    if (movimentos.length) {
+      try {
+        backupAntesDaExclusao();
+      } catch (erro) {
+        mostrarErro("Não foi possível preparar o backup; exclusão cancelada.");
+        return;
+      }
+    }
+
+    const sucesso = await atualizar(() => {
+      if (!encontrar("goals", id)) {
+        throw new Error("Meta financeira não encontrada.");
+      }
+
+      // Desfazer as reservas movimentadas para essa meta.
+      db.goalMoves = db.goalMoves.filter(
+        item => !mesmoId(item.goalId, id)
+      );
+      db.goals = db.goals.filter(
+        item => !mesmoId(item.id, id)
+      );
+    });
+
+    if (sucesso) aviso("Meta excluída; saldos das carteiras atualizados.");
+  }
+
+  /* =====================================================
+     EXCLUIR OUTROS REGISTROS E ARQUIVAR CARTÃO
   ===================================================== */
 
   async function excluir(colecao, id) {
@@ -2696,33 +3049,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    if (colecao === "wallets") {
+      await excluirCarteira(id);
+      return;
+    }
+
+    if (colecao === "goals") {
+      await excluirMeta(id);
+      return;
+    }
+
     if (colecao === "cards") {
       if (item.archived) return;
 
       if (comprometido(id) > 0.001) {
-        aviso(
-          "Há parcelas em aberto. " +
-          "Quite as faturas antes de arquivar."
-        );
+        aviso("Há parcelas em aberto. Quite as faturas antes de arquivar.");
         return;
       }
 
-      if (
-        !window.confirm(
-          `Arquivar o cartão ${item.name}?\n` +
-          "Compras e pagamentos serão preservados."
-        )
-      ) {
-        return;
-      }
+      if (!window.confirm(
+        `Arquivar o cartão ${item.name}?\nCompras e pagamentos serão preservados.`
+      )) return;
 
       const sucesso = await atualizar(() => {
         const cartao = encontrar("cards", id);
-
         if (!cartao || cartao.archived) {
           throw new Error("Cartão indisponível.");
         }
-
         cartao.archived = true;
       });
 
@@ -2730,65 +3083,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    if (
-      colecao === "bills" &&
-      (item.status === "done" || item.transactionId)
-    ) {
-      aviso(
-        "Reabra a conta pela movimentação " +
-        "vinculada antes de excluir."
-      );
+    if (colecao === "bills" &&
+      (item.status === "done" || item.transactionId)) {
+      aviso("Reabra a conta pela movimentação vinculada antes de excluir.");
       return;
     }
 
-    if (
-      colecao === "wallets" &&
-      (
-        db.transactions.some(
-          reg => reg.walletId === id
-        ) ||
-        db.transfers.some(
-          reg => reg.from === id || reg.to === id
-        ) ||
-        db.goalMoves.some(
-          reg => reg.walletId === id
-        )
-      )
-    ) {
-      aviso("Essa conta possui movimentações vinculadas.");
-      return;
-    }
-
-    if (
-      colecao === "goals" &&
-      db.goalMoves.some(reg => reg.goalId === id)
-    ) {
-      aviso(
-        "Essa meta possui aportes e não pode ser excluída."
-      );
-      return;
-    }
-
-    if (!window.confirm("Excluir este registro?")) {
-      return;
-    }
+    if (!window.confirm("Excluir este registro?")) return;
 
     const sucesso = await atualizar(() => {
       const atual = encontrar(colecao, id);
+      if (!atual) throw new Error("Registro não encontrado.");
 
-      if (!atual) {
-        throw new Error("Registro não encontrado.");
-      }
-
-      if (
-        colecao === "bills" &&
-        (atual.status === "done" || atual.transactionId)
-      ) {
+      if (colecao === "bills" &&
+        (atual.status === "done" || atual.transactionId)) {
         throw new Error("Conta não pode ser excluída.");
       }
 
       db[colecao] = db[colecao].filter(
-        reg => reg.id !== id
+        reg => !mesmoId(reg.id, id)
       );
     });
 
@@ -2944,10 +3257,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   });
 
-  monthInput.addEventListener(
-    "change",
-    renderizar
-  );
+  monthInput.addEventListener("change", renderizar);
 
   /* =====================================================
      EXPORTAÇÃO CSV
@@ -3024,8 +3334,9 @@ document.addEventListener("DOMContentLoaded", async () => {
      AUTENTICAÇÃO E INICIALIZAÇÃO
   ===================================================== */
 
-  // Este campo aparece mesmo se a API estiver indisponível.
+  // O seletor funciona mesmo enquanto os dados financeiros carregam.
   monthInput.value = mesAtual();
+  sincronizarSeletorPeriodo();
 
   criarMenuInferior();
   icones();
