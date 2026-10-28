@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -6,38 +7,81 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
   <meta name="theme-color" content="#17191D">
 
-  <title>Dashboard</title>
+  <meta
+    name="description"
+    content="Painel de gestão da Barbearia WJ."
+  >
 
-  <!-- LOGO NA ABA DO NAVEGADOR -->
-<link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="apple-touch-icon" href="assets/logo.png">
+  <title>Visão Geral</title>
 
-  <!-- ESTILOS -->
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link
+    rel="icon"
+    type="image/png"
+    href="assets/logo.png"
+  >
 
-  <!-- BIBLIOTECA DE ÍCONES -->
+  <link
+    rel="apple-touch-icon"
+    href="assets/logo.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/global.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/dashboard.css"
+  >
+
+  <link 
+    rel="stylesheet"
+    href="css/dashboard-mobile.css">
+
+  <!-- Ícones -->
   <script
     defer
     src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
   ></script>
 
-  <!-- SISTEMA -->
+  <!-- Sistema -->
   <script defer src="js/global.js"></script>
   <script defer src="js/dashboard.js"></script>
+  <script src="js/dashboard-mobile.js" defer></script>
 
-  <!-- Instalação no iPhone / PWA -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
-  <meta name="theme-color" content="#17191D">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+  <!-- PWA -->
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Barbearia WJ"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="assets/icon-180.png"
+  >
+
   <script src="js/pwa.js" defer></script>
 </head>
 
@@ -51,26 +95,24 @@
 
         <!-- CABEÇALHO -->
 
-        <header class="heading dashboard-heading">
+        <header class="dashboard-welcome">
 
-          <div>
-
-            <span class="page-eyebrow">
-              PAINEL DE CONTROLE
-            </span>
+          <div class="dashboard-welcome-text">
 
             <h1>Visão geral</h1>
 
-            <p class="muted">
-              Acompanhe os resultados e a operação
-              da Barbearia WJ.
+            <p id="dashboardGreeting">
+              Acompanhe seu negócio de forma simples.
             </p>
 
           </div>
 
           <div class="dashboard-period">
 
-            <span>PERÍODO ATUAL</span>
+            <span>
+              <i data-lucide="calendar-days"></i>
+              MÊS ATUAL
+            </span>
 
             <strong id="currentMonth">
               Carregando...
@@ -80,341 +122,522 @@
 
         </header>
 
-        <!-- INDICADORES -->
+        <!-- AVISO DE ERRO -->
 
-        <section class="dashboard-stats">
+        <div
+          id="dashboardError"
+          class="dashboard-error"
+          role="alert"
+          hidden
+        >
+          <i data-lucide="circle-alert"></i>
 
-          <!-- RECEITAS -->
+          <div>
+            <strong>Não foi possível carregar os dados</strong>
+            <p id="dashboardErrorMessage">
+              Tente atualizar o painel.
+            </p>
+          </div>
 
-          <article class="card dashboard-stat">
+          <button
+            type="button"
+            id="retryDashboard"
+            class="dashboard-retry"
+          >
+            Tentar novamente
+          </button>
+        </div>
 
-            <div class="stat-heading">
+        <!-- RESUMO FINANCEIRO -->
 
-              <span>Receitas do mês</span>
+        <section
+          class="dashboard-overview"
+          aria-labelledby="overviewTitle"
+        >
 
-              <div class="stat-icon">
-                <i data-lucide="trending-up"></i>
-              </div>
+          <div class="dashboard-section-title">
 
+            <div>
+              <span class="section-overline">
+                RESUMO FINANCEIRO
+              </span>
+
+              <h2 id="overviewTitle">
+                Como está o seu mês?
+              </h2>
+
+              <p>
+                Veja quanto entrou, saiu e sobrou.
+              </p>
             </div>
 
-            <strong
-              class="metric good"
-              id="revenue"
+            <button
+              class="dashboard-refresh"
+              type="button"
+              id="refreshDashboard"
+              aria-label="Atualizar informações"
             >
-              R$ 0,00
-            </strong>
+              <i data-lucide="refresh-cw"></i>
+              <span>Atualizar</span>
+            </button>
 
-            <small>
-              Entradas registradas no mês
-            </small>
+          </div>
 
-          </article>
+          <div class="dashboard-stats">
 
-          <!-- DESPESAS -->
+            <!-- SALDO PRINCIPAL -->
 
-          <article class="card dashboard-stat">
+            <article class="dashboard-stat balance-card">
 
-            <div class="stat-heading">
+              <div class="stat-heading">
 
-              <span>Despesas do mês</span>
+                <span>
+                  Saldo do mês
+                </span>
 
-              <div class="stat-icon">
-                <i data-lucide="trending-down"></i>
+                <div class="stat-icon">
+                  <i data-lucide="wallet"></i>
+                </div>
+
               </div>
 
-            </div>
+              <strong
+                class="metric accent"
+                id="balance"
+              >
+                R$ 0,00
+              </strong>
 
-            <strong
-              class="metric bad"
-              id="expenses"
-            >
-              R$ 0,00
-            </strong>
+              <small>
+                O que sobrou após descontar as despesas
+              </small>
 
-            <small>
-              Saídas registradas no mês
-            </small>
-
-          </article>
-
-          <!-- SALDO -->
-
-          <article class="card dashboard-stat">
-
-            <div class="stat-heading">
-
-              <span>Saldo do mês</span>
-
-              <div class="stat-icon">
-                <i data-lucide="wallet"></i>
+              <div class="balance-card-footer">
+                <span class="balance-status-dot"></span>
+                <span id="balanceDescription">
+                  Resultado financeiro do mês
+                </span>
               </div>
 
-            </div>
+            </article>
 
-            <strong
-              class="metric accent"
-              id="balance"
-            >
-              R$ 0,00
-            </strong>
+            <!-- RECEITAS -->
 
-            <small>
-              Receitas menos despesas
-            </small>
+            <article class="dashboard-stat revenue-card">
 
-          </article>
+              <div class="stat-heading">
 
-          <!-- ESTOQUE EM ALERTA -->
+                <span>
+                  Entradas
+                </span>
 
-          <article class="card dashboard-stat">
+                <div class="stat-icon good-icon">
+                  <i data-lucide="arrow-down-left"></i>
+                </div>
 
-            <div class="stat-heading">
-
-              <span>Produtos em alerta</span>
-
-              <div class="stat-icon">
-                <i data-lucide="triangle-alert"></i>
               </div>
 
-            </div>
+              <strong
+                class="metric good"
+                id="revenue"
+              >
+                R$ 0,00
+              </strong>
 
-            <strong
-              class="metric"
-              id="alerts"
-            >
-              0
-            </strong>
+              <small>
+                Dinheiro recebido no mês
+              </small>
 
-            <small>
-              Monitoramento do estoque geral
-            </small>
+            </article>
 
-          </article>
+            <!-- DESPESAS -->
+
+            <article class="dashboard-stat expense-card">
+
+              <div class="stat-heading">
+
+                <span>
+                  Saídas
+                </span>
+
+                <div class="stat-icon bad-icon">
+                  <i data-lucide="arrow-up-right"></i>
+                </div>
+
+              </div>
+
+              <strong
+                class="metric bad"
+                id="expenses"
+              >
+                R$ 0,00
+              </strong>
+
+              <small>
+                Despesas registradas no mês
+              </small>
+
+            </article>
+
+            <!-- ESTOQUE -->
+
+            <article class="dashboard-stat stock-card">
+
+              <div class="stat-heading">
+
+                <span>
+                  Estoque em alerta
+                </span>
+
+                <div class="stat-icon stock-icon">
+                  <i data-lucide="triangle-alert"></i>
+                </div>
+
+              </div>
+
+              <strong
+                class="metric"
+                id="alerts"
+              >
+                0
+              </strong>
+
+              <small id="stockAlertDescription">
+                Produtos que precisam de reposição
+              </small>
+
+              <a
+                href="estoque.html"
+                class="stock-card-link"
+              >
+                Ver estoque
+
+                <i data-lucide="arrow-right"></i>
+              </a>
+
+            </article>
+
+          </div>
 
         </section>
 
-        <!-- GRÁFICO E ESTOQUE -->
+        <!-- ACESSO RÁPIDO -->
 
-        <div class="dashboard-grid">
+        <section
+          class="dashboard-quick-section"
+          aria-labelledby="quickTitle"
+        >
 
-          <!-- DESEMPENHO FINANCEIRO -->
+          <div class="dashboard-section-title">
 
-          <section class="card dashboard-panel">
+            <div>
 
-            <div class="panel-heading">
+              <span class="section-overline">
+                NAVEGAÇÃO
+              </span>
 
-              <div class="panel-symbol">
-                <i data-lucide="chart-column-increasing"></i>
-              </div>
+              <h2 id="quickTitle">
+                O que deseja fazer?
+              </h2>
 
-              <div>
-
-                <h2>Desempenho financeiro</h2>
-
-                <p>
-                  Receitas dos últimos seis meses
-                </p>
-
-              </div>
-
-            </div>
-
-            <div
-              class="chart"
-              id="chart"
-            ></div>
-
-          </section>
-
-          <!-- ESTOQUE -->
-
-          <section class="card dashboard-panel">
-
-            <div class="panel-heading">
-
-              <div class="panel-symbol">
-                <i data-lucide="package-search"></i>
-              </div>
-
-              <div>
-
-                <h2>Estoque em atenção</h2>
-
-                <p>
-                  Produtos que precisam de reposição
-                </p>
-
-              </div>
+              <p>
+                Acesse as principais funções.
+              </p>
 
             </div>
 
-            <div
-              id="lowStock"
-              class="dashboard-list"
-            ></div>
+          </div>
+
+          <nav
+            class="dashboard-shortcuts"
+            aria-label="Acesso rápido"
+          >
 
             <a
-              href="estoque.html"
-              class="panel-link"
+              href="financeiro.html"
+              class="shortcut"
             >
 
-              Gerenciar estoque
+              <span class="shortcut-icon">
+                <i data-lucide="wallet"></i>
+              </span>
 
-              <span>
-                <i data-lucide="arrow-right"></i>
+              <span class="shortcut-label">
+
+                <strong>Financeiro</strong>
+
+                <small>
+                  Receitas e despesas
+                </small>
+
+              </span>
+
+              <span class="shortcut-arrow">
+                <i data-lucide="arrow-up-right"></i>
               </span>
 
             </a>
 
-          </section>
+            <a
+              href="estoque.html"
+              class="shortcut"
+            >
 
-        </div>
+              <span class="shortcut-icon">
+                <i data-lucide="boxes"></i>
+              </span>
 
-        <!-- MOVIMENTAÇÕES E ACESSOS -->
+              <span class="shortcut-label">
 
-        <div class="dashboard-grid">
+                <strong>Estoque</strong>
 
-          <!-- MOVIMENTAÇÕES RECENTES -->
+                <small>
+                  Produtos e materiais
+                </small>
 
-          <section class="card dashboard-panel">
+              </span>
 
-            <div class="panel-heading">
+              <span class="shortcut-arrow">
+                <i data-lucide="arrow-up-right"></i>
+              </span>
 
-              <div class="panel-symbol">
-                <i data-lucide="arrow-left-right"></i>
-              </div>
+            </a>
 
-              <div>
+            <a
+              href="consumo.html"
+              class="shortcut"
+            >
 
-                <h2>Movimentações recentes</h2>
+              <span class="shortcut-icon">
+                <i data-lucide="clipboard-list"></i>
+              </span>
 
-                <p>
-                  Últimos lançamentos financeiros
-                </p>
+              <span class="shortcut-label">
 
-              </div>
+                <strong>Consumo</strong>
+
+                <small>
+                  Uso de produtos
+                </small>
+
+              </span>
+
+              <span class="shortcut-arrow">
+                <i data-lucide="arrow-up-right"></i>
+              </span>
+
+            </a>
+
+            <a
+              href="financas-pessoais.html"
+              class="shortcut"
+            >
+
+              <span class="shortcut-icon">
+                <i data-lucide="wallet-cards"></i>
+              </span>
+
+              <span class="shortcut-label">
+
+                <strong>Minhas Finanças</strong>
+
+                <small>
+                  Controle pessoal
+                </small>
+
+              </span>
+
+              <span class="shortcut-arrow">
+                <i data-lucide="arrow-up-right"></i>
+              </span>
+
+            </a>
+
+          </nav>
+
+        </section>
+
+        <!-- ESTOQUE -->
+
+        <section
+          class="card dashboard-panel dashboard-stock-panel"
+          aria-labelledby="lowStockTitle"
+        >
+
+          <div class="panel-heading">
+
+            <div class="panel-symbol">
+              <i data-lucide="package-search"></i>
+            </div>
+
+            <div class="panel-heading-content">
+
+              <h2 id="lowStockTitle">
+                Produtos que precisam de atenção
+              </h2>
+
+              <p>
+                Confira o que está acabando no estoque.
+              </p>
 
             </div>
 
-            <div
-              id="recent"
-              class="dashboard-list"
-            ></div>
+          </div>
 
-          </section>
+          <div
+            class="dashboard-list"
+            id="lowStock"
+          ></div>
 
-          <!-- ACESSO RÁPIDO -->
+          <a
+            href="estoque.html"
+            class="panel-link"
+          >
 
-          <section class="card dashboard-panel">
+            Gerenciar estoque
 
-            <div class="panel-heading">
+            <span>
+              <i data-lucide="arrow-right"></i>
+            </span>
 
-              <div class="panel-symbol">
-                <i data-lucide="layout-grid"></i>
-              </div>
+          </a>
 
-              <div>
+        </section>
 
-                <h2>Acesso rápido</h2>
+        <!-- RELATÓRIOS -->
 
-                <p>
-                  Acesse as principais funções
-                  do sistema
-                </p>
+        <section
+          class="dashboard-reports"
+          aria-labelledby="reportsTitle"
+        >
 
-              </div>
+          <div class="dashboard-section-title">
+
+            <div>
+
+              <span class="section-overline">
+                ANÁLISE
+              </span>
+
+              <h2 id="reportsTitle">
+                Relatórios e histórico
+              </h2>
+
+              <p>
+                Acompanhe a evolução do negócio.
+              </p>
 
             </div>
 
-            <nav class="dashboard-shortcuts">
+          </div>
 
-              <!-- FINANCEIRO -->
+          <div class="dashboard-grid">
+
+            <!-- GRÁFICO -->
+
+            <section
+              class="card dashboard-panel"
+              aria-labelledby="chartTitle"
+            >
+
+              <div class="panel-heading">
+
+                <div class="panel-symbol">
+                  <i data-lucide="chart-column-increasing"></i>
+                </div>
+
+                <div class="panel-heading-content">
+
+                  <h2 id="chartTitle">
+                    Receitas dos últimos 6 meses
+                  </h2>
+
+                  <p>
+                    Compare o dinheiro recebido em cada mês.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div
+                class="chart"
+                id="chart"
+                role="img"
+                aria-label="Gráfico de receitas dos últimos seis meses"
+              ></div>
+
+              <p class="chart-hint">
+                Toque ou passe o mouse sobre uma barra
+                para ver o valor.
+              </p>
+
+            </section>
+
+            <!-- MOVIMENTAÇÕES -->
+
+            <section
+              class="card dashboard-panel"
+              aria-labelledby="recentTitle"
+            >
+
+              <div class="panel-heading">
+
+                <div class="panel-symbol">
+                  <i data-lucide="arrow-left-right"></i>
+                </div>
+
+                <div class="panel-heading-content">
+
+                  <h2 id="recentTitle">
+                    Últimas movimentações
+                  </h2>
+
+                  <p>
+                    Receitas e despesas registradas.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div
+                class="dashboard-list"
+                id="recent"
+              ></div>
 
               <a
                 href="financeiro.html"
-                class="shortcut"
+                class="panel-link"
               >
 
-                <span class="shortcut-icon">
-                  <i data-lucide="wallet"></i>
-                </span>
+                Abrir financeiro
 
-                <span class="shortcut-label">
-
-                  <strong>Financeiro</strong>
-
-                  <small>
-                    Registrar receitas e despesas
-                  </small>
-
-                </span>
-
-                <span class="shortcut-arrow">
-                  <i data-lucide="chevron-right"></i>
+                <span>
+                  <i data-lucide="arrow-right"></i>
                 </span>
 
               </a>
 
-              <!-- ESTOQUE -->
+            </section>
 
-              <a
-                href="estoque.html"
-                class="shortcut"
-              >
+          </div>
 
-                <span class="shortcut-icon">
-                  <i data-lucide="boxes"></i>
-                </span>
+        </section>
 
-                <span class="shortcut-label">
+        <!-- RODAPÉ -->
 
-                  <strong>Estoque</strong>
+        <footer class="dashboard-footer">
 
-                  <small>
-                    Gerenciar produtos e materiais
-                  </small>
+          <span>
+            Barbearia WJ · Painel de gestão
+          </span>
 
-                </span>
+          <span id="dashboardUpdatedAt">
+            Aguardando atualização
+          </span>
 
-                <span class="shortcut-arrow">
-                  <i data-lucide="chevron-right"></i>
-                </span>
-
-              </a>
-
-              <!-- CONSUMO -->
-
-              <a
-                href="consumo.html"
-                class="shortcut"
-              >
-
-                <span class="shortcut-icon">
-                  <i data-lucide="clipboard-list"></i>
-                </span>
-
-                <span class="shortcut-label">
-
-                  <strong>Consumo</strong>
-
-                  <small>
-                    Registrar utilização de produtos
-                  </small>
-
-                </span>
-
-                <span class="shortcut-arrow">
-                  <i data-lucide="chevron-right"></i>
-                </span>
-
-              </a>
-
-            </nav>
-
-          </section>
-
-        </div>
+        </footer>
 
       </div>
 
@@ -422,15 +645,57 @@
 
   </div>
 
-  <!-- INICIALIZAR ÍCONES -->
+  <!-- FUNDO DO MENU MOBILE -->
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) {
-        lucide.createIcons();
-      }
-    });
-  </script>
+  <div
+    id="dashboardMenuOverlay"
+    class="dashboard-menu-overlay"
+    hidden
+  ></div>
+
+  <!-- NAVEGAÇÃO INFERIOR NO CELULAR -->
+
+  <nav
+    class="dashboard-mobile-nav"
+    aria-label="Navegação rápida no celular"
+  >
+
+    <a
+      href="dashboard.html"
+      class="active"
+      aria-current="page"
+    >
+      <i data-lucide="house"></i>
+      <span>Início</span>
+    </a>
+
+    <a href="financeiro.html">
+      <i data-lucide="wallet"></i>
+      <span>Financeiro</span>
+    </a>
+
+    <a href="estoque.html">
+      <i data-lucide="boxes"></i>
+      <span>Estoque</span>
+    </a>
+
+    <a href="consumo.html">
+      <i data-lucide="clipboard-list"></i>
+      <span>Consumo</span>
+    </a>
+
+    <button
+      type="button"
+      id="dashboardMoreButton"
+      aria-label="Abrir menu completo"
+      aria-expanded="false"
+      aria-controls="sidebar"
+    >
+      <i data-lucide="menu"></i>
+      <span>Menu</span>
+    </button>
+
+  </nav>
 
 </body>
 </html>

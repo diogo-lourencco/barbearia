@@ -1,0 +1,439 @@
+
+/* =====================================================
+   BARBEARIA WJ — DASHBOARD SIMPLIFICADO NO CELULAR
+
+   Complemento do dashboard.css existente.
+   Não altera outras páginas do sistema.
+===================================================== */
+
+.dashboard-reports-toggle {
+  display: none;
+}
+
+@media (max-width: 760px) {
+
+  /* ESPAÇAMENTO GERAL */
+
+  body .content.dashboard-page {
+    padding: 16px 13px;
+    padding-bottom: calc(
+      105px + env(safe-area-inset-bottom)
+    );
+  }
+
+  /* CABEÇALHO DIRETO */
+
+  .dashboard-welcome {
+    margin-bottom: 19px;
+    gap: 12px;
+  }
+
+  .dashboard-eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+  }
+
+  .dashboard-welcome h1 {
+    font-size: 27px;
+    margin: 6px 0;
+  }
+
+  .dashboard-welcome p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .dashboard-period {
+    padding: 10px 13px;
+    background: #22252a;
+  }
+
+  .dashboard-period > span {
+    font-size: 10px;
+  }
+
+  .dashboard-period strong {
+    margin-top: 4px;
+    font-size: 13px;
+  }
+
+  /* RESUMO FINANCEIRO */
+
+  .dashboard-overview {
+    margin-bottom: 25px;
+  }
+
+  .dashboard-section-title {
+    margin-bottom: 13px;
+  }
+
+  .dashboard-section-title h2 {
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  .dashboard-section-title p {
+    font-size: 11px;
+  }
+
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  /* SALDO EM DESTAQUE */
+
+  .dashboard-stat.balance-card {
+    grid-column: 1 / -1;
+
+    min-height: 158px;
+    padding: 20px !important;
+
+    border-radius: 17px;
+
+    background:
+      linear-gradient(
+        135deg,
+        #3a2e23,
+        #26282d 80%
+      );
+
+    border: 1px solid rgba(
+      242, 140, 40, 0.45
+    );
+  }
+
+  .balance-card .stat-heading > span {
+    font-size: 13px;
+    color: #f0dfce;
+  }
+
+  .balance-card .metric {
+    font-size: clamp(29px, 8vw, 40px);
+    line-height: 1.2;
+    margin: 17px 0 8px;
+  }
+
+  .balance-card > small {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .balance-card-footer {
+    padding-top: 11px;
+  }
+
+  /* ENTRADAS E SAÍDAS */
+
+  .dashboard-stat.revenue-card,
+  .dashboard-stat.expense-card {
+    grid-column: auto;
+
+    min-height: 135px;
+    padding: 14px !important;
+
+    border-radius: 14px;
+  }
+
+  .dashboard-stat.revenue-card .stat-heading,
+  .dashboard-stat.expense-card .stat-heading {
+    gap: 6px;
+  }
+
+  .dashboard-stat.revenue-card .stat-heading > span,
+  .dashboard-stat.expense-card .stat-heading > span {
+    font-size: 12px;
+    color: #ededed;
+  }
+
+  .dashboard-stat.revenue-card .metric,
+  .dashboard-stat.expense-card .metric {
+    font-size: clamp(17px, 4.8vw, 25px);
+    margin: 14px 0 7px;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-stat.revenue-card > small,
+  .dashboard-stat.expense-card > small {
+    font-size: 10px;
+  }
+
+  /* ESTOQUE EM ALERTA */
+
+  .dashboard-stat.stock-card {
+    grid-column: 1 / -1;
+
+    min-height: auto;
+    padding: 15px 17px !important;
+
+    border-radius: 14px;
+  }
+
+  .stock-card .metric {
+    font-size: 25px;
+    margin: 9px 0 4px;
+  }
+
+  .stock-card-link {
+    padding-top: 9px;
+    font-size: 12px;
+  }
+
+  /* ACESSO RÁPIDO MAIS FÁCIL DE TOCAR */
+
+  .dashboard-quick-section {
+    margin-bottom: 25px;
+  }
+
+  .dashboard-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dashboard-shortcuts .shortcut {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    gap: 11px;
+
+    min-height: 133px;
+    padding: 15px;
+
+    border-radius: 15px;
+    background: #292c32;
+    border: 1px solid #42454d;
+
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .dashboard-shortcuts .shortcut:active {
+    background: #38322d;
+    border-color: #f28c28;
+    transform: scale(0.98);
+  }
+
+  .shortcut-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+    border-radius: 12px;
+  }
+
+  .shortcut-icon svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .shortcut-label {
+    gap: 5px;
+  }
+
+  .shortcut-label strong {
+    font-size: 13px;
+    line-height: 1.3;
+    color: #ffffff;
+  }
+
+  .shortcut-label small {
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .shortcut-arrow {
+    top: 15px;
+    right: 12px;
+  }
+
+  /* ESTOQUE DETALHADO */
+
+  .dashboard-stock-panel {
+    padding: 16px !important;
+    margin-bottom: 22px;
+  }
+
+  .dashboard-stock-panel .panel-heading {
+    padding-bottom: 13px;
+    margin-bottom: 12px;
+  }
+
+  .dashboard-stock-panel .panel-heading h2 {
+    font-size: 14px;
+  }
+
+  /* BOTÃO DE MOSTRAR RELATÓRIOS */
+
+  .dashboard-reports-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 56px;
+
+    margin: 0 0 14px;
+    padding: 14px 16px;
+
+    background: #292c32;
+    color: #f7f7f7;
+
+    border: 1px solid #454850;
+    border-radius: 14px;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    text-align: left;
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .dashboard-reports-toggle:active {
+    background: #36383e;
+  }
+
+  .dashboard-reports-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .dashboard-reports-toggle-label svg {
+    width: 20px;
+    height: 20px;
+    color: #f28c28;
+  }
+
+  .dashboard-reports-toggle-arrow {
+    display: grid;
+    place-items: center;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 9px;
+    background: rgba(242, 140, 40, 0.12);
+    color: #f28c28;
+  }
+
+  .dashboard-reports-toggle-arrow svg {
+    width: 17px;
+    height: 17px;
+    transition: transform 0.2s ease;
+  }
+
+  .dashboard-reports-toggle[aria-expanded="true"]
+  .dashboard-reports-toggle-arrow svg {
+    transform: rotate(180deg);
+  }
+
+  /* RELATÓRIOS RECOLHIDOS POR PADRÃO */
+
+  .dashboard-reports.mobile-collapsed {
+    display: none !important;
+  }
+
+  .dashboard-reports {
+    margin-bottom: 22px;
+  }
+
+  .dashboard-reports .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  /* GRÁFICO E HISTÓRICO */
+
+  .dashboard-reports .dashboard-panel {
+    padding: 16px !important;
+    border-radius: 14px;
+  }
+
+  .dashboard-page .chart {
+    height: 210px;
+    gap: 4px;
+  }
+
+  .dashboard-page .chart-item .chart-value {
+    font-size: 9px;
+  }
+
+  .dashboard-list .movement-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .movement-content {
+    min-width: 0;
+  }
+
+  .movement-value {
+    font-size: 12px;
+  }
+
+  .btn-delete-movement {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* MENU INFERIOR */
+
+  .dashboard-mobile-nav {
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.24);
+  }
+
+  .dashboard-mobile-nav a,
+  .dashboard-mobile-nav button {
+    min-height: 49px;
+  }
+
+  .dashboard-mobile-nav span {
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* RODAPÉ */
+
+  .dashboard-footer {
+    gap: 5px;
+    flex-direction: column;
+    font-size: 10px;
+  }
+}
+
+/* CELULARES MUITO ESTREITOS */
+
+@media (max-width: 350px) {
+  .dashboard-shortcuts .shortcut {
+    padding: 12px;
+    min-height: 128px;
+  }
+
+  .shortcut-label strong {
+    font-size: 12px;
+  }
+
+  .shortcut-label small {
+    font-size: 9px;
+  }
+
+  .dashboard-stat.revenue-card,
+  .dashboard-stat.expense-card {
+    padding: 11px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-reports-toggle-arrow svg {
+    transition: none;
+  }
+}
