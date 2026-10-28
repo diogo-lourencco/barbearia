@@ -437,3 +437,12 @@
     transition: none;
   }
 }
+/* REMOVER A BARRA SUPERIOR SOMENTE NO CELULAR */
+
+@media (max-width: 760px) {
+
+  .main > .topbar {
+    display: none !important;
+  }
+
+}

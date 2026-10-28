@@ -1,0 +1,555 @@
+.wj-corte-destaque {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+  margin-bottom: 27px;
+  padding: 20px;
+
+  border: 1px solid rgba(242, 140, 40, 0.35);
+  border-radius: 18px;
+
+  background: linear-gradient(
+    125deg,
+    #30271e,
+    #24272d 75%
+  );
+}
+
+.wj-corte-destaque-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  min-width: 0;
+}
+
+.wj-corte-destaque-icone,
+.wj-corte-modal-icone {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 46px;
+  height: 46px;
+
+  border-radius: 13px;
+  background: rgba(242, 140, 40, 0.14);
+  color: #f28c28;
+}
+
+.wj-corte-destaque-icone svg,
+.wj-corte-modal-icone svg {
+  width: 23px;
+  height: 23px;
+}
+
+.wj-corte-destaque strong {
+  display: block;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.wj-corte-destaque p {
+  margin: 6px 0 0;
+  color: #b9bbc1;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.wj-corte-abrir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  flex-shrink: 0;
+
+  min-height: 49px;
+  padding: 13px 20px;
+
+  border: 0;
+  border-radius: 12px;
+
+  background: #f28c28;
+  color: #17191d;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.wj-corte-abrir:hover {
+  background: #ffaa53;
+}
+
+.wj-corte-abrir svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* MODAL */
+
+.wj-corte-modal[hidden],
+.wj-corte-erro[hidden] {
+  display: none !important;
+}
+
+.wj-corte-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 18px;
+}
+
+.wj-corte-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+body.wj-corte-modal-aberto {
+  overflow: hidden;
+}
+
+.wj-corte-dialog {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100dvh - 36px);
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  border: 1px solid #454850;
+  border-radius: 21px;
+
+  background: #24272d;
+  color: #f7f7f7;
+
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+}
+
+/* CABEÇALHO DO MODAL */
+
+.wj-corte-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+  padding: 22px;
+
+  border-bottom: 1px solid #3c4048;
+}
+
+.wj-corte-titulo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+}
+
+.wj-corte-cabecalho h2 {
+  margin: 0 0 5px;
+  font-size: 19px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.wj-corte-cabecalho p {
+  margin: 0;
+  color: #adb0b7;
+  font-size: 11px;
+}
+
+.wj-corte-fechar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 40px;
+  height: 40px;
+
+  padding: 0;
+  border: 1px solid #454850;
+  border-radius: 11px;
+
+  background: #30343a;
+  color: #f7f7f7;
+}
+
+.wj-corte-fechar svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* FORMULÁRIO */
+
+.wj-corte-campos {
+  display: grid;
+  gap: 19px;
+  padding: 23px 22px 0;
+}
+
+.wj-corte-campo {
+  display: grid;
+  gap: 9px;
+}
+
+.wj-corte-campo > label,
+.wj-corte-pagamentos legend {
+  color: #f0f0f1;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wj-corte-campo label small {
+  color: #adb0b7;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.wj-corte-campo > input,
+.wj-corte-campo > select {
+  width: 100%;
+  min-height: 49px;
+
+  padding: 12px 14px;
+
+  border: 1px solid #4a4d55;
+  border-radius: 12px;
+
+  background: #30343a;
+  color: #ffffff;
+
+  font-size: 15px;
+}
+
+.wj-corte-campo > small {
+  color: #a6a9b0;
+  font-size: 11px;
+}
+
+.wj-corte-valor-area {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 0 15px;
+
+  border: 1px solid #4a4d55;
+  border-radius: 12px;
+
+  background: #30343a;
+}
+
+.wj-corte-valor-area:focus-within {
+  border-color: #f28c28;
+}
+
+.wj-corte-valor-area > span {
+  color: #f28c28;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.wj-corte-valor-area input {
+  flex: 1;
+  min-width: 0;
+  min-height: 54px;
+
+  padding: 12px 0;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: #ffffff;
+
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.wj-corte-valor-area input::placeholder {
+  color: #82858d;
+}
+
+.wj-corte-valor-area input:focus-visible {
+  outline: 0;
+}
+
+/* FORMAS DE PAGAMENTO */
+
+.wj-corte-pagamentos {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.wj-corte-pagamentos legend {
+  margin-bottom: 11px;
+}
+
+.wj-corte-pagamento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.wj-corte-pagamento {
+  position: relative;
+  display: block;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.wj-corte-pagamento input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.wj-corte-pagamento > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+  min-height: 86px;
+
+  padding: 12px 5px;
+
+  border: 1px solid #4a4d55;
+  border-radius: 13px;
+
+  background: #30343a;
+  color: #dadce0;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.wj-corte-pagamento svg {
+  width: 24px;
+  height: 24px;
+}
+
+.wj-corte-pagamento input:checked + span {
+  border-color: #f28c28;
+
+  background: rgba(242, 140, 40, 0.12);
+  color: #ffae5f;
+}
+
+.wj-corte-pagamento input:focus-visible + span {
+  outline: 2px solid #f28c28;
+  outline-offset: 3px;
+}
+
+/* MENSAGENS E RESUMO */
+
+.wj-corte-erro {
+  margin: 20px 22px 0;
+  padding: 12px 14px;
+
+  border: 1px solid rgba(255, 122, 133, 0.45);
+  border-radius: 11px;
+
+  background: rgba(255, 122, 133, 0.1);
+  color: #ffc4ca;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.wj-corte-resumo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin: 22px 22px 0;
+  padding: 16px;
+
+  border: 1px solid rgba(69, 211, 161, 0.2);
+  border-radius: 12px;
+
+  background: rgba(69, 211, 161, 0.07);
+}
+
+.wj-corte-resumo span {
+  color: #b9c9c2;
+  font-size: 12px;
+}
+
+.wj-corte-resumo strong {
+  color: #45d3a1;
+  font-size: 20px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* AÇÕES */
+
+.wj-corte-acoes {
+  display: grid;
+  grid-template-columns: 0.8fr 1.5fr;
+  gap: 10px;
+
+  margin: 20px 22px 0;
+}
+
+.wj-corte-cancelar,
+.wj-corte-salvar {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+
+  min-height: 51px;
+  padding: 12px;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wj-corte-cancelar {
+  border: 1px solid #4a4d55;
+  background: #30343a;
+  color: #f7f7f7;
+}
+
+.wj-corte-salvar {
+  border: 0;
+  background: #f28c28;
+  color: #17191d;
+}
+
+.wj-corte-salvar:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.wj-corte-salvar svg {
+  width: 19px;
+  height: 19px;
+}
+
+.wj-corte-rodape {
+  margin: 12px 22px 23px;
+
+  color: #a9acb3;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* CELULAR */
+
+@media (max-width: 760px) {
+  .wj-corte-destaque {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 15px;
+    padding: 17px;
+
+    margin-bottom: 25px;
+    border-radius: 16px;
+  }
+
+  .wj-corte-destaque strong {
+    font-size: 14px;
+  }
+
+  .wj-corte-destaque p {
+    font-size: 11px;
+  }
+
+  .wj-corte-abrir {
+    width: 100%;
+    min-height: 54px;
+
+    font-size: 15px;
+    border-radius: 12px;
+  }
+
+  .wj-corte-modal {
+    align-items: flex-end;
+
+    padding: 0;
+  }
+
+  .wj-corte-dialog {
+    max-width: none;
+    max-height: 94dvh;
+
+    border-radius: 22px 22px 0 0;
+
+    border-bottom: 0;
+
+    padding-bottom: max(
+      10px,
+      env(safe-area-inset-bottom)
+    );
+  }
+
+  .wj-corte-cabecalho {
+    padding: 18px 17px;
+  }
+
+  .wj-corte-campos {
+    gap: 17px;
+    padding: 19px 17px 0;
+  }
+
+  .wj-corte-erro {
+    margin: 18px 17px 0;
+  }
+
+  .wj-corte-resumo {
+    margin: 19px 17px 0;
+  }
+
+  .wj-corte-acoes {
+    margin: 18px 17px 0;
+  }
+
+  .wj-corte-rodape {
+    margin: 12px 17px 18px;
+  }
+}
+
+@media (max-width: 350px) {
+  .wj-corte-pagamento-grid {
+    gap: 6px;
+  }
+
+  .wj-corte-pagamento > span {
+    font-size: 11px;
+    padding: 10px 3px;
+  }
+
+  .wj-corte-resumo strong {
+    font-size: 17px;
+  }
+}
