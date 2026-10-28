@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -6,39 +7,67 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
   <meta name="theme-color" content="#17191D">
 
+  <meta
+    name="description"
+    content="Controle de estoque da Barbearia WJ"
+  >
+
   <title>Estoque</title>
 
-  <!-- LOGO NA ABA DO NAVEGADOR -->
-<link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="apple-touch-icon" href="assets/logo.png">
+  <!-- IDENTIDADE -->
+
+  <link rel="icon" type="image/png" href="assets/logo.png">
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="assets/icon-180.png"
+  >
 
   <!-- ESTILOS -->
+
   <link rel="stylesheet" href="css/global.css">
+
   <link rel="stylesheet" href="css/estoque.css">
 
-  <!-- ÍCONES PROFISSIONAIS -->
+  <!-- ÍCONES -->
+
   <script
     defer
     src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
   ></script>
 
-  <!-- SCRIPTS DO SISTEMA -->
+  <!-- SISTEMA -->
+
   <script defer src="js/global.js"></script>
   <script defer src="js/estoque.js"></script>
 
-  <!-- Instalação no iPhone / PWA -->
+  <!-- PWA -->
+
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
-  <meta name="theme-color" content="#17191D">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
-  <script src="js/pwa.js" defer></script>
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Barbearia WJ"
+  >
+
+  <script defer src="js/pwa.js"></script>
+
 </head>
 
 <body>
@@ -49,21 +78,21 @@
 
       <div class="content stock-page">
 
-        <!-- CABEÇALHO -->
+        <!-- =====================================
+             CABEÇALHO
+        ===================================== -->
 
-        <header class="heading stock-heading">
+        <header class="stock-heading">
 
-          <div>
+          <div class="stock-heading-copy">
 
-            <span class="page-eyebrow">
-              GESTÃO DE PRODUTOS
-            </span>
+            <h1>
+              Estoque
+            </h1>
 
-            <h1>Controle de estoque</h1>
-
-            <p class="muted">
-              Gerencie produtos, acompanhe quantidades
-              e organize reposições.
+            <p>
+              Saiba o que tem disponível,
+              o que está acabando e o que precisa repor.
             </p>
 
           </div>
@@ -72,27 +101,69 @@
             href="consumo.html"
             class="stock-header-link"
           >
-            <span>Registrar consumo</span>
-            <i data-lucide="arrow-right"></i>
+            <i data-lucide="clipboard-list"></i>
+
+            <span>
+              Registrar consumo
+            </span>
+
           </a>
 
         </header>
 
-        <!-- INDICADORES -->
+        <!-- =====================================
+             AÇÕES RÁPIDAS
+        ===================================== -->
 
-        <section class="stock-stats">
+        <section
+          class="stock-shortcuts"
+          aria-label="Ações rápidas"
+        >
 
-          <!-- PRODUTOS CADASTRADOS -->
+          <button
+            id="openStockForm"
+            class="stock-shortcut stock-shortcut-primary"
+            type="button"
+          >
+            <i data-lucide="package-plus"></i>
+
+            <span>
+              Cadastrar produto
+            </span>
+          </button>
+
+          <button
+            id="viewLowStock"
+            class="stock-shortcut stock-shortcut-secondary"
+            type="button"
+          >
+            <i data-lucide="triangle-alert"></i>
+
+            <span>
+              Ver reposições
+            </span>
+          </button>
+
+        </section>
+
+        <!-- =====================================
+             INDICADORES
+        ===================================== -->
+
+        <section
+          class="stock-stats"
+          aria-label="Resumo do estoque"
+        >
 
           <article class="card stock-stat">
 
             <div class="stat-top">
 
-              <span>Produtos cadastrados</span>
+              <span>Produtos</span>
 
-              <div class="stat-icon">
+              <span class="stat-icon">
                 <i data-lucide="package"></i>
-              </div>
+              </span>
 
             </div>
 
@@ -104,22 +175,20 @@
             </strong>
 
             <small>
-              Total de produtos no sistema
+              Cadastrados no estoque
             </small>
 
           </article>
 
-          <!-- PRODUTOS EM ALERTA -->
-
-          <article class="card stock-stat">
+          <article class="card stock-stat stock-stat-alert">
 
             <div class="stat-top">
 
-              <span>Produtos em alerta</span>
+              <span>Precisam repor</span>
 
-              <div class="stat-icon">
+              <span class="stat-icon">
                 <i data-lucide="triangle-alert"></i>
-              </div>
+              </span>
 
             </div>
 
@@ -131,22 +200,45 @@
             </strong>
 
             <small>
-              Produtos que precisam de reposição
+              No mínimo ou abaixo dele
             </small>
 
           </article>
 
-          <!-- VALOR ESTIMADO -->
-
-          <article class="card stock-stat">
+          <article class="card stock-stat stock-stat-out">
 
             <div class="stat-top">
 
-              <span>Valor estimado em estoque</span>
+              <span>Em falta</span>
 
-              <div class="stat-icon">
+              <span class="stat-icon">
+                <i data-lucide="package-x"></i>
+              </span>
+
+            </div>
+
+            <strong
+              class="stat-value danger-value"
+              id="stockOut"
+            >
+              0
+            </strong>
+
+            <small>
+              Sem quantidade disponível
+            </small>
+
+          </article>
+
+          <article class="card stock-stat stock-stat-value">
+
+            <div class="stat-top">
+
+              <span>Valor em estoque</span>
+
+              <span class="stat-icon">
                 <i data-lucide="wallet"></i>
-              </div>
+              </span>
 
             </div>
 
@@ -158,314 +250,21 @@
             </strong>
 
             <small>
-              Quantidade atual × custo por unidade
+              Quantidade × custo unitário
             </small>
 
           </article>
 
         </section>
 
-        <!-- FORMULÁRIO E INFORMAÇÕES -->
-
-        <div class="stock-layout">
-
-          <!-- CADASTRO DE PRODUTO -->
-
-          <section
-            class="card stock-panel"
-            id="stockFormPanel"
-          >
-
-            <div class="panel-heading">
-
-              <div class="panel-icon">
-                <i data-lucide="package-plus"></i>
-              </div>
-
-              <div>
-
-                <h2 id="stockFormTitle">
-                  Cadastrar produto
-                </h2>
-
-                <p>
-                  Preencha as informações do material.
-                </p>
-
-              </div>
-
-            </div>
-
-            <form
-              id="stockForm"
-              class="stock-form"
-            >
-
-              <input
-                id="stockId"
-                type="hidden"
-              >
-
-              <!-- NOME -->
-
-              <div class="stock-field">
-
-                <label for="stockName">
-                  Nome do produto
-                </label>
-
-                <input
-                  id="stockName"
-                  type="text"
-                  maxlength="120"
-                  placeholder="Ex.: Pomada modeladora"
-                  required
-                >
-
-              </div>
-
-              <!-- UNIDADE E QUANTIDADE -->
-
-              <div class="stock-form-row">
-
-                <div class="stock-field">
-
-                  <label for="stockUnit">
-                    Unidade de medida
-                  </label>
-
-                  <select id="stockUnit">
-
-                    <option value="unid.">
-                      Unidade
-                    </option>
-
-                    <option value="frascos">
-                      Frasco
-                    </option>
-
-                    <option value="caixas">
-                      Caixa
-                    </option>
-
-                    <option value="ml">
-                      Mililitro (ml)
-                    </option>
-
-                    <option value="litros">
-                      Litro
-                    </option>
-
-                    <option value="potes">
-                      Pote
-                    </option>
-
-                  </select>
-
-                </div>
-
-                <div class="stock-field">
-
-                  <label for="stockQty">
-                    Quantidade atual
-                  </label>
-
-                  <input
-                    id="stockQty"
-                    type="number"
-                    min="0"
-                    step="any"
-                    placeholder="0"
-                    required
-                  >
-
-                </div>
-
-              </div>
-
-              <!-- ESTOQUE MÍNIMO E CUSTO -->
-
-              <div class="stock-form-row">
-
-                <div class="stock-field">
-
-                  <label for="stockMin">
-                    Estoque mínimo
-                  </label>
-
-                  <input
-                    id="stockMin"
-                    type="number"
-                    min="0"
-                    step="any"
-                    placeholder="0"
-                    required
-                  >
-
-                </div>
-
-                <div class="stock-field">
-
-                  <label for="stockPrice">
-                    Custo por unidade (R$)
-                  </label>
-
-                  <input
-                    id="stockPrice"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value="0"
-                    required
-                  >
-
-                </div>
-
-              </div>
-
-              <!-- BOTÕES -->
-
-              <div class="stock-form-actions">
-
-                <button
-                  class="btn stock-save"
-                  type="submit"
-                >
-
-                  <i data-lucide="save"></i>
-
-                  <span id="stockSaveText">
-                    Salvar produto
-                  </span>
-
-                </button>
-
-                <button
-                  class="btn alt stock-clear"
-                  type="button"
-                  id="cancelStock"
-                >
-
-                  <i data-lucide="rotate-ccw"></i>
-
-                  <span>Limpar</span>
-
-                </button>
-
-              </div>
-
-            </form>
-
-          </section>
-
-          <!-- CONTROLE INTELIGENTE -->
-
-          <section class="card stock-panel stock-info-panel">
-
-            <div class="panel-heading">
-
-              <div class="panel-icon info-icon">
-                <i data-lucide="chart-no-axes-combined"></i>
-              </div>
-
-              <div>
-
-                <h2>Controle inteligente</h2>
-
-                <p>
-                  Acompanhe a situação dos materiais.
-                </p>
-
-              </div>
-
-            </div>
-
-            <!-- MONITORAMENTO -->
-
-            <div class="stock-info-block">
-
-              <div class="info-label">
-
-                <span class="info-dot"></span>
-
-                MONITORAMENTO ATIVO
-
-              </div>
-
-              <p>
-                O sistema identifica automaticamente produtos
-                cuja quantidade está igual ou abaixo
-                do estoque mínimo.
-              </p>
-
-            </div>
-
-            <!-- ALERTA DE REPOSIÇÃO -->
-
-            <div class="stock-tip">
-
-              <span class="tip-icon">
-                <i data-lucide="triangle-alert"></i>
-              </span>
-
-              <div>
-
-                <strong>
-                  Alerta de reposição
-                </strong>
-
-                <p>
-                  Produtos com estoque baixo aparecem destacados
-                  na tabela e no Dashboard.
-                </p>
-
-              </div>
-
-            </div>
-
-            <!-- INTEGRAÇÃO -->
-
-            <div class="stock-tip">
-
-              <span class="tip-icon">
-                <i data-lucide="arrow-down-to-line"></i>
-              </span>
-
-              <div>
-
-                <strong>
-                  Integração com consumo
-                </strong>
-
-                <p>
-                  Cada utilização registrada desconta
-                  automaticamente a quantidade disponível.
-                </p>
-
-              </div>
-
-            </div>
-
-            <a
-              href="consumo.html"
-              class="stock-info-link"
-            >
-
-              <span>
-                Acessar consumo de materiais
-              </span>
-
-              <i data-lucide="arrow-right"></i>
-
-            </a>
-
-          </section>
-
-        </div>
-
-        <!-- HISTÓRICO DE ESTOQUE -->
-
-        <section class="card stock-history">
+        <!-- =====================================
+             INVENTÁRIO
+        ===================================== -->
+
+        <section
+          class="card stock-history"
+          id="stockInventory"
+        >
 
           <div class="history-heading">
 
@@ -475,26 +274,26 @@
                 INVENTÁRIO
               </span>
 
-              <h2>Produtos cadastrados</h2>
+              <h2>
+                Seus produtos
+              </h2>
 
               <p>
-                Consulte, edite e reponha
-                os materiais da barbearia.
+                Consulte quantidades, registre vendas
+                ou faça uma reposição.
               </p>
 
             </div>
 
             <span class="history-badge">
-              Estoque geral
+              Estoque atualizado
             </span>
 
           </div>
 
-          <!-- FILTROS -->
+          <!-- BUSCA E FILTRO -->
 
           <div class="stock-toolbar">
-
-            <!-- PESQUISA -->
 
             <div class="stock-search">
 
@@ -505,36 +304,47 @@
               <input
                 id="searchStock"
                 type="search"
-                placeholder="Pesquisar produto..."
+                placeholder="Buscar produto..."
                 aria-label="Pesquisar produtos"
+                autocomplete="off"
               >
 
             </div>
 
-            <!-- SITUAÇÃO -->
+            <label class="stock-filter-field">
 
-            <select
-              id="filterStock"
-              aria-label="Filtrar situação"
-            >
+              <span>
+                Situação
+              </span>
 
-              <option value="Todos">
-                Todos os produtos
-              </option>
+              <select
+                id="filterStock"
+                aria-label="Filtrar situação dos produtos"
+              >
 
-              <option value="Baixo">
-                Estoque baixo
-              </option>
+                <option value="Todos">
+                  Todos
+                </option>
 
-              <option value="Normal">
-                Estoque normal
-              </option>
+                <option value="Baixo">
+                  Precisam repor
+                </option>
 
-            </select>
+                <option value="Sem">
+                  Em falta
+                </option>
+
+                <option value="Normal">
+                  Disponíveis
+                </option>
+
+              </select>
+
+            </label>
 
           </div>
 
-          <!-- TABELA -->
+          <!-- LISTA DE PRODUTOS -->
 
           <div class="table-wrap stock-table-wrap">
 
@@ -543,37 +353,349 @@
               <thead>
 
                 <tr>
-                  <th>PRODUTO</th>
-                  <th>QUANTIDADE</th>
-                  <th>MÍNIMO</th>
-                  <th>CUSTO UNIT.</th>
-                  <th>SITUAÇÃO</th>
-                  <th>AÇÕES</th>
+                  <th scope="col">Produto</th>
+                  <th scope="col">Disponível</th>
+                  <th scope="col">Mínimo</th>
+                  <th scope="col">Custo unitário</th>
+                  <th scope="col">Situação</th>
+                  <th scope="col">Ações</th>
                 </tr>
 
               </thead>
 
-              <tbody id="stockRows"></tbody>
+              <tbody id="stockRows">
+
+                <tr>
+                  <td colspan="6" class="stock-empty">
+                    Carregando produtos...
+                  </td>
+                </tr>
+
+              </tbody>
 
             </table>
 
           </div>
 
-          <!-- RODAPÉ -->
-
           <div class="stock-table-footer">
 
-            <span id="stockResults">
-              0 produtos encontrados
+            <span
+              id="stockResults"
+              aria-live="polite"
+            >
+              Carregando...
             </span>
 
-            <span>
-              Controle atualizado automaticamente
-            </span>
+            <button
+              id="clearStockFilters"
+              class="stock-clear-filters"
+              type="button"
+            >
+              Limpar filtros
+            </button>
 
           </div>
 
         </section>
+
+        <!-- =====================================
+             FORMULÁRIO DE PRODUTO
+
+             No computador aparece normalmente.
+             No celular abre pelo botão.
+        ===================================== -->
+
+        <section
+          class="card stock-panel stock-form-panel"
+          id="stockFormPanel"
+          aria-labelledby="stockFormTitle"
+        >
+
+          <div class="panel-heading">
+
+            <span class="panel-icon">
+              <i data-lucide="package-plus"></i>
+            </span>
+
+            <div class="panel-heading-text">
+
+              <h2 id="stockFormTitle">
+                Cadastrar produto
+              </h2>
+
+              <p>
+                Informe os dados do produto ou material.
+              </p>
+
+            </div>
+
+            <button
+              id="closeStockForm"
+              class="stock-close-form"
+              type="button"
+              aria-label="Fechar formulário"
+            >
+              <i data-lucide="x"></i>
+            </button>
+
+          </div>
+
+          <form
+            id="stockForm"
+            class="stock-form"
+          >
+
+            <input
+              id="stockId"
+              type="hidden"
+            >
+
+            <!-- NOME -->
+
+            <div class="stock-field">
+
+              <label for="stockName">
+                Nome do produto
+              </label>
+
+              <input
+                id="stockName"
+                type="text"
+                maxlength="120"
+                placeholder="Ex.: Pomada modeladora"
+                required
+              >
+
+            </div>
+
+            <!-- UNIDADE E QUANTIDADE -->
+
+            <div class="stock-form-row">
+
+              <div class="stock-field">
+
+                <label for="stockUnit">
+                  Unidade de medida
+                </label>
+
+                <select id="stockUnit">
+
+                  <option value="unid.">
+                    Unidade
+                  </option>
+
+                  <option value="frascos">
+                    Frasco
+                  </option>
+
+                  <option value="caixas">
+                    Caixa
+                  </option>
+
+                  <option value="ml">
+                    Mililitro
+                  </option>
+
+                  <option value="litros">
+                    Litro
+                  </option>
+
+                  <option value="potes">
+                    Pote
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="stock-field">
+
+                <label for="stockQty">
+                  Quantidade atual
+                </label>
+
+                <input
+                  id="stockQty"
+                  type="number"
+                  min="0"
+                  step="0.001"
+                  inputmode="decimal"
+                  placeholder="0"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+            <!-- MÍNIMO -->
+
+            <div class="stock-form-row">
+
+              <div class="stock-field">
+
+                <label for="stockMin">
+                  Estoque mínimo
+                </label>
+
+                <input
+                  id="stockMin"
+                  type="number"
+                  min="0"
+                  step="0.001"
+                  inputmode="decimal"
+                  placeholder="Ex.: 5"
+                  required
+                >
+
+                <small>
+                  Quando chegar nesse valor,
+                  o sistema avisará.
+                </small>
+
+              </div>
+
+              <div class="stock-field">
+
+                <label for="stockPrice">
+                  Custo por unidade (R$)
+                </label>
+
+                <input
+                  id="stockPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputmode="decimal"
+                  placeholder="Ex.: 15.00"
+                  required
+                >
+
+                <small>
+                  Quanto a barbearia pagou por unidade.
+                </small>
+
+              </div>
+
+            </div>
+
+            <!-- PREÇO DE VENDA -->
+
+            <div class="stock-field">
+
+              <label for="stockSalePrice">
+                Preço de venda (R$)
+              </label>
+
+              <input
+                id="stockSalePrice"
+                type="number"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="Ex.: 25.00"
+                required
+              >
+
+              <small>
+                Preço sugerido para vender no Financeiro.
+                Para materiais não vendidos, pode ser zero.
+              </small>
+
+            </div>
+
+            <!-- AÇÕES -->
+
+            <div class="stock-form-actions">
+
+              <button
+                class="btn stock-save"
+                id="saveStock"
+                type="submit"
+              >
+
+                <i data-lucide="save"></i>
+
+                <span id="stockSaveText">
+                  Salvar produto
+                </span>
+
+              </button>
+
+              <button
+                class="btn alt stock-clear"
+                id="cancelStock"
+                type="button"
+              >
+
+                <i data-lucide="x"></i>
+
+                <span>
+                  Cancelar
+                </span>
+
+              </button>
+
+            </div>
+
+          </form>
+
+        </section>
+
+        <!-- =====================================
+             INFORMAÇÕES
+        ===================================== -->
+
+        <details class="stock-help">
+
+          <summary>
+
+            <i data-lucide="circle-help"></i>
+
+            <span>
+              Como funciona o controle de estoque?
+            </span>
+
+            <i data-lucide="chevron-down"></i>
+
+          </summary>
+
+          <div class="stock-help-content">
+
+            <p>
+              <strong>Cadastrar:</strong>
+              adiciona um produto ao controle.
+            </p>
+
+            <p>
+              <strong>Repor:</strong>
+              acrescenta produtos que chegaram.
+            </p>
+
+            <p>
+              <strong>Vender:</strong>
+              registra uma receita no Financeiro
+              e desconta a quantidade vendida.
+            </p>
+
+            <p>
+              <strong>Consumo:</strong>
+              registra materiais utilizados
+              nos atendimentos.
+            </p>
+
+            <a
+              href="consumo.html"
+              class="stock-info-link"
+            >
+              Abrir controle de consumo
+
+              <i data-lucide="arrow-right"></i>
+            </a>
+
+          </div>
+
+        </details>
 
       </div>
 
@@ -581,15 +703,379 @@
 
   </div>
 
-  <!-- INICIALIZAÇÃO DOS ÍCONES -->
+  <!-- =====================================
+       MODAL DE REPOSIÇÃO
+  ===================================== -->
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) {
-        lucide.createIcons();
-      }
-    });
-  </script>
+  <div
+    class="stock-modal"
+    id="stockRestockModal"
+    hidden
+  >
+
+    <div
+      class="stock-modal-backdrop"
+      data-close-modal
+    ></div>
+
+    <section
+      class="stock-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="stockRestockTitle"
+      tabindex="-1"
+    >
+
+      <header class="stock-dialog-header">
+
+        <div>
+
+          <h2 id="stockRestockTitle">
+            Repor estoque
+          </h2>
+
+          <p id="restockProductName"></p>
+
+        </div>
+
+        <button
+          class="stock-dialog-close"
+          type="button"
+          data-close-modal
+          aria-label="Fechar reposição"
+        >
+          <i data-lucide="x"></i>
+        </button>
+
+      </header>
+
+      <form id="stockRestockForm">
+
+        <input
+          type="hidden"
+          id="restockProductId"
+        >
+
+        <div class="stock-dialog-body">
+
+          <div class="stock-dialog-information">
+            Quantidade atual:
+            <strong id="restockAvailable"></strong>
+          </div>
+
+          <div class="stock-field">
+
+            <label for="restockQuantity">
+              Quantas unidades chegaram?
+            </label>
+
+            <input
+              id="restockQuantity"
+              type="number"
+              min="0.001"
+              step="0.001"
+              inputmode="decimal"
+              placeholder="Ex.: 5"
+              required
+            >
+
+          </div>
+
+          <div class="stock-dialog-information">
+            Nova quantidade:
+            <strong id="restockTotal"></strong>
+          </div>
+
+        </div>
+
+        <footer class="stock-dialog-actions">
+
+          <button
+            type="button"
+            class="btn alt"
+            data-close-modal
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn"
+            id="confirmRestock"
+          >
+            Confirmar reposição
+          </button>
+
+        </footer>
+
+      </form>
+
+    </section>
+
+  </div>
+
+  <!-- =====================================
+       MODAL DE VENDA
+  ===================================== -->
+
+  <div
+    class="stock-modal"
+    id="saleModal"
+    hidden
+  >
+
+    <div
+      class="stock-modal-backdrop"
+      data-close-modal
+    ></div>
+
+    <section
+      class="stock-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="saleModalTitle"
+      tabindex="-1"
+    >
+
+      <header class="stock-dialog-header">
+
+        <div>
+
+          <h2 id="saleModalTitle">
+            Vender produto
+          </h2>
+
+          <p id="saleProductName"></p>
+
+        </div>
+
+        <button
+          class="stock-dialog-close"
+          type="button"
+          data-close-modal
+          aria-label="Fechar venda"
+        >
+          <i data-lucide="x"></i>
+        </button>
+
+      </header>
+
+      <form id="saleForm">
+
+        <input
+          type="hidden"
+          id="saleProductId"
+        >
+
+        <div class="stock-dialog-body">
+
+          <div class="stock-dialog-information">
+            Disponível:
+            <strong id="saleAvailable"></strong>
+          </div>
+
+          <div class="stock-field">
+
+            <label for="saleQuantity">
+              Quantidade vendida
+            </label>
+
+            <input
+              id="saleQuantity"
+              type="number"
+              min="0.001"
+              step="0.001"
+              inputmode="decimal"
+              value="1"
+              required
+            >
+
+          </div>
+
+          <div class="stock-field">
+
+            <label for="saleUnitPrice">
+              Preço unitário (R$)
+            </label>
+
+            <input
+              id="saleUnitPrice"
+              type="number"
+              min="0.01"
+              step="0.01"
+              inputmode="decimal"
+              required
+            >
+
+          </div>
+
+          <div class="stock-field">
+
+            <label for="salePayment">
+              Forma de pagamento
+            </label>
+
+            <select
+              id="salePayment"
+              required
+            >
+
+              <option value="">
+                Selecione
+              </option>
+
+              <option value="Pix">
+                Pix
+              </option>
+
+              <option value="Cartão">
+                Cartão
+              </option>
+
+              <option value="Dinheiro">
+                Dinheiro
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="stock-field">
+
+            <label for="saleClient">
+              Nome do cliente (opcional)
+            </label>
+
+            <input
+              id="saleClient"
+              type="text"
+              maxlength="160"
+              placeholder="Ex.: João"
+            >
+
+          </div>
+
+          <div class="stock-field">
+
+            <label for="saleWhatsapp">
+              WhatsApp (opcional)
+            </label>
+
+            <input
+              id="saleWhatsapp"
+              type="tel"
+              maxlength="20"
+              inputmode="tel"
+              placeholder="(11) 99999-9999"
+            >
+
+          </div>
+
+          <div class="stock-dialog-total">
+
+            <span>
+              Total da venda
+            </span>
+
+            <strong id="saleTotal">
+              R$ 0,00
+            </strong>
+
+          </div>
+
+        </div>
+
+        <footer class="stock-dialog-actions">
+
+          <button
+            type="button"
+            class="btn alt"
+            data-close-modal
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn"
+            id="confirmSale"
+          >
+            Confirmar venda
+          </button>
+
+        </footer>
+
+      </form>
+
+    </section>
+
+  </div>
+
+  <!-- =====================================
+       MENU INFERIOR NO CELULAR
+  ===================================== -->
+
+  <div
+    class="stock-nav-overlay"
+    id="stockNavOverlay"
+    hidden
+  ></div>
+
+  <nav
+    class="stock-mobile-nav"
+    aria-label="Navegação principal"
+  >
+
+    <a href="dashboard.html">
+
+      <i data-lucide="house"></i>
+
+      <span>Início</span>
+
+    </a>
+
+    <a href="financeiro.html">
+
+      <i data-lucide="wallet"></i>
+
+      <span>Financeiro</span>
+
+    </a>
+
+    <a
+      href="estoque.html"
+      class="active"
+      aria-current="page"
+    >
+
+      <i data-lucide="package"></i>
+
+      <span>Estoque</span>
+
+    </a>
+
+    <a href="consumo.html">
+
+      <i data-lucide="clipboard-list"></i>
+
+      <span>Consumo</span>
+
+    </a>
+
+    <button
+      type="button"
+      id="stockMobileMenu"
+      aria-label="Abrir menu"
+      aria-expanded="false"
+    >
+
+      <i data-lucide="menu"></i>
+
+      <span>Menu</span>
+
+    </button>
+
+  </nav>
 
 </body>
 </html>

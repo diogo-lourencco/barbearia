@@ -1,212 +1,212 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
-
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
-
   <meta name="theme-color" content="#17191D">
-
   <title>Minhas Finanças</title>
 
-  <!-- ÍCONE DA ABA -->
-  <link
-    rel="icon"
-    type="image/png"
-    href="assets/logo.png"
-  >
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/global.css">
 
-  <link
-    rel="apple-touch-icon"
-    href="assets/logo.png"
-  >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
 
-  <!-- CSS GLOBAL -->
-  <link
-    rel="stylesheet"
-    href="css/global.css"
-  >
-
-  <!-- ESTILOS EXCLUSIVOS DESTA PÁGINA -->
   <style>
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      min-height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: #17191D;
-    }
-
     *,
     *::before,
     *::after {
       box-sizing: border-box;
     }
 
-    /* ISOLAR O LAYOUT FINANCEIRO */
-
-    body.financas-pessoais-page .layout {
-      display: block;
+    html,
+    body {
       width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      min-height: 0;
+      height: 100%;
       margin: 0;
       padding: 0;
+      background: #17191D;
     }
 
-    body.financas-pessoais-page .main {
-      display: block;
-      width: 100%;
-      max-width: none;
-      height: 100%;
-      min-height: 0;
-      margin: 0;
-      padding: 0;
-    }
-
-    body.financas-pessoais-page .content {
-      width: 100%;
-      max-width: none;
-      height: 100%;
-      min-height: 0;
-      margin: 0;
-      padding: 0;
+    body.financas-pessoais-page {
       overflow: hidden;
     }
 
-    /* PAINEL FINANCEIRO */
+    body.financas-pessoais-page .layout,
+    body.financas-pessoais-page .main,
+    body.financas-pessoais-page .content {
+      display: block;
+      width: 100%;
+      max-width: none;
+      height: 100dvh;
+      min-height: 0;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
 
     .personal-frame {
       display: block;
       width: 100%;
       height: 100%;
-      margin: 0;
-      padding: 0;
       border: 0;
       background: #17191D;
     }
 
-    /* EVITAR ELEMENTOS EXTERNOS INDESEJADOS */
-
-    body.financas-pessoais-page > .sidebar,
-    body.financas-pessoais-page > .topbar {
-      display: none;
+    [hidden] {
+      display: none !important;
     }
 
-    @media (max-width: 760px) {
-      body.financas-pessoais-page .layout,
-      body.financas-pessoais-page .main,
-      body.financas-pessoais-page .content {
-        width: 100%;
-        height: 100dvh;
-        margin: 0;
-        padding: 0;
-      }
+    .personal-loading {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
 
-      .personal-frame {
-        width: 100%;
-        height: 100%;
-      }
+      width: 100%;
+      height: 100%;
+      padding: 24px;
+
+      background: #17191D;
+      color: #ADB0B7;
+
+      font: 14px/1.6 system-ui, sans-serif;
+      text-align: center;
+    }
+
+    .personal-loading strong {
+      color: #F28C28;
+      font-size: 21px;
+    }
+
+    .personal-retry {
+      margin-top: 8px;
+      min-height: 43px;
+      padding: 10px 19px;
+
+      border: 1px solid #F28C28;
+      border-radius: 10px;
+
+      background: #F28C28;
+      color: #17191D;
+
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
     }
   </style>
 
-  <!-- SISTEMA GLOBAL -->
-  <script
-    defer
-    src="js/global.js"
-  ></script>
-
-  <!-- ÍCONES -->
-  <script
-    defer
-    src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
-  ></script>
-
-  <!-- PWA -->
-  <link
-    rel="manifest"
-    href="manifest.webmanifest"
-  >
-
-  <meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
-  >
-
-  <meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
-  >
-
-  <meta
-    name="apple-mobile-web-app-title"
-    content="Barbearia WJ"
-  >
-
-  <link
-    rel="apple-touch-icon"
-    sizes="180x180"
-    href="assets/icon-180.png"
-  >
-
-  <script
-    defer
-    src="js/pwa.js"
-  ></script>
+  <script defer src="js/global.js"></script>
+  <script defer src="js/pwa.js"></script>
 </head>
 
 <body class="financas-pessoais-page">
-
   <div class="layout">
-
     <main class="main">
-
       <div class="content">
 
+        <div
+          class="personal-loading"
+          id="personalLoading"
+          role="status"
+          aria-live="polite"
+        >
+          <strong>Minhas Finanças</strong>
+
+          <span id="personalLoadingMessage">
+            Verificando acesso...
+          </span>
+
+          <button
+            type="button"
+            id="personalRetry"
+            class="personal-retry"
+            hidden
+          >
+            Tentar novamente
+          </button>
+        </div>
+
         <iframe
+          id="personalFrame"
           class="personal-frame"
           title="Minhas Finanças Pessoais"
-          src="pessoal-app.html"
-          loading="eager"
+          hidden
         ></iframe>
 
       </div>
-
     </main>
-
   </div>
 
   <script>
-    document.addEventListener(
-      "DOMContentLoaded",
-      async () => {
-        if (typeof WJ === "undefined") {
-          console.error(
-            "Não foi possível carregar o sistema global."
-          );
-          return;
-        }
+    document.addEventListener("DOMContentLoaded", () => {
+      const frame = document.getElementById("personalFrame");
+      const loading = document.getElementById("personalLoading");
+      const mensagem = document.getElementById("personalLoadingMessage");
+      const retry = document.getElementById("personalRetry");
+
+      async function iniciar() {
+        retry.hidden = true;
+        loading.hidden = false;
+        frame.hidden = true;
+
+        mensagem.textContent = "Verificando acesso...";
 
         try {
-          await WJ.init("financas-pessoais", { layout: false });
-        } catch (error) {
-          console.error(
-            "Erro ao inicializar Finanças Pessoais:",
-            error
-          );
+          if (
+            !window.WJ ||
+            typeof WJ.verificarSessao !== "function"
+          ) {
+            throw new Error(
+              "O arquivo js/global.js não foi carregado corretamente."
+            );
+          }
+
+          const usuario = await WJ.verificarSessao();
+
+          if (!usuario) {
+            window.location.replace("index.html");
+            return;
+          }
+
+          mensagem.textContent = "Abrindo seu painel financeiro...";
+
+          frame.onload = () => {
+            loading.hidden = true;
+            frame.hidden = false;
+          };
+
+          frame.onerror = () => {
+            mensagem.textContent =
+              "Não foi possível carregar pessoal-app.html.";
+            retry.hidden = false;
+          };
+
+          frame.src = "pessoal-app.html";
+
+        } catch (erro) {
+          console.error("Erro em Minhas Finanças:", erro);
+
+          mensagem.textContent =
+            erro.message ||
+            "Não foi possível abrir Minhas Finanças.";
+
+          retry.hidden = false;
         }
       }
-    );
-  </script>
 
+      retry.addEventListener("click", iniciar);
+
+      iniciar();
+    });
+  </script>
 </body>
 </html>

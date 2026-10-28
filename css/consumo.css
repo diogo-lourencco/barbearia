@@ -1,21 +1,17 @@
-/* ==========================================
-   BARBEARIA WJ - CONSUMO DE MATERIAIS
-   TEMA GRAFITE + LARANJA
-========================================== */
-
 .consumption-page {
-  --cons-bg: #17191D;
-  --cons-panel: #24272D;
-  --cons-soft: #30343A;
-  --cons-accent: #F28C28;
-  --cons-text: #F7F7F7;
-  --cons-muted: #ADB0B7;
-  --cons-border: #3C4048;
-  --cons-green: #45D3A1;
-  --cons-red: #FF7A85;
+  --cons-bg: #17191d;
+  --cons-panel: #24272d;
+  --cons-soft: #30343a;
+  --cons-accent: #f28c28;
+  --cons-text: #f7f7f7;
+  --cons-muted: #adb0b7;
+  --cons-border: #3c4048;
+  --cons-green: #45d3a1;
+  --cons-red: #ff7a85;
 
   width: 100%;
-  padding-bottom: 32px;
+  min-width: 0;
+  padding-bottom: 35px;
 }
 
 .consumption-page *,
@@ -24,231 +20,573 @@
   box-sizing: border-box;
 }
 
-/* ==========================================
-   ÍCONES LUCIDE
-========================================== */
-
-.consumption-page svg {
+.consumption-page svg,
+.consumption-mobile-nav svg {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 19px;
+  height: 19px;
   flex-shrink: 0;
   stroke-width: 2;
 }
 
 .consumption-page button svg,
-.consumption-page a svg {
+.consumption-page a svg,
+.consumption-mobile-nav svg {
   pointer-events: none;
 }
 
-/* ==========================================
+.consumption-page button {
+  cursor: pointer;
+}
+
+.consumption-page button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.consumption-page [hidden],
+.consumption-nav-overlay[hidden] {
+  display: none !important;
+}
+
+/* =====================================================
    CABEÇALHO
-========================================== */
+===================================================== */
 
 .consumption-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
+  gap: 22px;
+
+  margin-bottom: 20px;
+}
+
+.consumption-heading-copy {
+  min-width: 0;
 }
 
 .consumption-page .page-eyebrow,
 .consumption-page .section-eyebrow {
   display: inline-block;
+  margin-bottom: 9px;
+
   color: var(--cons-accent);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
+  letter-spacing: 1.6px;
 }
 
 .consumption-heading h1 {
-  margin: 0 0 9px;
+  margin: 0 0 8px;
   color: var(--cons-text);
-  font-size: clamp(25px, 3vw, 34px);
+
+  font-size: clamp(28px, 3vw, 35px);
   font-weight: 800;
   letter-spacing: -0.8px;
+  line-height: 1.2;
 }
 
 .consumption-heading p {
+  max-width: 550px;
   margin: 0;
+
   color: var(--cons-muted);
   font-size: 13px;
   line-height: 1.6;
 }
 
-/* ==========================================
-   PERÍODO ATUAL
-========================================== */
+/* =====================================================
+   MÊS ATUAL
+===================================================== */
 
 .month-display {
-  min-width: 185px;
-  padding: 15px 20px;
-  background: var(--cons-panel);
+  min-width: 175px;
+  padding: 14px 17px;
+
   border: 1px solid var(--cons-border);
-  border-radius: 13px;
+  border-radius: 12px;
+
+  background: var(--cons-panel);
   text-align: right;
 }
 
 .month-display span {
   display: block;
+
   color: var(--cons-muted);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
 }
 
 .month-display strong {
   display: block;
-  margin-top: 7px;
+  margin-top: 6px;
+
   color: var(--cons-accent);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   text-transform: capitalize;
 }
 
-/* ==========================================
+/* =====================================================
+   BOTÕES RÁPIDOS
+===================================================== */
+
+.consumption-shortcuts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 11px;
+
+  margin-bottom: 21px;
+}
+
+.consumption-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 49px;
+  padding: 11px 17px;
+
+  border-radius: 12px;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  text-align: center;
+
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.consumption-shortcut-primary {
+  border: 1px solid var(--cons-accent);
+  background: var(--cons-accent);
+  color: #17191d;
+}
+
+.consumption-shortcut-secondary {
+  border: 1px solid var(--cons-border);
+  background: var(--cons-soft);
+  color: var(--cons-text);
+}
+
+.consumption-shortcut:hover {
+  filter: brightness(1.12);
+}
+
+.consumption-shortcut:active {
+  transform: scale(0.98);
+}
+
+/* =====================================================
    INDICADORES
-========================================== */
+===================================================== */
 
 .consumption-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-  margin-bottom: 22px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+
+  margin-bottom: 21px;
 }
 
 .consumption-stats .stat-card {
   min-width: 0;
-  min-height: 153px;
-  padding: 22px;
+  min-height: 145px;
+  padding: 19px !important;
+
   border: 1px solid var(--cons-border);
-  border-radius: 16px;
+  border-radius: 15px;
+
   background: var(--cons-panel);
-
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.consumption-stats .stat-card:hover {
-  border-color: var(--cons-accent);
-  transform: translateY(-2px);
 }
 
 .consumption-page .stat-top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .consumption-page .stat-top > span {
   color: var(--cons-muted);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .consumption-page .stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
 
-  width: 37px;
-  height: 37px;
+  width: 35px;
+  height: 35px;
   flex-shrink: 0;
 
-  border-radius: 11px;
+  border-radius: 10px;
   background: rgba(242, 140, 40, 0.12);
   color: var(--cons-accent);
 }
 
-.consumption-page .stat-icon svg {
-  width: 19px;
-  height: 19px;
-}
-
 .consumption-page .stat-value {
   display: block;
-  margin: 12px 0 7px;
+  margin: 14px 0 9px;
+
   color: var(--cons-text);
-  font-size: 35px;
-  line-height: 1.2;
+
+  font-size: clamp(24px, 2.8vw, 34px);
+  line-height: 1.1;
   font-weight: 800;
-  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+
+  overflow-wrap: anywhere;
 }
 
 .consumption-page .stat-card small {
   color: var(--cons-muted);
-  font-size: 11px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.consumption-page .warning-stat {
+  border-color: rgba(242, 140, 40, 0.28);
 }
 
 .consumption-page .warning-stat .stat-value {
   color: var(--cons-accent);
 }
 
-/* ==========================================
-   PAINÉIS
-========================================== */
-
-.consumption-layout {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1.1fr)
-    minmax(0, 0.9fr);
-
-  gap: 20px;
-  margin-bottom: 22px;
+.consumption-page .cost-stat .stat-value {
+  color: var(--cons-green);
+  font-size: clamp(20px, 2.4vw, 29px);
 }
 
-.consumption-panel {
+/* =====================================================
+   PAINÉIS
+===================================================== */
+
+.consumption-history,
+.consumption-form-panel {
   min-width: 0;
-  padding: 26px !important;
+  padding: 23px !important;
+
+  margin-bottom: 21px;
+
   border: 1px solid var(--cons-border);
   border-radius: 16px;
+
   background: var(--cons-panel);
 }
+
+.consumption-history,
+.consumption-form-panel {
+  scroll-margin-top: 20px;
+}
+
+/* =====================================================
+   CABEÇALHO DO HISTÓRICO
+===================================================== */
+
+.history-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.history-top h2 {
+  margin: 0 0 7px;
+
+  color: var(--cons-text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.history-top p {
+  margin: 0;
+  color: var(--cons-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   FILTROS
+===================================================== */
+
+.history-filters {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.7fr) minmax(0, 1.3fr);
+  align-items: end;
+  gap: 12px;
+
+  margin: 20px 0 0;
+  padding-top: 19px;
+
+  border-top: 1px solid var(--cons-border);
+}
+
+.history-filter {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.history-filter label {
+  color: var(--cons-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.history-filter input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+
+  padding: 10px 13px;
+
+  border: 1px solid var(--cons-border);
+  border-radius: 10px;
+
+  background: var(--cons-soft);
+  color: var(--cons-text);
+
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.history-filter input:focus {
+  border-color: var(--cons-accent);
+  box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+}
+
+.history-filter input[type="month"] {
+  color-scheme: dark;
+}
+
+.consumption-search-box {
+  position: relative;
+}
+
+.consumption-search-box svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 17px;
+  height: 17px;
+
+  color: var(--cons-muted);
+  pointer-events: none;
+}
+
+.consumption-search-box input {
+  padding-left: 40px;
+}
+
+/* =====================================================
+   BARRA DE AÇÕES DO HISTÓRICO
+===================================================== */
+
+.history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  margin: 18px 0;
+}
+
+.history-toolbar-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.history-count {
+  color: var(--cons-muted);
+  font-size: 11px;
+}
+
+.history-toolbar .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 42px;
+  padding: 10px 13px;
+
+  border-radius: 10px;
+
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.history-toolbar .btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.history-toolbar .export-button {
+  border: 1px solid rgba(242, 140, 40, 0.38);
+  background: rgba(242, 140, 40, 0.07);
+  color: var(--cons-accent);
+}
+
+/* =====================================================
+   HISTÓRICO — TABELA NO COMPUTADOR
+===================================================== */
+
+.consumption-history .table-wrap {
+  width: 100%;
+  overflow-x: auto;
+
+  border: 1px solid var(--cons-border);
+  border-radius: 12px;
+}
+
+.consumption-table {
+  width: 100%;
+  min-width: 690px;
+
+  border-collapse: collapse;
+}
+
+.consumption-table thead {
+  background: var(--cons-soft);
+}
+
+.consumption-table th {
+  padding: 15px 13px;
+
+  color: var(--cons-muted);
+
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.consumption-table td {
+  padding: 16px 13px;
+
+  border-top: 1px solid var(--cons-border);
+  color: var(--cons-text);
+
+  font-size: 12px;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+.consumption-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.consume-product-name {
+  display: block;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.consume-quantity {
+  color: var(--cons-accent);
+  font-weight: 800;
+}
+
+.consume-reason {
+  color: var(--cons-text);
+}
+
+.consume-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  min-height: 37px;
+  padding: 8px 11px;
+
+  border: 1px solid rgba(255, 122, 133, 0.3);
+  border-radius: 9px;
+
+  background: rgba(255, 122, 133, 0.09);
+  color: var(--cons-red);
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.consume-delete:hover {
+  background: rgba(255, 122, 133, 0.17);
+}
+
+.consume-delete svg {
+  width: 16px;
+  height: 16px;
+}
+
+.empty-consumption {
+  padding: 35px 15px !important;
+  color: var(--cons-muted) !important;
+  text-align: center !important;
+}
+
+/* =====================================================
+   CABEÇALHO DO FORMULÁRIO
+===================================================== */
 
 .consumption-page .panel-heading {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding-bottom: 21px;
-  margin-bottom: 23px;
+  gap: 12px;
+
+  margin-bottom: 21px;
+  padding-bottom: 18px;
+
   border-bottom: 1px solid var(--cons-border);
 }
 
 .consumption-page .panel-heading-icon {
-  width: 44px;
-  height: 44px;
+  display: grid;
+  place-items: center;
+
+  width: 43px;
+  height: 43px;
   flex-shrink: 0;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: var(--cons-accent);
-  color: #17191D;
   border-radius: 12px;
-}
 
-.consumption-page .panel-heading-icon svg {
-  width: 23px;
-  height: 23px;
-  stroke-width: 2.2;
-}
-
-.consumption-page .stock-icon {
-  background: rgba(242, 140, 40, 0.13);
+  background: rgba(242, 140, 40, 0.14);
   color: var(--cons-accent);
 }
 
+.consumption-page .panel-heading-copy {
+  flex: 1;
+  min-width: 0;
+}
+
 .consumption-page .panel-heading h2 {
-  margin: 0 0 6px;
+  margin: 0 0 5px;
+
   color: var(--cons-text);
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 800;
 }
 
@@ -259,112 +597,219 @@
   line-height: 1.5;
 }
 
-/* ==========================================
+.consumption-close-form {
+  display: none;
+  place-items: center;
+
+  width: 37px;
+  height: 37px;
+
+  border: 1px solid var(--cons-border);
+  border-radius: 10px;
+
+  background: var(--cons-soft);
+  color: var(--cons-text);
+}
+
+/* =====================================================
    FORMULÁRIO
-========================================== */
+===================================================== */
 
 .consumption-form {
-  display: flex;
-  flex-direction: column;
-  gap: 19px;
+  display: grid;
+  gap: 18px;
 }
 
 .consumption-form .form-field {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 9px;
   min-width: 0;
 }
 
-.consumption-form label,
-.consumption-page .history-filter label {
+.consumption-form label {
   color: var(--cons-text);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .consumption-form input,
-.consumption-form select,
-.consumption-page .history-filter input {
+.consumption-form select {
   display: block;
+
   width: 100%;
   min-width: 0;
-  min-height: 47px;
-  padding: 11px 14px;
+  min-height: 48px;
+
+  padding: 11px 13px;
+
+  border: 1px solid var(--cons-border);
+  border-radius: 11px;
 
   background: var(--cons-soft);
-  border: 1px solid var(--cons-border);
-  border-radius: 10px;
   color: var(--cons-text);
 
-  font-family: inherit;
-  font-size: 13px;
+  font: inherit;
+  font-size: 14px;
   outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
 .consumption-form input::placeholder {
-  color: #858A93;
+  color: #858a93;
 }
 
 .consumption-form input:focus,
-.consumption-form select:focus,
-.consumption-page .history-filter input:focus {
+.consumption-form select:focus {
   border-color: var(--cons-accent);
   box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
 }
 
 .consumption-form select option {
   background: var(--cons-panel);
-  color: var(--cons-text);
 }
 
-.consumption-form input[type="date"],
-.consumption-page .history-filter input[type="month"] {
+.consumption-form input[type="date"] {
   color-scheme: dark;
 }
 
 .consumption-page .form-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 15px;
 }
 
-/* ==========================================
-   BOTÃO REGISTRAR CONSUMO
-========================================== */
+/* =====================================================
+   ESTOQUE DISPONÍVEL E PREVISÃO
+===================================================== */
 
-.save-consumption {
+.consume-stock-preview {
+  min-height: 76px;
+  padding: 15px;
+
+  border: 1px solid var(--cons-border);
+  border-radius: 12px;
+
+  background: var(--cons-soft);
+  color: var(--cons-muted);
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.consume-preview-product {
+  display: block;
+  margin-bottom: 12px;
+
+  color: var(--cons-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.consume-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.consume-preview-item {
+  display: grid;
+  gap: 5px;
+}
+
+.consume-preview-item span {
+  color: var(--cons-muted);
+  font-size: 10px;
+}
+
+.consume-preview-item strong {
+  color: var(--cons-text);
+  font-size: 17px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.consume-preview-status {
+  display: inline-flex;
+  margin-top: 13px;
+  padding: 6px 9px;
+
+  border-radius: 8px;
+  background: rgba(69, 211, 161, 0.1);
+  color: var(--cons-green);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.consume-preview-status.warn {
+  background: rgba(242, 140, 40, 0.12);
+  color: var(--cons-accent);
+}
+
+.consume-preview-status.bad {
+  background: rgba(255, 122, 133, 0.11);
+  color: var(--cons-red);
+}
+
+/* =====================================================
+   AVISO NO FORMULÁRIO
+===================================================== */
+
+.consume-form-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  padding: 13px;
+
+  border-left: 3px solid var(--cons-accent);
+  border-radius: 0 9px 9px 0;
+
+  background: rgba(242, 140, 40, 0.07);
+  color: var(--cons-muted);
+
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.consume-form-notice svg {
+  width: 18px;
+  height: 18px;
+  color: var(--cons-accent);
+}
+
+/* =====================================================
+   BOTÕES DO FORMULÁRIO
+===================================================== */
+
+.consume-form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 11px;
+
+  margin-top: 4px;
+}
+
+.consume-form-actions .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 9px;
 
-  width: 100%;
+  min-width: 0;
   min-height: 49px;
-  margin-top: 4px;
-  padding: 12px 18px;
+  padding: 11px 13px;
 
-  border: none;
-  border-radius: 10px;
+  border-radius: 11px;
 
-  background: var(--cons-accent);
-  color: #17191D;
-
-  font-family: inherit;
-  font-size: 13px;
+  font: inherit;
+  font-size: 12px;
   font-weight: 800;
-  line-height: 1.2;
-  text-align: center;
+}
 
-  cursor: pointer;
-
-  transition:
-    filter 0.2s ease,
-    transform 0.2s ease;
+.save-consumption {
+  border: 1px solid var(--cons-accent);
+  background: var(--cons-accent);
+  color: #17191d;
 }
 
 .save-consumption svg {
@@ -372,554 +817,546 @@
   height: 18px;
 }
 
-.save-consumption span {
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: 1.2;
-}
+/* =====================================================
+   AJUDA
+===================================================== */
 
-.save-consumption:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
-
-.save-consumption:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ==========================================
-   CONTROLE DE ESTOQUE
-========================================== */
-
-.stock-info {
-  padding: 17px;
-  border: 1px solid rgba(69, 211, 161, 0.2);
-  background: rgba(69, 211, 161, 0.06);
-  border-radius: 12px;
-}
-
-.stock-info-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--cons-green);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.7px;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--cons-green);
-}
-
-.stock-info p {
-  margin: 12px 0 0;
-  color: var(--cons-muted);
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-/* ==========================================
-   VISUALIZAÇÃO DO ESTOQUE
-========================================== */
-
-.stock-preview {
-  min-height: 100px;
-  margin-top: 18px;
-  padding: 19px;
+.consumption-help {
+  margin-bottom: 20px;
 
   border: 1px solid var(--cons-border);
-  border-radius: 12px;
+  border-radius: 14px;
 
-  background: var(--cons-soft);
-  color: var(--cons-muted);
-
-  font-size: 13px;
-  line-height: 1.9;
+  background: var(--cons-panel);
+  overflow: hidden;
 }
 
-.stock-preview strong {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--cons-text);
-  font-size: 15px;
-}
-
-.stock-preview .good {
-  color: var(--cons-green);
-}
-
-.stock-preview .bad {
-  color: var(--cons-red);
-}
-
-/* ==========================================
-   AVISO DE ESTOQUE
-========================================== */
-
-.stock-notice {
+.consumption-help summary {
   display: flex;
-  align-items: flex-start;
-  gap: 11px;
+  align-items: center;
+  gap: 10px;
 
-  margin-top: 17px;
-  padding: 13px 15px;
+  padding: 17px;
 
-  border-left: 3px solid var(--cons-accent);
-  border-radius: 0 9px 9px 0;
+  color: var(--cons-text);
+  font-size: 13px;
+  font-weight: 800;
 
-  background: rgba(242, 140, 40, 0.06);
-  color: var(--cons-muted);
-
-  font-size: 12px;
-  line-height: 1.7;
+  cursor: pointer;
+  list-style: none;
 }
 
-.stock-notice svg {
-  width: 17px;
-  height: 17px;
-  margin-top: 2px;
+.consumption-help summary::-webkit-details-marker {
+  display: none;
+}
+
+.consumption-help summary span {
+  flex: 1;
+}
+
+.consumption-help summary svg:first-child {
   color: var(--cons-accent);
 }
 
-.stock-notice span {
-  flex: 1;
-  min-width: 0;
+.consumption-help[open] summary svg:last-child {
+  transform: rotate(180deg);
 }
 
-/* ==========================================
-   GERENCIAR PRODUTOS
-========================================== */
+.consumption-help-content {
+  padding: 0 17px 17px;
+}
 
-.stock-management {
+.consumption-help-content p {
+  margin: 0 0 11px;
+
+  color: var(--cons-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.consumption-help-content strong {
+  color: var(--cons-text);
+}
+
+.consumption-help-link {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 9px;
 
-  width: 100%;
-  min-height: 46px;
-  margin-top: 20px;
-  padding: 13px 16px;
+  margin-top: 7px;
+  padding: 11px 13px;
 
   border: 1px solid var(--cons-border);
   border-radius: 10px;
 
   background: var(--cons-soft);
-  color: var(--cons-text);
+  color: var(--cons-accent);
 
+  font-size: 12px;
+  font-weight: 700;
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.3;
-
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease;
 }
 
-.stock-management:hover {
-  border-color: var(--cons-accent);
+/* =====================================================
+   MENU INFERIOR — OCULTO NO COMPUTADOR
+===================================================== */
+
+.consumption-mobile-nav,
+.consumption-nav-overlay {
+  display: none;
 }
 
-.stock-management span {
-  font-size: inherit;
-  line-height: inherit;
-}
+/* =====================================================
+   TABLETS
+===================================================== */
 
-.stock-management svg {
-  width: 18px;
-  height: 18px;
-  color: var(--cons-accent);
-}
-
-/* ==========================================
-   HISTÓRICO
-========================================== */
-
-.consumption-history {
-  padding: 26px !important;
-  border: 1px solid var(--cons-border);
-  border-radius: 16px;
-  background: var(--cons-panel);
-}
-
-.history-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.history-top h2 {
-  margin: 0 0 8px;
-  color: var(--cons-text);
-  font-size: 19px;
-  font-weight: 800;
-}
-
-.history-top p {
-  margin: 0;
-  color: var(--cons-muted);
-  font-size: 12px;
-}
-
-/* ==========================================
-   FILTRO DE MÊS
-========================================== */
-
-.history-filter {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  width: 205px;
-}
-
-/* ==========================================
-   BARRA DE AÇÕES
-========================================== */
-
-.history-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
-
-  padding: 20px 0;
-  margin-top: 20px;
-
-  border-top: 1px solid var(--cons-border);
-}
-
-.history-toolbar-left {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.history-count {
-  color: var(--cons-muted);
-  font-size: 12px;
-}
-
-.history-toolbar .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-
-  min-height: 43px;
-  padding: 11px 16px;
-
-  border-radius: 9px;
-
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.history-toolbar .btn svg {
-  width: 17px;
-  height: 17px;
-}
-
-.history-toolbar .btn span {
-  font-size: inherit;
-  line-height: inherit;
-}
-
-.export-button {
-  border-color: rgba(242, 140, 40, 0.45) !important;
-  color: var(--cons-accent) !important;
-}
-
-/* ==========================================
-   TABELA
-========================================== */
-
-.consumption-history .table-wrap {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid var(--cons-border);
-  border-radius: 12px;
-}
-
-.consumption-table {
-  width: 100%;
-  min-width: 600px;
-  border-collapse: collapse;
-}
-
-.consumption-table thead {
-  background: var(--cons-soft);
-}
-
-.consumption-table th {
-  padding: 16px;
-  color: var(--cons-muted);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.consumption-table td {
-  padding: 17px 16px;
-  border-top: 1px solid var(--cons-border);
-  color: var(--cons-text);
-  font-size: 12px;
-  vertical-align: middle;
-}
-
-.consumption-table tbody tr {
-  transition: background 0.2s ease;
-}
-
-.consumption-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.consumption-table td:nth-child(2) {
-  font-weight: 700;
-}
-
-.consumption-table td:nth-child(3) {
-  color: var(--cons-accent);
-  font-weight: 800;
-}
-
-.empty-consumption {
-  padding: 38px 16px !important;
-  text-align: center !important;
-  color: var(--cons-muted) !important;
-}
-
-#consumeResults {
-  font-size: 12px;
-}
-
-/* ==========================================
-   RESPONSIVIDADE
-========================================== */
-
-@media (max-width: 1100px) {
-  .consumption-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 850px) {
+@media (max-width: 1050px) {
   .consumption-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  .consumption-stats .stat-card:last-child {
-    grid-column: 1 / -1;
-  }
 }
 
-@media (max-width: 600px) {
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media (max-width: 760px) {
+
+  /* BARRA SUPERIOR */
+
+  body .main > .topbar {
+    display: none !important;
+  }
+
+  /* ÁREA SEGURA DO IPHONE */
+
+  body .main > .content.consumption-page {
+    padding:
+      calc(22px + env(safe-area-inset-top, 0px))
+      13px
+      calc(108px + env(safe-area-inset-bottom, 0px));
+
+    min-width: 0;
+  }
+
+  /* CABEÇALHO */
+
   .consumption-heading {
-    align-items: stretch;
-    gap: 18px;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .consumption-heading h1 {
+    font-size: 28px;
+  }
+
+  .consumption-heading p {
+    font-size: 12px;
   }
 
   .month-display {
-    width: 100%;
-    text-align: left;
+    min-width: 0;
+    padding: 10px 11px;
+    text-align: right;
   }
+
+  .month-display span {
+    font-size: 8px;
+  }
+
+  .month-display strong {
+    font-size: 11px;
+  }
+
+  /* BOTÕES RÁPIDOS */
+
+  .consumption-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-bottom: 17px;
+  }
+
+  .consumption-shortcut {
+    min-width: 0;
+    min-height: 54px;
+    padding: 10px 7px;
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .consumption-shortcut svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* INDICADORES */
 
   .consumption-stats {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .consumption-stats .stat-card:last-child {
-    grid-column: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
   }
 
   .consumption-stats .stat-card {
-    min-height: 130px;
-    padding: 18px;
+    min-height: 122px;
+    padding: 14px !important;
   }
 
-  .consumption-panel,
-  .consumption-history {
-    padding: 18px !important;
+  .consumption-page .stat-top > span {
+    font-size: 11px;
+  }
+
+  .consumption-page .stat-icon {
+    width: 29px;
+    height: 29px;
+  }
+
+  .consumption-page .stat-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .consumption-page .stat-value {
+    font-size: 27px;
+    margin: 12px 0 7px;
+  }
+
+  .consumption-page .cost-stat .stat-value {
+    font-size: 21px;
+  }
+
+  .consumption-page .stat-card small {
+    font-size: 10px;
+  }
+
+  /* PAINÉIS */
+
+  .consumption-history,
+  .consumption-form-panel {
+    padding: 15px !important;
+    margin-bottom: 17px;
+    border-radius: 15px;
+  }
+
+  .history-top h2 {
+    font-size: 19px;
+  }
+
+  .history-top p {
+    font-size: 11px;
+  }
+
+  /* FILTROS */
+
+  .history-filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+
+  .history-filter input {
+    font-size: 16px;
+  }
+
+  .history-toolbar {
+    align-items: stretch;
+    gap: 11px;
+    margin: 16px 0;
+  }
+
+  .history-toolbar-left {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .history-toolbar .btn {
+    min-height: 42px;
+    font-size: 11px;
+  }
+
+  .history-toolbar .export-button {
+    width: 100%;
+  }
+
+  /* HISTÓRICO EM CARTÕES */
+
+  .consumption-history .table-wrap {
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .consumption-table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .consumption-table thead {
+    display: none;
+  }
+
+  .consumption-table tbody {
+    display: grid;
+    gap: 11px;
+  }
+
+  .consumption-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 10px;
+
+    padding: 15px;
+
+    border: 1px solid #434750;
+    border-radius: 13px;
+
+    background: #2b2e34;
+  }
+
+  .consumption-table tbody td {
+    display: block;
+
+    min-width: 0;
+    padding: 0;
+    border: 0;
+
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .consumption-table tbody td::before {
+    content: attr(data-label);
+
+    display: block;
+    margin-bottom: 5px;
+
+    color: #a1a5ae;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  /* MATERIAL EM DESTAQUE */
+
+  .consumption-table tbody td:nth-child(2) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .consumption-table tbody td:nth-child(2)::before {
+    display: none;
+  }
+
+  .consume-product-name {
+    font-size: 15px;
+  }
+
+  /* QUANTIDADE */
+
+  .consumption-table tbody td:nth-child(3) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .consume-quantity {
+    font-size: 21px;
+  }
+
+  /* MOTIVO */
+
+  .consumption-table tbody td:nth-child(4) {
+    grid-column: 1 / -1;
+  }
+
+  /* AÇÕES */
+
+  .consumption-table tbody td:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+
+  .consume-delete {
+    width: 100%;
+    min-height: 45px;
+  }
+
+  /* HISTÓRICO VAZIO */
+
+  .consumption-table tbody tr.consume-empty-row {
+    display: block;
+  }
+
+  .consumption-table tbody tr.consume-empty-row td {
+    text-align: center;
+  }
+
+  /* FORMULÁRIO FECHADO NO CELULAR */
+
+  body.consumption-ready:not(.consumption-form-open)
+  #consumeFormPanel {
+    display: none !important;
+  }
+
+  .consumption-close-form {
+    display: grid;
+  }
+
+  .consumption-form-panel {
+    scroll-margin-top:
+      calc(15px + env(safe-area-inset-top, 0px));
+  }
+
+  .consumption-page .panel-heading h2 {
+    font-size: 18px;
+  }
+
+  .consumption-page .panel-heading p {
+    font-size: 11px;
   }
 
   .consumption-page .form-row {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
-  .history-filter {
-    width: 100%;
-  }
-
-  .history-toolbar,
-  .history-toolbar-left {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .history-toolbar .btn {
-    width: 100%;
-  }
-
-  .history-count {
-    text-align: center;
-  }
-}
-
-/* ==========================================
-   CORREÇÃO DO NOVO CORTE NO CELULAR
-   Formulário compacto e sem cortar o topo
-========================================== */
-
-@media (max-width: 760px) {
-
-  .wj-corte-modal {
-    position: fixed;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding:
-      max(12px, env(safe-area-inset-top))
-      12px
-      max(12px, env(safe-area-inset-bottom));
-
-    overflow: hidden;
-  }
-
-  .wj-corte-dialog {
-    width: 100%;
-    max-width: 430px;
-
-    max-height: calc(100dvh - 32px);
-
-    margin: 0;
-    padding: 0;
-
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-
-    border: 1px solid #454850;
-    border-radius: 17px;
-  }
-
-  /* Título e botão fechar sempre visíveis */
-
-  .wj-corte-cabecalho {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-
-    padding: 13px 15px;
-
-    background: #24272d;
-    border-bottom: 1px solid #3c4048;
-  }
-
-  .wj-corte-cabecalho h2 {
-    font-size: 17px;
-  }
-
-  .wj-corte-modal-icone {
-    width: 36px;
-    height: 36px;
-  }
-
-  .wj-corte-modal-icone svg {
-    width: 19px;
-    height: 19px;
-  }
-
-  /* Reduzir altura dos campos */
-
-  .wj-corte-campos {
-    gap: 12px;
-    padding: 14px 15px 0;
-  }
-
-  .wj-corte-campo {
-    gap: 6px;
-  }
-
-  .wj-corte-campo > input,
-  .wj-corte-campo > select {
-    min-height: 43px;
-    padding: 9px 12px;
+  .consumption-form input,
+  .consumption-form select {
     font-size: 16px;
   }
 
-  .wj-corte-valor-area input {
-    min-height: 46px;
-    padding: 8px 0;
-    font-size: 22px;
+  .consume-form-actions {
+    grid-template-columns: 1fr 1.5fr;
+    gap: 9px;
   }
 
-  /* Pagamentos menores e mais organizados */
-
-  .wj-corte-pagamentos legend {
-    margin-bottom: 8px;
+  .consume-form-actions .btn {
+    padding: 10px 8px;
+    font-size: 11px;
   }
 
-  .wj-corte-pagamento-grid {
-    gap: 7px;
+  /* MENU INFERIOR */
+
+  .consumption-mobile-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2px;
+
+    padding:
+      7px
+      6px
+      max(8px, env(safe-area-inset-bottom, 0px));
+
+    border-top: 1px solid #3c4048;
+    background: rgba(29, 31, 35, 0.98);
+
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
   }
 
-  .wj-corte-pagamento > span {
-    min-height: 63px;
+  .consumption-mobile-nav a,
+  .consumption-mobile-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 5px;
-    padding: 8px 4px;
+
+    min-width: 0;
+    min-height: 48px;
+    padding: 6px 1px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: transparent;
+    color: #b4b6bf;
+
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
   }
 
-  .wj-corte-pagamento svg {
-    width: 19px;
-    height: 19px;
+  .consumption-mobile-nav .active,
+  .consumption-mobile-nav button[aria-expanded="true"] {
+    background: rgba(242, 140, 40, 0.12);
+    color: #f28c28;
   }
 
-  /* Resumo e botões */
-
-  .wj-corte-resumo {
-    margin: 13px 15px 0;
-    padding: 11px 13px;
+  .consumption-mobile-nav svg {
+    width: 20px;
+    height: 20px;
   }
 
-  .wj-corte-resumo strong {
-    font-size: 18px;
+  .consumption-mobile-nav span {
+    white-space: nowrap;
   }
 
-  .wj-corte-acoes {
-    margin: 13px 15px 0;
-    gap: 8px;
+  /* MENU LATERAL */
+
+  .consumption-nav-overlay:not([hidden]) {
+    display: block;
+
+    position: fixed;
+    inset: 0;
+    z-index: 21;
+
+    background: rgba(0, 0, 0, 0.65);
   }
 
-  .wj-corte-cancelar,
-  .wj-corte-salvar {
-    min-height: 45px;
-    padding: 9px;
+  body.consumption-menu-open {
+    overflow: hidden;
   }
 
-  .wj-corte-rodape {
-    margin: 10px 15px 15px;
+  body.consumption-menu-open .sidebar {
+    z-index: 22;
+  }
+}
+
+/* =====================================================
+   CELULARES PEQUENOS
+===================================================== */
+
+@media (max-width: 360px) {
+  .consumption-shortcut {
     font-size: 10px;
   }
 
+  .consumption-stats .stat-card {
+    padding: 11px !important;
+  }
+
+  .consumption-table tbody tr {
+    padding: 12px;
+  }
+
+  .consumption-mobile-nav a,
+  .consumption-mobile-nav button {
+    font-size: 9px;
+  }
+}
+
+/* =====================================================
+   ACESSIBILIDADE
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .consumption-page *,
+  .consumption-page *::before,
+  .consumption-page *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
 }

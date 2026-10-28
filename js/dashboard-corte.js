@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <strong>Atendeu um cliente?</strong>
 
         <p>
-          Registre o corte e a entrada no
+          Registre a entrada no
           Financeiro em poucos segundos.
         </p>
       </div>
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       id="wjAbrirCorte"
     >
       <i data-lucide="plus"></i>
-      Novo corte
+      Novo atendimento
     </button>
   `;
 
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div>
             <h2 id="wjCorteTitulo">
-              Novo corte
+              Novo atendimento
             </h2>
 
             <p>
@@ -142,8 +142,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 Sobrancelha
               </option>
 
+              <option value="Corte masculino">
+                Progressiva
+              </option>
+
+              <option value="Corte masculino">
+                Alisante
+              </option>
+
+              <option value="Corte masculino">
+                Luzes
+              </option>
+
+              <option value="Corte masculino">
+                Platinado
+              </option>
+
+              <option value="Corte masculino">
+                Hidratação
+              </option>
+
               <option value="Outros serviços">
                 Outros serviços
+              </option>
+
+              <option value="Corte masculino">
+                Outras receitas
               </option>
             </select>
 

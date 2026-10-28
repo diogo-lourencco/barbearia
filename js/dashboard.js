@@ -1,24 +1,4 @@
-
 "use strict";
-
-/* =========================================================
-   BARBEARIA WJ — DASHBOARD 2.0
-
-   Preserva:
-   - WJ.init("dashboard")
-   - API /financeiro
-   - API /estoque
-   - Cálculos financeiros
-   - Cancelamento de vendas
-   - Exclusão de movimentações
-   - Atualização automática
-
-   Adiciona:
-   - Interface mais clara
-   - Navegação mobile
-   - Atualização manual
-   - Tratamento visual de erros
-========================================================= */
 
 document.addEventListener("DOMContentLoaded", async () => {
 

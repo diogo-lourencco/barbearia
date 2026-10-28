@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -6,38 +7,91 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
   <meta name="theme-color" content="#17191D">
 
+  <meta
+    name="description"
+    content="Controle financeiro da Barbearia WJ."
+  >
+
   <title>Financeiro</title>
 
-  <!-- LOGO NA ABA DO NAVEGADOR -->
-<link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="apple-touch-icon" href="assets/logo.png">
+  <!-- LOGO -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="assets/logo.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="assets/logo.png"
+  >
 
   <!-- ESTILOS -->
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/financeiro.css">
 
-  <!-- ÍCONES PROFISSIONAIS -->
+  <link
+    rel="stylesheet"
+    href="css/global.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/financeiro.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/financeiro-mobile.css"
+  >
+
+  <!-- ÍCONES -->
+
   <script
     defer
     src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
   ></script>
 
-  <!-- SCRIPTS DO SISTEMA -->
+  <!-- SISTEMA -->
+
   <script defer src="js/global.js"></script>
+
   <script defer src="js/financeiro.js"></script>
-  <!-- Instalação no iPhone / PWA -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
-  <meta name="theme-color" content="#17191D">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
-  <script src="js/pwa.js" defer></script>
+
+  <!-- PWA / IPHONE -->
+
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Barbearia WJ"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="assets/icon-180.png"
+  >
+
+  <script defer src="js/pwa.js"></script>
+
 </head>
 
 <body>
@@ -46,41 +100,62 @@
 
     <main class="main">
 
-      <div class="content">
+      <div class="content finance-mobile-page">
 
-        <!-- CABEÇALHO -->
+        <!-- =====================================
+             CABEÇALHO
+        ===================================== -->
 
-        <header class="heading">
+        <header class="heading finance-heading">
 
           <div>
-
-            <span class="page-kicker">
-              GESTÃO FINANCEIRA
-            </span>
-
-            <h1>Controle financeiro</h1>
+            
+            <h1>
+              Financeiro
+            </h1>
 
             <p class="muted">
-              Gerencie receitas, despesas e atendimentos
-              da Barbearia WJ.
+              Acompanhe o dinheiro que entra
+              e sai da barbearia.
             </p>
 
           </div>
+
+          <!-- BOTÃO PRINCIPAL NO COMPUTADOR -->
 
           <button
             class="btn"
             id="newTransaction"
             type="button"
           >
-            <i data-lucide="plus"></i>
-            <span>Nova movimentação</span>
+
+            <i
+              data-lucide="plus"
+              aria-hidden="true"
+            ></i>
+
+            <span>
+              Nova movimentação
+            </span>
+
           </button>
 
         </header>
 
-        <!-- INDICADORES FINANCEIROS -->
+        <!--
+          Os botões "Nova entrada" e
+          "Nova despesa" serão inseridos
+          automaticamente pelo financeiro.js.
+        -->
 
-        <section class="cards finance-cards">
+        <!-- =====================================
+             INDICADORES FINANCEIROS
+        ===================================== -->
+
+        <section
+          class="cards finance-cards"
+          aria-label="Resumo financeiro"
+        >
 
           <!-- RECEITAS -->
 
@@ -88,10 +163,17 @@
 
             <div class="stat-header">
 
-              <span>Receitas</span>
+              <span>
+                Entradas
+              </span>
 
               <span class="stat-icon revenue-icon">
-                <i data-lucide="trending-up"></i>
+
+                <i
+                  data-lucide="arrow-down-left"
+                  aria-hidden="true"
+                ></i>
+
               </span>
 
             </div>
@@ -104,7 +186,7 @@
             </strong>
 
             <small>
-              Entradas no período selecionado
+              Dinheiro recebido no período
             </small>
 
           </article>
@@ -115,10 +197,17 @@
 
             <div class="stat-header">
 
-              <span>Despesas</span>
+              <span>
+                Saídas
+              </span>
 
               <span class="stat-icon expense-icon">
-                <i data-lucide="trending-down"></i>
+
+                <i
+                  data-lucide="arrow-up-right"
+                  aria-hidden="true"
+                ></i>
+
               </span>
 
             </div>
@@ -131,7 +220,7 @@
             </strong>
 
             <small>
-              Saídas no período selecionado
+              Despesas do período
             </small>
 
           </article>
@@ -142,10 +231,17 @@
 
             <div class="stat-header">
 
-              <span>Saldo</span>
+              <span>
+                Saldo do período
+              </span>
 
               <span class="stat-icon balance-icon">
-                <i data-lucide="wallet"></i>
+
+                <i
+                  data-lucide="wallet"
+                  aria-hidden="true"
+                ></i>
+
               </span>
 
             </div>
@@ -158,7 +254,7 @@
             </strong>
 
             <small>
-              Receitas menos despesas
+              O que sobrou após as despesas
             </small>
 
           </article>
@@ -169,10 +265,17 @@
 
             <div class="stat-header">
 
-              <span>Movimentações</span>
+              <span>
+                Movimentações
+              </span>
 
               <span class="stat-icon">
-                <i data-lucide="arrow-left-right"></i>
+
+                <i
+                  data-lucide="arrow-left-right"
+                  aria-hidden="true"
+                ></i>
+
               </span>
 
             </div>
@@ -185,18 +288,21 @@
             </strong>
 
             <small>
-              Registros no período selecionado
+              Registros no período
             </small>
 
           </article>
 
         </section>
 
-        <!-- FORMULÁRIO -->
+        <!-- =====================================
+             FORMULÁRIO FINANCEIRO
+        ===================================== -->
 
         <section
           class="card form-section"
           id="transactionSection"
+          aria-labelledby="formTitle"
           hidden
         >
 
@@ -209,7 +315,8 @@
               </h2>
 
               <p class="muted">
-                Registre um atendimento ou uma despesa.
+                Preencha os dados abaixo
+                para registrar o valor.
               </p>
 
             </div>
@@ -220,7 +327,12 @@
               type="button"
               aria-label="Fechar formulário"
             >
-              <i data-lucide="x"></i>
+
+              <i
+                data-lucide="x"
+                aria-hidden="true"
+              ></i>
+
             </button>
 
           </div>
@@ -246,13 +358,15 @@
                   id="transactionType"
                   required
                 >
+
                   <option value="Receita">
-                    Receita
+                    Entrada / Receita
                   </option>
 
                   <option value="Despesa">
-                    Despesa
+                    Saída / Despesa
                   </option>
+
                 </select>
 
               </div>
@@ -273,7 +387,7 @@
 
               </div>
 
-              <!-- CLIENTE -->
+              <!-- NOME DO CLIENTE -->
 
               <div
                 class="field"
@@ -281,14 +395,14 @@
               >
 
                 <label for="clientName">
-                  Nome do cliente
+                  Nome do cliente (opcional)
                 </label>
 
                 <input
                   type="text"
                   id="clientName"
                   placeholder="Ex.: João Silva"
-                  maxlength="100"
+                  maxlength="160"
                   autocomplete="name"
                 >
 
@@ -302,7 +416,7 @@
               >
 
                 <label for="clientWhatsapp">
-                  WhatsApp do cliente
+                  WhatsApp do cliente (opcional)
                 </label>
 
                 <input
@@ -311,6 +425,7 @@
                   placeholder="(11) 99999-9999"
                   maxlength="20"
                   autocomplete="tel"
+                  inputmode="tel"
                 >
 
               </div>
@@ -320,14 +435,14 @@
               <div class="field full">
 
                 <label for="transactionDescription">
-                  Descrição do serviço ou despesa
+                  Descrição
                 </label>
 
                 <input
                   type="text"
                   id="transactionDescription"
-                  placeholder="Ex.: Corte masculino + barba"
-                  maxlength="120"
+                  placeholder="Ex.: Corte masculino"
+                  maxlength="250"
                   required
                 >
 
@@ -361,18 +476,19 @@
                   id="transactionValue"
                   min="0.01"
                   step="0.01"
-                  placeholder="0,00"
+                  placeholder="35.00"
+                  inputmode="decimal"
                   required
                 >
 
               </div>
 
-              <!-- PAGAMENTO -->
+              <!-- FORMA DE PAGAMENTO -->
 
               <div class="field full payment-field">
 
                 <label for="transactionPayment">
-                  Forma de pagamento
+                  Como foi o pagamento?
                 </label>
 
                 <select
@@ -381,7 +497,7 @@
                 >
 
                   <option value="">
-                    Selecione a forma de pagamento
+                    Selecione
                   </option>
 
                   <option value="Pix">
@@ -399,7 +515,8 @@
                 </select>
 
                 <small class="payment-hint">
-                  Informe como o valor foi recebido ou pago.
+                  Informe como o valor foi
+                  recebido ou pago.
                 </small>
 
               </div>
@@ -409,30 +526,35 @@
               <div class="field full">
 
                 <label for="transactionNotes">
-                  Observações
+                  Observações (opcional)
                 </label>
 
                 <textarea
                   id="transactionNotes"
                   rows="3"
+                  placeholder="Informações adicionais"
                   maxlength="300"
-                  placeholder="Informações adicionais (opcional)"
                 ></textarea>
 
               </div>
 
             </div>
 
+            <!--
+              O painel de venda de produtos
+              será inserido aqui pelo JS.
+            -->
+
             <p
               class="client-hint"
               id="clientHint"
             >
-              O WhatsApp será usado apenas para abrir
-              a mensagem de agradecimento.
-              Informe o número com DDD.
+              Se informar o WhatsApp do cliente,
+              poderá enviar uma mensagem de
+              agradecimento pelo histórico.
             </p>
 
-            <!-- AÇÕES DO FORMULÁRIO -->
+            <!-- BOTÕES DO FORMULÁRIO -->
 
             <div class="form-actions">
 
@@ -449,8 +571,16 @@
                 type="submit"
                 id="saveTransaction"
               >
-                <i data-lucide="save"></i>
-                <span>Salvar movimentação</span>
+
+                <i
+                  data-lucide="save"
+                  aria-hidden="true"
+                ></i>
+
+                <span>
+                  Salvar movimentação
+                </span>
+
               </button>
 
             </div>
@@ -459,20 +589,26 @@
 
         </section>
 
-        <!-- HISTÓRICO -->
+        <!-- =====================================
+             HISTÓRICO FINANCEIRO
+        ===================================== -->
 
-        <section class="card history-section">
+        <section
+          class="card history-section"
+          aria-labelledby="historyTitle"
+        >
 
           <div class="section-heading">
 
             <div>
 
-              <h2>
+              <h2 id="historyTitle">
                 Histórico de movimentações
               </h2>
 
               <p class="muted">
-                Consulte atendimentos, pagamentos e despesas.
+                Confira os cortes, entradas,
+                vendas e despesas.
               </p>
 
             </div>
@@ -482,8 +618,16 @@
               type="button"
               id="exportCSV"
             >
-              <i data-lucide="download"></i>
-              <span>Exportar CSV</span>
+
+              <i
+                data-lucide="download"
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                Exportar CSV
+              </span>
+
             </button>
 
           </div>
@@ -503,27 +647,28 @@
               <input
                 type="search"
                 id="searchTransaction"
-                placeholder="Cliente, serviço ou categoria"
+                placeholder="Cliente ou serviço"
+                autocomplete="off"
               >
 
             </div>
 
-            <!-- TIPO -->
+            <!-- FILTRO POR TIPO -->
 
             <div class="field">
 
               <label for="filterType">
-                Tipo
+                Mostrar
               </label>
 
               <select id="filterType">
 
                 <option value="">
-                  Todos
+                  Tudo
                 </option>
 
                 <option value="Receita">
-                  Receitas
+                  Entradas
                 </option>
 
                 <option value="Despesa">
@@ -534,7 +679,7 @@
 
             </div>
 
-            <!-- MÊS -->
+            <!-- FILTRO POR MÊS -->
 
             <div class="field">
 
@@ -556,13 +701,24 @@
               type="button"
               id="clearFilters"
             >
-              <i data-lucide="filter-x"></i>
-              <span>Limpar filtros</span>
+
+              <i
+                data-lucide="filter-x"
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                Limpar filtros
+              </span>
+
             </button>
 
           </div>
 
-          <!-- TABELA -->
+          <!-- HISTÓRICO
+               No computador: tabela
+               No celular: cartões
+          -->
 
           <div class="table-wrap">
 
@@ -571,19 +727,52 @@
               <thead>
 
                 <tr>
-                  <th>Data</th>
-                  <th>Cliente</th>
-                  <th>Descrição</th>
-                  <th>Categoria</th>
-                  <th>Tipo</th>
-                  <th>Pagamento</th>
-                  <th>Valor</th>
-                  <th>Ações</th>
+
+                  <th scope="col">
+                    Data
+                  </th>
+
+                  <th scope="col">
+                    Cliente
+                  </th>
+
+                  <th scope="col">
+                    Descrição
+                  </th>
+
+                  <th scope="col">
+                    Categoria
+                  </th>
+
+                  <th scope="col">
+                    Tipo
+                  </th>
+
+                  <th scope="col">
+                    Pagamento
+                  </th>
+
+                  <th scope="col">
+                    Valor
+                  </th>
+
+                  <th scope="col">
+                    Ações
+                  </th>
+
                 </tr>
 
               </thead>
 
-              <tbody id="transactionTable"></tbody>
+              <tbody id="transactionTable">
+
+                <!--
+                  Movimentações carregadas
+                  automaticamente pela API
+                  no financeiro.js.
+                -->
+
+              </tbody>
 
             </table>
 
@@ -593,12 +782,15 @@
 
           <div class="history-footer">
 
-            <span id="resultsCount">
-              0 movimentações
+            <span
+              id="resultsCount"
+              aria-live="polite"
+            >
+              Carregando movimentações...
             </span>
 
             <span>
-              Barbearia WJ - Financeiro
+              Barbearia WJ · Financeiro
             </span>
 
           </div>
@@ -611,14 +803,20 @@
 
   </div>
 
-  <!-- INICIALIZAÇÃO DOS ÍCONES -->
+  <!-- ÍCONES -->
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) {
-        lucide.createIcons();
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        if (
+          window.lucide &&
+          typeof window.lucide.createIcons === "function"
+        ) {
+          window.lucide.createIcons();
+        }
       }
-    });
+    );
   </script>
 
 </body>

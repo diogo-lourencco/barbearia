@@ -1,91 +1,200 @@
-
 "use strict";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const autorizado = await WJ.init("consumo");
 
-  if (!autorizado) return;
+  /* =====================================================
+     INICIALIZAÇÃO E AUTENTICAÇÃO
+  ===================================================== */
 
-  const $ = id => document.getElementById(id);
+  if (typeof WJ === "undefined") {
+    console.error(
+      "O arquivo js/global.js não foi carregado."
+    );
+    return;
+  }
+
+  try {
+    const autorizado = await WJ.init("consumo");
+
+    // WJ.init pode não retornar true.
+    // Interrompemos apenas quando retorna false.
+    if (autorizado === false) return;
+
+  } catch (erro) {
+    console.error("Erro de autenticação:", erro);
+    return;
+  }
+
+  /* =====================================================
+     ELEMENTOS
+  ===================================================== */
+
+  const $ = (id) => document.getElementById(id);
 
   const form = $("consumeForm");
+  const formPanel = $("consumeFormPanel");
+
   const productInput = $("consumeProduct");
   const quantityInput = $("consumeQty");
   const reasonInput = $("consumeReason");
   const dateInput = $("consumeDate");
+
   const monthInput = $("consumeMonth");
+  const searchInput = $("searchConsumption");
+
   const table = $("consumeRows");
 
   const showAllButton = $("showAllConsumption");
   const exportButton = $("exportConsumptionCSV");
   const saveButton = $("saveConsume");
 
-  let products = [];
-  let consumption = [];
-  let showAllMonths = false;
-  let saving = false;
-  let loading = false;
-  let deleting = false;
+  const requiredElements = [
+    form,
+    formPanel,
+    productInput,
+    quantityInput,
+    reasonInput,
+    dateInput,
+    monthInput,
+    searchInput,
+    table,
+    showAllButton,
+    exportButton,
+    saveButton,
+    $("stockPreview"),
+    $("consumeCount"),
+    $("consumeQuantity"),
+    $("consumeLow"),
+    $("consumeCost")
+  ];
 
-  // ==========================================
-  // FUNÇÕES AUXILIARES
-  // ==========================================
-
-  function refreshIcons() {
-    if (typeof WJ.initIcons === "function") {
-      WJ.initIcons();
-    } else if (window.lucide) {
-      window.lucide.createIcons();
-    }
+  if (requiredElements.some((elemento) => !elemento)) {
+    console.error(
+      "O HTML do Consumo está incompleto. " +
+      "Confira se foi substituído pela nova versão."
+    );
+    return;
   }
 
-  function showError(error, fallback) {
-    console.error(error);
-    WJ.toast(error?.message || fallback);
+  /* =====================================================
+     ESTADO DA PÁGINA
+  ===================================================== */
+
+  let produtos = [];
+  let consumos = [];
+
+  let todosOsMeses = false;
+
+  let salvando = false;
+  let excluindo = false;
+
+  let requisicaoAtual = null;
+
+  /* =====================================================
+     FUNÇÕES AUXILIARES
+  ===================================================== */
+
+  function escapar(valor) {
+    return WJ.escape(String(valor ?? ""));
   }
 
-  function formatQuantity(value) {
-    return Number(value || 0).toLocaleString("pt-BR", {
+  function moeda(valor) {
+    return WJ.money(Number(valor || 0));
+  }
+
+  function quantidadeFormatada(valor) {
+    return Number(valor || 0).toLocaleString("pt-BR", {
       maximumFractionDigits: 3
     });
   }
 
-  function getCurrentMonth() {
-    const today = new Date();
+  function arredondarQuantidade(valor) {
+    return Math.round(Number(valor) * 1000) / 1000;
+  }
 
-    return (
-      today.getFullYear() +
-      "-" +
-      String(today.getMonth() + 1).padStart(2, "0")
+  function atualizarIcones() {
+    if (
+      window.lucide &&
+      typeof window.lucide.createIcons === "function"
+    ) {
+      window.lucide.createIcons();
+    }
+  }
+
+  function avisar(mensagem) {
+    if (typeof WJ.toast === "function") {
+      WJ.toast(mensagem);
+    } else {
+      window.alert(mensagem);
+    }
+  }
+
+  function mostrarErro(erro, mensagem) {
+    console.error("Consumo WJ:", erro);
+
+    avisar(
+      erro?.message ||
+      mensagem ||
+      "Não foi possível concluir a operação."
     );
   }
 
-  function getConsumptionDate(item) {
-    return String(item.data || "").slice(0, 10);
+  function dataSimples(valor) {
+    return String(valor || "").slice(0, 10);
   }
 
-  function getQuantity(product) {
-    return Number(product.quantidade || 0);
+  function mesAtual() {
+    // Usa a data local do sistema, compatível com WJ.
+    return WJ.today().slice(0, 7);
   }
 
-  function getMinimum(product) {
-    return Number(product.estoque_minimo || 0);
+  function formatarMes(valor) {
+    if (!/^\d{4}-\d{2}$/.test(valor)) {
+      return "Período atual";
+    }
+
+    const [ano, mes] = valor.split("-").map(Number);
+
+    return new Date(
+      ano,
+      mes - 1,
+      1
+    ).toLocaleDateString("pt-BR", {
+      month: "long",
+      year: "numeric"
+    });
   }
 
-  function getConsumedQuantity(item) {
+  function produtoPorId(id) {
+    return produtos.find(
+      (produto) =>
+        String(produto.id) === String(id)
+    );
+  }
+
+  function quantidadeDisponivel(produto) {
+    return Number(produto?.quantidade || 0);
+  }
+
+  function estoqueMinimo(produto) {
+    return Number(produto?.estoque_minimo || 0);
+  }
+
+  function quantidadeConsumida(item) {
     return Number(item.quantidade || 0);
   }
 
-  function getConsumedName(item) {
+  function nomeConsumido(item) {
     return String(
       item.produto_nome ||
       item.produtoNome ||
       item.nome ||
+      produtoPorId(item.produto_id)?.nome ||
       "Produto"
     );
   }
 
-  function getConsumedReason(item) {
+  function motivoConsumido(item) {
     return String(
       item.motivo ||
       item.observacoes ||
@@ -93,646 +202,1111 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   }
 
-  // ==========================================
-  // CARREGAR DADOS DO POSTGRESQL
-  // ==========================================
+  function unidadeConsumida(item) {
+    return String(
+      item.unidade ||
+      item.produto_unidade ||
+      produtoPorId(item.produto_id)?.unidade ||
+      ""
+    );
+  }
 
-  async function loadData() {
-    if (loading) return;
+  function consumoValido(valor) {
+    if (
+      valor === "" ||
+      valor === null ||
+      valor === undefined
+    ) {
+      return false;
+    }
 
-    loading = true;
+    const numero = Number(valor);
 
-    try {
-      const [stockData, consumptionData] =
+    return (
+      Number.isFinite(numero) &&
+      numero > 0 &&
+      Math.abs(
+        arredondarQuantidade(numero) - numero
+      ) < 0.0000001
+    );
+  }
+
+  function ocupado() {
+    return salvando || excluindo;
+  }
+
+  /* =====================================================
+     MOSTRAR E FECHAR FORMULÁRIO
+  ===================================================== */
+
+  function mostrarFormulario() {
+    document.body.classList.add(
+      "consumption-form-open"
+    );
+
+    formPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  function esconderFormulario() {
+    if (salvando) return;
+
+    document.body.classList.remove(
+      "consumption-form-open"
+    );
+  }
+
+  function limparFormulario() {
+    form.reset();
+
+    dateInput.value = WJ.today();
+    productInput.value = "";
+
+    atualizarPrevisao();
+  }
+
+  $("openConsumeForm").addEventListener(
+    "click",
+    () => {
+      if (ocupado()) return;
+
+      mostrarFormulario();
+    }
+  );
+
+  $("closeConsumeForm").addEventListener(
+    "click",
+    esconderFormulario
+  );
+
+  $("cancelConsume").addEventListener(
+    "click",
+    () => {
+      if (ocupado()) return;
+
+      limparFormulario();
+      esconderFormulario();
+    }
+  );
+
+  /* =====================================================
+     CARREGAR DADOS DO POSTGRESQL
+  ===================================================== */
+
+  async function carregarDados() {
+    // Permite que chamadas diferentes aguardem
+    // a mesma atualização em andamento.
+    if (requisicaoAtual) {
+      return requisicaoAtual;
+    }
+
+    requisicaoAtual = (async () => {
+      const [estoqueResposta, consumoResposta] =
         await Promise.all([
           WJ.api("/estoque"),
           WJ.api("/consumo")
         ]);
 
       if (
-        !Array.isArray(stockData) ||
-        !Array.isArray(consumptionData)
+        !Array.isArray(estoqueResposta) ||
+        !Array.isArray(consumoResposta)
       ) {
         throw new Error(
           "O servidor retornou dados em formato inválido."
         );
       }
 
-      products = stockData;
-      consumption = consumptionData;
+      produtos = estoqueResposta;
+      consumos = consumoResposta;
 
-      updateProductOptions();
-      render();
+      atualizarOpcoesProdutos();
+      renderizar();
+    })();
 
-    } catch (error) {
-      showError(
-        error,
+    try {
+      await requisicaoAtual;
+
+    } catch (erro) {
+      mostrarErro(
+        erro,
         "Não foi possível carregar os dados."
       );
 
+      $("consumeResults").textContent =
+        "Erro ao carregar consumos.";
+
     } finally {
-      loading = false;
+      requisicaoAtual = null;
     }
   }
 
-  // ==========================================
-  // BOTÃO VER TODOS OS MESES
-  // ==========================================
+  /* =====================================================
+     LISTA DE PRODUTOS
+  ===================================================== */
 
-  function updateShowAllButton() {
-    const iconName = showAllMonths
+  function atualizarOpcoesProdutos() {
+    const selecionado = productInput.value;
+
+    const lista = [...produtos].sort(
+      (a, b) =>
+        String(a.nome || "").localeCompare(
+          String(b.nome || ""),
+          "pt-BR"
+        )
+    );
+
+    productInput.replaceChildren(
+      new Option(
+        lista.length
+          ? "Selecione um material"
+          : "Nenhum produto cadastrado",
+        ""
+      )
+    );
+
+    lista.forEach((produto) => {
+      const quantidade = quantidadeDisponivel(
+        produto
+      );
+
+      const unidade = produto.unidade || "unid.";
+
+      const rotulo =
+        `${produto.nome} — ` +
+        `${quantidadeFormatada(quantidade)} ` +
+        `${unidade} disponíveis`;
+
+      const opcao = new Option(
+        rotulo,
+        String(produto.id)
+      );
+
+      opcao.disabled = quantidade <= 0;
+
+      productInput.add(opcao);
+    });
+
+    const aindaDisponivel = produtos.some(
+      (produto) =>
+        String(produto.id) === selecionado &&
+        quantidadeDisponivel(produto) > 0
+    );
+
+    productInput.value = aindaDisponivel
+      ? selecionado
+      : "";
+
+    atualizarPrevisao();
+  }
+
+  /* =====================================================
+     PREVISÃO DO ESTOQUE
+  ===================================================== */
+
+  function atualizarPrevisao() {
+    const preview = $("stockPreview");
+
+    const produto = produtoPorId(
+      productInput.value
+    );
+
+    if (!produto) {
+      preview.textContent =
+        "Selecione um material para consultar " +
+        "a quantidade disponível.";
+
+      return;
+    }
+
+    const disponivel = quantidadeDisponivel(
+      produto
+    );
+
+    const minimo = estoqueMinimo(
+      produto
+    );
+
+    const unidade = String(
+      produto.unidade || "unid."
+    );
+
+    const informado = quantityInput.value.trim();
+
+    const quantidade =
+      informado !== "" &&
+      Number.isFinite(Number(informado))
+        ? Number(informado)
+        : 0;
+
+    const restante = arredondarQuantidade(
+      disponivel - quantidade
+    );
+
+    let mensagem;
+    let classe;
+
+    if (quantidade > disponivel) {
+      mensagem = "Quantidade maior que o estoque disponível";
+      classe = "bad";
+
+    } else if (restante <= 0) {
+      mensagem = "O produto ficará sem estoque";
+      classe = "bad";
+
+    } else if (restante <= minimo) {
+      mensagem = "O produto precisará de reposição";
+      classe = "warn";
+
+    } else {
+      mensagem = "Estoque suficiente";
+      classe = "";
+    }
+
+    preview.innerHTML = `
+      <strong class="consume-preview-product">
+        ${escapar(produto.nome)}
+      </strong>
+
+      <div class="consume-preview-grid">
+
+        <div class="consume-preview-item">
+          <span>Disponível agora</span>
+
+          <strong>
+            ${quantidadeFormatada(disponivel)}
+            ${escapar(unidade)}
+          </strong>
+        </div>
+
+        <div class="consume-preview-item">
+          <span>Restará após o consumo</span>
+
+          <strong>
+            ${quantidadeFormatada(restante)}
+            ${escapar(unidade)}
+          </strong>
+        </div>
+
+        <div class="consume-preview-item">
+          <span>Estoque mínimo</span>
+
+          <strong>
+            ${quantidadeFormatada(minimo)}
+            ${escapar(unidade)}
+          </strong>
+        </div>
+
+        <div class="consume-preview-item">
+          <span>Quantidade informada</span>
+
+          <strong>
+            ${quantidadeFormatada(quantidade)}
+            ${escapar(unidade)}
+          </strong>
+        </div>
+
+      </div>
+
+      <span class="consume-preview-status ${classe}">
+        ${mensagem}
+      </span>
+    `;
+  }
+
+  productInput.addEventListener(
+    "change",
+    atualizarPrevisao
+  );
+
+  quantityInput.addEventListener(
+    "input",
+    atualizarPrevisao
+  );
+
+  /* =====================================================
+     RESUMO DO MÊS ATUAL
+  ===================================================== */
+
+  function renderizarIndicadores() {
+    const mes = mesAtual();
+
+    const registrosMes = consumos.filter(
+      (item) =>
+        dataSimples(item.data).startsWith(mes)
+    );
+
+    // Não somamos 30 ml + 2 unidades.
+    // Contamos materiais distintos utilizados.
+    const materiaisDiferentes = new Set(
+      registrosMes.map((item) => {
+        const id =
+          item.produto_id ??
+          item.produtoId ??
+          "";
+
+        if (id !== "") {
+          return `id:${id}`;
+        }
+
+        return (
+          "nome:" +
+          nomeConsumido(item)
+            .trim()
+            .toLocaleLowerCase("pt-BR")
+        );
+      })
+    );
+
+    const produtosAlerta = produtos.filter(
+      (produto) =>
+        quantidadeDisponivel(produto) <=
+        estoqueMinimo(produto)
+    );
+
+    /*
+      ESTIMATIVA DE CUSTO:
+
+      O histórico de consumo não contém
+      necessariamente o custo unitário na
+      data em que o material foi utilizado.
+
+      Por isso usamos o custo ATUAL do
+      produto, quando ele ainda existe.
+    */
+
+    let custoEstimado = 0;
+
+    let itensSemCusto = 0;
+
+    registrosMes.forEach((item) => {
+      let produto = produtoPorId(
+        item.produto_id ?? item.produtoId
+      );
+
+      if (!produto) {
+        const nome = nomeConsumido(item)
+          .trim()
+          .toLocaleLowerCase("pt-BR");
+
+        produto = produtos.find(
+          (registro) =>
+            String(registro.nome || "")
+              .trim()
+              .toLocaleLowerCase("pt-BR") === nome
+        );
+      }
+
+      if (!produto) {
+        itensSemCusto++;
+        return;
+      }
+
+      const custo = Number(
+        produto.custo_unitario
+      );
+
+      if (!Number.isFinite(custo) || custo < 0) {
+        itensSemCusto++;
+        return;
+      }
+
+      custoEstimado +=
+        quantidadeConsumida(item) * custo;
+    });
+
+    $("consumeCount").textContent =
+      String(registrosMes.length);
+
+    $("consumeQuantity").textContent =
+      String(materiaisDiferentes.size);
+
+    $("consumeLow").textContent =
+      String(produtosAlerta.length);
+
+    $("consumeCost").textContent =
+      moeda(custoEstimado);
+
+    $("currentMonth").textContent =
+      formatarMes(mes);
+
+    // Informação contextual para não confundir
+    // estimativa com custo histórico exato.
+    const custo = $("consumeCost");
+
+    custo.title = itensSemCusto > 0
+      ? (
+          "Estimativa com custos atuais. " +
+          `${itensSemCusto} registro(s) sem custo ` +
+          "correspondente no estoque atual."
+        )
+      : (
+          "Estimativa baseada nos custos atuais " +
+          "dos produtos."
+        );
+  }
+
+  /* =====================================================
+     VER TODOS OS MESES
+  ===================================================== */
+
+  function atualizarBotaoMeses() {
+    const nomeIcone = todosOsMeses
       ? "calendar-days"
       : "calendar-range";
 
-    const label = showAllMonths
+    const texto = todosOsMeses
       ? "Mostrar mês selecionado"
       : "Ver todos os meses";
 
     showAllButton.innerHTML = `
-      <i data-lucide="${iconName}" aria-hidden="true"></i>
-      <span>${label}</span>
+      <i
+        data-lucide="${nomeIcone}"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        ${texto}
+      </span>
     `;
 
     showAllButton.setAttribute(
       "aria-pressed",
-      String(showAllMonths)
+      String(todosOsMeses)
     );
 
-    refreshIcons();
+    monthInput.disabled = todosOsMeses;
+
+    atualizarIcones();
   }
 
-  // ==========================================
-  // LISTA DE PRODUTOS
-  // ==========================================
+  /* =====================================================
+     FILTRAR HISTÓRICO
+  ===================================================== */
 
-  function updateProductOptions() {
-    const previous = productInput.value;
+  function consumosFiltrados() {
+    const mesSelecionado = monthInput.value;
 
-    productInput.replaceChildren();
+    const busca = searchInput.value
+      .trim()
+      .toLocaleLowerCase("pt-BR");
 
-    const placeholder = document.createElement("option");
+    return [...consumos]
+      .filter((item) => {
+        const correspondeMes =
+          todosOsMeses ||
+          !mesSelecionado ||
+          dataSimples(item.data)
+            .startsWith(mesSelecionado);
 
-    placeholder.value = "";
+        const texto = [
+          nomeConsumido(item),
+          motivoConsumido(item),
+          unidadeConsumida(item)
+        ]
+          .join(" ")
+          .toLocaleLowerCase("pt-BR");
 
-    placeholder.textContent = products.length
-      ? "Selecione um produto"
-      : "Nenhum produto cadastrado";
+        const correspondeBusca =
+          texto.includes(busca);
 
-    productInput.appendChild(placeholder);
-
-    products.forEach(product => {
-      const option = document.createElement("option");
-
-      option.value = String(product.id);
-
-      option.textContent =
-        `${product.nome} — ` +
-        `${formatQuantity(product.quantidade)} ` +
-        `${product.unidade || "un"} disponíveis`;
-
-      option.disabled =
-        Number(product.quantidade) <= 0;
-
-      productInput.appendChild(option);
-    });
-
-    const previousExists = products.some(
-      product =>
-        String(product.id) === previous &&
-        Number(product.quantidade) > 0
-    );
-
-    productInput.value = previousExists
-      ? previous
-      : "";
-
-    updateStockPreview();
-  }
-
-  // ==========================================
-  // VISUALIZAÇÃO DO ESTOQUE
-  // ==========================================
-
-  function updateStockPreview() {
-    const preview = $("stockPreview");
-
-    const product = products.find(
-      item => String(item.id) === productInput.value
-    );
-
-    if (!product) {
-      preview.textContent =
-        "Selecione um produto para consultar o estoque.";
-      return;
-    }
-
-    const quantity = getQuantity(product);
-    const minimum = getMinimum(product);
-    const low = quantity <= minimum;
-
-    preview.innerHTML = `
-      <strong>
-        ${WJ.escape(product.nome)}
-      </strong>
-
-      <div>
-        Disponível:
-        ${formatQuantity(quantity)}
-        ${WJ.escape(product.unidade || "un")}
-      </div>
-
-      <div>
-        Estoque mínimo:
-        ${formatQuantity(minimum)}
-      </div>
-
-      <div class="${low ? "bad" : "good"}">
-        ${low ? "Produto em alerta" : "Estoque adequado"}
-      </div>
-    `;
-  }
-
-  // ==========================================
-  // INDICADORES
-  // ==========================================
-
-  function renderIndicators() {
-    const currentMonth = getCurrentMonth();
-
-    const monthly = consumption.filter(
-      item =>
-        getConsumptionDate(item).startsWith(currentMonth)
-    );
-
-    const totalQuantity = monthly.reduce(
-      (total, item) =>
-        total + getConsumedQuantity(item),
-      0
-    );
-
-    const lowStock = products.filter(product => {
-      const quantity = getQuantity(product);
-      const minimum = getMinimum(product);
-
-      return (
-        Number.isFinite(quantity) &&
-        Number.isFinite(minimum) &&
-        quantity <= minimum
-      );
-    });
-
-    $("consumeCount").textContent = monthly.length;
-
-    $("consumeQuantity").textContent =
-      formatQuantity(totalQuantity);
-
-    $("consumeLow").textContent = lowStock.length;
-
-    $("currentMonth").textContent =
-      new Date().toLocaleDateString("pt-BR", {
-        month: "long",
-        year: "numeric"
-      });
-  }
-
-  // ==========================================
-  // FILTRAR HISTÓRICO
-  // ==========================================
-
-  function getFilteredConsumption() {
-    const selectedMonth = monthInput.value;
-
-    return [...consumption]
-      .filter(item => {
-        if (showAllMonths) return true;
-
-        return getConsumptionDate(item)
-          .startsWith(selectedMonth);
+        return correspondeMes && correspondeBusca;
       })
       .sort((a, b) => {
-        const dateComparison = getConsumptionDate(b)
-          .localeCompare(getConsumptionDate(a));
+        const porData = dataSimples(b.data)
+          .localeCompare(dataSimples(a.data));
 
-        return dateComparison ||
-          Number(b.id) - Number(a.id);
+        return (
+          porData ||
+          Number(b.id) - Number(a.id)
+        );
       });
   }
 
-  // ==========================================
-  // HISTÓRICO DE CONSUMO
-  // ==========================================
+  /* =====================================================
+     RENDERIZAR HISTÓRICO
+  ===================================================== */
 
-  function renderHistory() {
-    const rows = getFilteredConsumption();
+  function renderizarHistorico() {
+    const lista = consumosFiltrados();
 
     $("consumeResults").textContent =
-      `${rows.length} registro` +
-      `${rows.length === 1 ? "" : "s"}`;
+      `${lista.length} registro${
+        lista.length === 1 ? "" : "s"
+      }`;
 
-    if (!rows.length) {
+    if (!lista.length) {
       table.innerHTML = `
-        <tr>
-          <td colspan="5" class="empty-consumption">
-            Nenhum consumo encontrado neste período.
+        <tr class="consume-empty-row">
+
+          <td
+            colspan="5"
+            class="empty-consumption"
+          >
+            Nenhum consumo encontrado
+            para os filtros selecionados.
           </td>
+
         </tr>
       `;
 
       return;
     }
 
-    table.innerHTML = rows.map(item => `
-      <tr>
-        <td>
-          ${WJ.escape(WJ.date(getConsumptionDate(item)))}
-        </td>
+    table.innerHTML = lista.map((item) => {
+      const nome = nomeConsumido(item);
 
-        <td>
-          ${WJ.escape(getConsumedName(item))}
-        </td>
+      const unidade = unidadeConsumida(item);
 
-        <td>
-          ${formatQuantity(getConsumedQuantity(item))}
-        </td>
+      const quantidade =
+        quantidadeFormatada(
+          quantidadeConsumida(item)
+        );
 
-        <td>
-          ${WJ.escape(getConsumedReason(item))}
-        </td>
+      const data = dataSimples(item.data);
 
-        <td style="text-align:center;">
-          <button
-            type="button"
-            class="btn-delete-consumption"
-            data-consumption-id="${WJ.escape(String(item.id))}"
-            title="Excluir consumo"
-            aria-label="Excluir consumo"
-            style="
-              display:inline-flex;
-              align-items:center;
-              justify-content:center;
-              width:36px;
-              height:36px;
-              padding:0;
-              border:1px solid rgba(239,68,68,.35);
-              border-radius:10px;
-              background:transparent;
-              color:#ef4444;
-              cursor:pointer;
-              transition:background .2s ease;
-            "
-          >
-            <i
-              data-lucide="trash-2"
-              aria-hidden="true"
-              style="width:17px;height:17px;"
-            ></i>
-          </button>
-        </td>
-      </tr>
-    `).join("");
+      const dataFormatada = data
+        ? WJ.date(data)
+        : "-";
 
-    refreshIcons();
+      return `
+        <tr>
+
+          <td data-label="Data">
+            ${escapar(dataFormatada)}
+          </td>
+
+          <td data-label="Material">
+
+            <span class="consume-product-name">
+              ${escapar(nome)}
+            </span>
+
+          </td>
+
+          <td data-label="Quantidade utilizada">
+
+            <span class="consume-quantity">
+
+              − ${quantidade}
+              ${escapar(unidade)}
+
+            </span>
+
+          </td>
+
+          <td data-label="Motivo / serviço">
+
+            <span class="consume-reason">
+              ${escapar(motivoConsumido(item))}
+            </span>
+
+          </td>
+
+          <td data-label="Ações">
+
+            <button
+              type="button"
+              class="consume-delete btn-delete-consumption"
+              data-consumption-id="${escapar(item.id)}"
+              aria-label="Excluir consumo de ${escapar(nome)}"
+              title="Excluir consumo e solicitar devolução ao estoque"
+            >
+
+              <i data-lucide="trash-2"></i>
+
+              <span>
+                Excluir consumo
+              </span>
+
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+    }).join("");
+
+    atualizarIcones();
   }
 
-  // ==========================================
-  // ATUALIZAÇÃO DA INTERFACE
-  // ==========================================
+  /* =====================================================
+     ATUALIZAR TELA
+  ===================================================== */
 
-  function render() {
-    renderIndicators();
-    renderHistory();
-    updateStockPreview();
+  function renderizar() {
+    renderizarIndicadores();
+    renderizarHistorico();
+    atualizarPrevisao();
   }
 
-  // ==========================================
-  // SELECIONAR PRODUTO
-  // ==========================================
+  /* =====================================================
+     REGISTRAR CONSUMO
+  ===================================================== */
 
-  productInput.addEventListener(
-    "change",
-    updateStockPreview
-  );
+  form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
 
-  // ==========================================
-  // EXCLUIR CONSUMO
-  // ==========================================
+    if (ocupado()) return;
 
-  async function deleteConsumption(id) {
-    if (deleting || saving) return;
+    const produtoId = productInput.value;
 
-    const item = consumption.find(
-      registro => String(registro.id) === String(id)
+    const produto = produtoPorId(
+      produtoId
     );
 
-    if (!item) {
-      WJ.toast("Registro de consumo não encontrado.");
+    if (!produto) {
+      avisar("Selecione um material válido.");
       return;
     }
 
-    const nome = getConsumedName(item);
-    const quantidade = formatQuantity(
-      getConsumedQuantity(item)
+    const quantidadeTexto =
+      quantityInput.value;
+
+    if (!consumoValido(quantidadeTexto)) {
+      avisar(
+        "Informe uma quantidade maior que zero, " +
+        "com até 3 casas decimais."
+      );
+      return;
+    }
+
+    const quantidade = Number(
+      quantidadeTexto
     );
 
-    const confirmed = window.confirm(
-      `Deseja realmente excluir este consumo?\n\n` +
-      `Produto: ${nome}\n` +
-      `Quantidade: ${quantidade}\n\n` +
-      `A quantidade será devolvida ao estoque.\n` +
-      `Essa ação não poderá ser desfeita.`
-    );
+    const motivo = reasonInput.value.trim();
+    const data = dateInput.value;
 
-    if (!confirmed) return;
+    if (!motivo || motivo.length > 150) {
+      avisar("Informe o motivo ou serviço.");
+      return;
+    }
 
-    deleting = true;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+      avisar("Informe uma data válida.");
+      return;
+    }
 
-    const buttons = document.querySelectorAll(
-      ".btn-delete-consumption"
-    );
+    if (
+      quantidade >
+      quantidadeDisponivel(produto)
+    ) {
+      avisar(
+        "Estoque insuficiente. Disponível: " +
+        quantidadeFormatada(
+          quantidadeDisponivel(produto)
+        ) +
+        ` ${produto.unidade || "unid."}`
+      );
 
-    buttons.forEach(button => {
-      button.disabled = true;
-      button.style.opacity = "0.5";
-      button.style.cursor = "not-allowed";
-    });
+      return;
+    }
+
+    salvando = true;
+    saveButton.disabled = true;
+
+    const conteudoOriginal =
+      saveButton.innerHTML;
+
+    saveButton.textContent =
+      "Registrando consumo...";
+
+    let salvo = false;
 
     try {
-      const result = await WJ.api(
+      await WJ.api("/consumo", {
+        method: "POST",
+        body: JSON.stringify({
+          produto_id: Number(produtoId),
+          quantidade,
+          motivo,
+          data
+        })
+      });
+
+      salvo = true;
+
+    } catch (erro) {
+      mostrarErro(
+        erro,
+        "Não foi possível registrar o consumo. " +
+        "Confira o histórico antes de tentar novamente."
+      );
+
+    } finally {
+      salvando = false;
+      saveButton.disabled = false;
+      saveButton.innerHTML = conteudoOriginal;
+
+      atualizarIcones();
+    }
+
+    if (salvo) {
+      limparFormulario();
+      esconderFormulario();
+
+      await carregarDados();
+
+      avisar(
+        "Consumo registrado e estoque atualizado!"
+      );
+    }
+  });
+
+  /* =====================================================
+     EXCLUIR CONSUMO
+  ===================================================== */
+
+  async function excluirConsumo(id) {
+    if (ocupado()) return;
+
+    const item = consumos.find(
+      (registro) =>
+        String(registro.id) === String(id)
+    );
+
+    if (!item) {
+      avisar("Registro de consumo não encontrado.");
+      return;
+    }
+
+    const nome = nomeConsumido(item);
+
+    const quantidade =
+      quantidadeFormatada(
+        quantidadeConsumida(item)
+      );
+
+    const confirmado = window.confirm(
+      "Deseja excluir este consumo?\n\n" +
+      `Material: ${nome}\n` +
+      `Quantidade: ${quantidade}\n\n` +
+      "O sistema solicitará ao servidor a " +
+      "devolução dessa quantidade ao estoque.\n\n" +
+      "Essa exclusão não poderá ser desfeita."
+    );
+
+    if (!confirmado) return;
+
+    excluindo = true;
+
+    table.querySelectorAll(
+      ".btn-delete-consumption"
+    ).forEach((botao) => {
+      botao.disabled = true;
+    });
+
+    let excluido = false;
+    let mensagemSucesso = "";
+
+    try {
+      const resultado = await WJ.api(
         `/consumo/${encodeURIComponent(id)}`,
         {
           method: "DELETE"
         }
       );
 
-      await loadData();
+      excluido = true;
 
-      WJ.toast(
-        result?.mensagem ||
-        "Consumo excluído e estoque atualizado."
-      );
+      mensagemSucesso =
+        resultado?.mensagem ||
+        "Consumo excluído. Confira o estoque atualizado.";
 
-    } catch (error) {
-      showError(
-        error,
+    } catch (erro) {
+      mostrarErro(
+        erro,
         "Não foi possível excluir o consumo."
       );
 
     } finally {
-      deleting = false;
+      excluindo = false;
 
-      document.querySelectorAll(
+      table.querySelectorAll(
         ".btn-delete-consumption"
-      ).forEach(button => {
-        button.disabled = false;
-        button.style.opacity = "";
-        button.style.cursor = "";
+      ).forEach((botao) => {
+        botao.disabled = false;
       });
+    }
+
+    if (excluido) {
+      await carregarDados();
+      avisar(mensagemSucesso);
     }
   }
 
-  // ==========================================
-  // EVENTO DA LIXEIRA NO HISTÓRICO
-  // ==========================================
+  /* =====================================================
+     EVENTO DA LIXEIRA
+  ===================================================== */
 
-  table.addEventListener("click", async event => {
-    const button = event.target.closest(
+  table.addEventListener("click", (evento) => {
+    const botao = evento.target.closest(
       ".btn-delete-consumption"
     );
 
-    if (!button || !table.contains(button)) {
+    if (
+      !botao ||
+      !table.contains(botao)
+    ) {
       return;
     }
 
-    const id = button.dataset.consumptionId;
+    const id =
+      botao.dataset.consumptionId;
 
     if (!id) {
-      WJ.toast("ID do consumo não encontrado.");
+      avisar("ID do consumo não encontrado.");
       return;
     }
 
-    await deleteConsumption(id);
+    excluirConsumo(id);
   });
 
-  // ==========================================
-  // REGISTRAR CONSUMO NO POSTGRESQL
-  // ==========================================
-
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (saving || deleting) return;
-
-    const productId = productInput.value;
-    const quantity = Number(quantityInput.value);
-    const reason = reasonInput.value.trim();
-    const date = dateInput.value;
-
-    const product = products.find(
-      item => String(item.id) === productId
-    );
-
-    if (!product) {
-      WJ.toast("Selecione um produto válido.");
-      return;
-    }
-
-    if (
-      !Number.isFinite(quantity) ||
-      quantity <= 0 ||
-      Math.abs(
-        Math.round(quantity * 1000) / 1000 - quantity
-      ) > 0.0000001
-    ) {
-      WJ.toast(
-        "Informe uma quantidade válida com até 3 casas decimais."
-      );
-      return;
-    }
-
-    if (!reason) {
-      WJ.toast("Informe o motivo do consumo.");
-      return;
-    }
-
-    if (!date) {
-      WJ.toast("Informe a data do consumo.");
-      return;
-    }
-
-    const available = getQuantity(product);
-
-    if (quantity > available) {
-      WJ.toast(
-        `Estoque insuficiente. Disponível: ` +
-        formatQuantity(available)
-      );
-      return;
-    }
-
-    saving = true;
-    saveButton.disabled = true;
-
-    const originalText = saveButton.textContent;
-
-    saveButton.textContent = "Salvando...";
-
-    try {
-      await WJ.api("/consumo", {
-        method: "POST",
-        body: JSON.stringify({
-          produto_id: Number(productId),
-          quantidade: quantity,
-          motivo: reason,
-          data: date
-        })
-      });
-
-      form.reset();
-      dateInput.value = WJ.today();
-
-      await loadData();
-
-      WJ.toast(
-        "Consumo registrado e estoque atualizado!"
-      );
-
-    } catch (error) {
-      showError(
-        error,
-        "Não foi possível registrar o consumo."
-      );
-
-    } finally {
-      saving = false;
-      saveButton.disabled = false;
-      saveButton.textContent = originalText;
-    }
-  });
-
-  // ==========================================
-  // FILTRO POR MÊS
-  // ==========================================
+  /* =====================================================
+     FILTROS DE HISTÓRICO
+  ===================================================== */
 
   monthInput.addEventListener("change", () => {
-    showAllMonths = false;
+    todosOsMeses = false;
 
-    updateShowAllButton();
-    renderHistory();
+    atualizarBotaoMeses();
+    renderizarHistorico();
   });
 
-  // ==========================================
-  // VER TODOS OS MESES
-  // ==========================================
+  searchInput.addEventListener(
+    "input",
+    renderizarHistorico
+  );
 
   showAllButton.addEventListener("click", () => {
-    showAllMonths = !showAllMonths;
+    todosOsMeses = !todosOsMeses;
 
-    updateShowAllButton();
-    renderHistory();
+    atualizarBotaoMeses();
+    renderizarHistorico();
   });
 
-  // ==========================================
-  // EXPORTAR CSV
-  // ==========================================
+  /* =====================================================
+     EXPORTAÇÃO CSV
+  ===================================================== */
 
   exportButton.addEventListener("click", () => {
-    const rows = getFilteredConsumption();
+    const lista = consumosFiltrados();
 
-    if (!rows.length) {
-      WJ.toast("Não há registros para exportar.");
+    if (!lista.length) {
+      avisar("Não há registros para exportar.");
       return;
     }
 
-    function escapeCSV(value) {
-      let text = String(value ?? "");
+    function campoCSV(valor) {
+      let texto = String(valor ?? "");
 
-      // Evita interpretação como fórmula no Excel.
-      if (/^\s*[=+\-@]/.test(text)) {
-        text = "'" + text;
+      // Proteção contra fórmulas
+      // abertas em programas de planilha.
+      if (/^\s*[=+\-@]/.test(texto)) {
+        texto = "'" + texto;
       }
 
-      return `"${text.replace(/"/g, '""')}"`;
+      return (
+        '"' +
+        texto.replace(/"/g, '""') +
+        '"'
+      );
     }
 
-    const header = [
-      "Data",
-      "Produto",
-      "Quantidade",
-      "Motivo"
-    ];
+    const linhas = [
+      [
+        "Data",
+        "Material",
+        "Quantidade",
+        "Unidade",
+        "Motivo / Serviço"
+      ],
 
-    const lines = [
-      header.map(escapeCSV).join(";"),
-
-      ...rows.map(item => [
-        WJ.date(getConsumptionDate(item)),
-        getConsumedName(item),
-        getConsumedQuantity(item)
+      ...lista.map((item) => [
+        dataSimples(item.data),
+        nomeConsumido(item),
+        quantidadeConsumida(item)
           .toFixed(3)
           .replace(".", ","),
-        getConsumedReason(item)
-      ].map(escapeCSV).join(";"))
+        unidadeConsumida(item),
+        motivoConsumido(item)
+      ])
     ];
 
-    WJ.download(
-      "consumo-barbearia-wj.csv",
-      "\uFEFF" + lines.join("\r\n"),
-      "text/csv;charset=utf-8"
+    const conteudo =
+      "\uFEFF" +
+      linhas
+        .map((linha) =>
+          linha.map(campoCSV).join(";")
+        )
+        .join("\r\n");
+
+    const arquivo = new Blob(
+      [conteudo],
+      {
+        type: "text/csv;charset=utf-8"
+      }
     );
 
-    WJ.toast(
-      "Arquivo CSV preparado para download."
+    const url = URL.createObjectURL(
+      arquivo
     );
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download =
+      "consumo-barbearia-wj.csv";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    avisar("Relatório CSV exportado!");
   });
 
-  // ==========================================
-  // ATUALIZAR AO VOLTAR PARA A PÁGINA
-  // ==========================================
+  /* =====================================================
+     MENU INFERIOR NO CELULAR
+  ===================================================== */
 
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && !saving && !deleting) {
-      loadData();
+  const botaoMenu = $("consumptionMobileMenu");
+  const overlayMenu = $("consumptionNavOverlay");
+
+  function obterSidebar() {
+    return document.querySelector(".sidebar");
+  }
+
+  function sincronizarMenu() {
+    const aberto = !!obterSidebar()?.classList.contains(
+      "open"
+    );
+
+    overlayMenu.hidden = !aberto;
+
+    botaoMenu.setAttribute(
+      "aria-expanded",
+      String(aberto)
+    );
+
+    document.body.classList.toggle(
+      "consumption-menu-open",
+      aberto
+    );
+  }
+
+  function fecharMenu() {
+    obterSidebar()?.classList.remove("open");
+    sincronizarMenu();
+  }
+
+  botaoMenu.addEventListener("click", () => {
+    const sidebar = obterSidebar();
+
+    if (!sidebar) {
+      avisar("Menu lateral indisponível.");
+      return;
+    }
+
+    sidebar.classList.toggle("open");
+
+    sincronizarMenu();
+  });
+
+  overlayMenu.addEventListener(
+    "click",
+    fecharMenu
+  );
+
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+      fecharMenu();
     }
   });
 
-  // ==========================================
-  // ATUALIZAÇÃO PERIÓDICA
-  // ==========================================
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 760) {
+      fecharMenu();
+    }
+  });
 
-  let lastMonth = getCurrentMonth();
+  /* =====================================================
+     ATUALIZAÇÃO AO VOLTAR À PÁGINA
+  ===================================================== */
 
-  setInterval(() => {
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (
+        !document.hidden &&
+        !ocupado()
+      ) {
+        carregarDados();
+      }
+    }
+  );
+
+  window.addEventListener(
+    "pageshow",
+    (evento) => {
+      if (
+        evento.persisted &&
+        !ocupado()
+      ) {
+        carregarDados();
+      }
+    }
+  );
+
+  /* =====================================================
+     ATUALIZAÇÃO PERIÓDICA
+  ===================================================== */
+
+  let ultimoMes = mesAtual();
+
+  window.setInterval(() => {
     if (
-      saving ||
-      deleting ||
-      document.hidden
+      document.hidden ||
+      ocupado()
     ) {
       return;
     }
 
-    const currentMonth = getCurrentMonth();
+    const agora = mesAtual();
 
-    if (currentMonth !== lastMonth) {
-      lastMonth = currentMonth;
+    if (agora !== ultimoMes) {
+      const acompanhavaMesAtual =
+        monthInput.value === ultimoMes;
 
-      if (!showAllMonths) {
-        monthInput.value = currentMonth;
+      ultimoMes = agora;
+
+      if (acompanhavaMesAtual) {
+        monthInput.value = agora;
       }
     }
 
-    loadData();
+    carregarDados();
   }, 60000);
 
-  // ==========================================
-  // INICIALIZAÇÃO
-  // ==========================================
+  /* =====================================================
+     INICIALIZAÇÃO
+  ===================================================== */
 
   dateInput.value = WJ.today();
-  monthInput.value = getCurrentMonth();
+  monthInput.value = mesAtual();
 
-  updateShowAllButton();
+  document.body.classList.add(
+    "consumption-ready"
+  );
 
-  await loadData();
+  atualizarBotaoMeses();
+  atualizarIcones();
 
-  refreshIcons();
+  await carregarDados();
+
 });

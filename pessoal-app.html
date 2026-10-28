@@ -1,147 +1,37 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#17191D">
-
   <title>Minhas Finanças</title>
 
-  <!-- ÍCONES DA ABA -->
-  <link
-    rel="icon"
-    type="image/png"
-    href="assets/logo.png"
-  >
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
 
-  <link
-    rel="apple-touch-icon"
-    href="assets/logo.png"
-  >
+  <link rel="stylesheet" href="css/financas-pessoais.css">
+  <link rel="stylesheet" href="css/financas-pessoais-melhorias.css">
 
-  <!-- ESTILOS -->
-  <link
-    rel="stylesheet"
-    href="css/financas-pessoais.css"
-  >
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script defer src="js/global.js"></script>
+  <script defer src="js/financas-pessoais.js"></script>
+  <script defer src="js/pwa.js"></script>
 
-  <!-- ESTILO DO BOTÃO DE RETORNO -->
-  <style>
-    #nav .back-to-barbershop {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(242, 140, 40, 0.35);
-      border-radius: 10px;
-      background: rgba(242, 140, 40, 0.08);
-      color: #F28C28;
-      font: inherit;
-      font-weight: 600;
-      text-align: left;
-      text-decoration: none;
-      cursor: pointer;
-      transition:
-        background 0.2s ease,
-        border-color 0.2s ease;
-    }
-
-    #nav .back-to-barbershop:hover {
-      background: rgba(242, 140, 40, 0.16);
-      border-color: #F28C28;
-    }
-
-    #nav .back-to-barbershop:focus-visible {
-      outline: 2px solid #F28C28;
-      outline-offset: 2px;
-    }
-
-    #nav .back-to-barbershop svg {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-    }
-
-    #nav .nav-divider {
-      height: 1px;
-      margin: 4px 0 14px;
-      background: rgba(255, 255, 255, 0.10);
-    }
-  </style>
-
-  <!-- ÍCONES LUCIDE -->
-  <script
-    defer
-    src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
-  ></script>
-
-  <!-- SISTEMA GLOBAL -->
-  <script
-    defer
-    src="js/global.js"
-  ></script>
-
-  <!-- SISTEMA DE FINANÇAS PESSOAIS -->
-  <script
-    defer
-    src="js/financas-pessoais.js"
-  ></script>
-
-  <!-- PWA -->
-  <link
-    rel="manifest"
-    href="manifest.webmanifest"
-  >
-
-  <meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
-  >
-
-  <meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
-  >
-
-  <meta
-    name="apple-mobile-web-app-title"
-    content="Barbearia WJ"
-  >
-
-  <link
-    rel="apple-touch-icon"
-    sizes="180x180"
-    href="assets/icon-180.png"
-  >
-
-  <script
-    defer
-    src="js/pwa.js"
-  ></script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Barbearia WJ">
 </head>
 
 <body>
-
   <div class="app">
 
     <!-- MENU LATERAL -->
 
-    <aside
-      class="sidebar"
-      id="personalSidebar"
-    >
+    <aside class="sidebar" id="personalSidebar">
 
       <div class="brand">
-
         <span class="brand-icon">
           <i data-lucide="wallet"></i>
         </span>
@@ -150,117 +40,74 @@
           <b>Minhas Finanças</b>
           <small>ESPAÇO PESSOAL</small>
         </div>
-
       </div>
 
-      <nav
-        id="nav"
-        aria-label="Menu principal"
-      >
+      <nav id="nav" aria-label="Menu principal">
 
-        <!-- VOLTAR PARA BARBEARIA -->
         <a
           href="dashboard.html"
           target="_top"
           class="back-to-barbershop"
-          aria-label="Voltar para Barbearia"
         >
           <i data-lucide="arrow-left"></i>
           <span>Voltar para Barbearia</span>
         </a>
 
-        <div
-          class="nav-divider"
-          aria-hidden="true"
-        ></div>
-
-        <button
-          type="button"
-          data-page="dashboard"
-          class="active"
-        >
+        <button type="button" data-page="dashboard" class="active">
           <i data-lucide="layout-dashboard"></i>
           <span>Visão geral</span>
         </button>
 
-        <button
-          type="button"
-          data-page="transactions"
-        >
+        <button type="button" data-page="transactions">
           <i data-lucide="arrow-left-right"></i>
           <span>Movimentações</span>
         </button>
 
-        <button
-          type="button"
-          data-page="bills"
-        >
+        <button type="button" data-page="bills">
           <i data-lucide="calendar-clock"></i>
           <span>Contas a pagar/receber</span>
         </button>
 
-        <button
-          type="button"
-          data-page="goals"
-        >
+        <button type="button" data-page="goals">
           <i data-lucide="target"></i>
           <span>Metas financeiras</span>
         </button>
 
-        <button
-          type="button"
-          data-page="cards"
-        >
+        <button type="button" data-page="cards">
           <i data-lucide="credit-card"></i>
           <span>Cartões de crédito</span>
         </button>
 
-        <button
-          type="button"
-          data-page="recurring"
-        >
+        <button type="button" data-page="recurring">
           <i data-lucide="repeat"></i>
           <span>Gastos fixos</span>
         </button>
 
-        <button
-          type="button"
-          data-page="wallets"
-        >
+        <button type="button" data-page="wallets">
           <i data-lucide="wallet-cards"></i>
           <span>Contas e carteiras</span>
         </button>
-
       </nav>
 
       <div class="side-foot">
-
         <div class="side-security">
           <i data-lucide="lock-keyhole"></i>
-
-          <span>
-            Dados pessoais separados da barbearia
-          </span>
+          <span>Dados pessoais separados da barbearia</span>
         </div>
-
       </div>
-
     </aside>
 
-    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- CONTEÚDO -->
 
     <div class="main">
 
-      <!-- CABEÇALHO -->
-
       <header class="topbar">
-
         <div class="topbar-heading">
 
           <button
             type="button"
-            class="mobile-menu-toggle"
             id="mobileMenuToggle"
+            class="mobile-menu-toggle"
             aria-label="Abrir menu"
             aria-controls="personalSidebar"
             aria-expanded="false"
@@ -269,200 +116,109 @@
           </button>
 
           <div>
-
-            <span class="eyebrow">
-              PAINEL FINANCEIRO PESSOAL
-            </span>
-
-            <h1 id="pageTitle">
-              Visão geral
-            </h1>
-
+            <span class="eyebrow">PAINEL FINANCEIRO PESSOAL</span>
+            <h1 id="pageTitle">Visão geral</h1>
             <p id="pageSubtitle">
               Acompanhe seu dinheiro e seus objetivos.
             </p>
-
           </div>
-
         </div>
 
         <div class="top-actions">
-
           <label class="month-label">
             Mês de referência
-
-            <input
-              type="month"
-              id="month"
-            >
+            <input type="month" id="month">
           </label>
-
         </div>
-
       </header>
-
-      <!-- PÁGINAS -->
 
       <main id="pages">
 
-        <!-- DASHBOARD -->
+        <!-- VISÃO GERAL -->
 
-        <section
-          class="page active"
-          id="page-dashboard"
-        >
+        <section class="page active" id="page-dashboard">
 
-          <div
-            class="stats"
-            id="stats"
-          ></div>
+          <div id="stats" class="stats"></div>
 
           <div class="dashboard-grid">
 
-            <!-- GRÁFICO -->
-
             <article class="panel">
-
               <div class="panel-title">
-
-                <h2>
-                  Fluxo dos últimos 6 meses
-                </h2>
-
+                <h2>Fluxo dos últimos 6 meses</h2>
                 <span class="muted">
                   Receitas e despesas efetivadas
                 </span>
-
               </div>
-
-              <div
-                id="chart"
-                class="chart"
-              ></div>
-
+              <div id="chart" class="chart"></div>
             </article>
 
-            <!-- VENCIMENTOS -->
-
             <article class="panel">
-
               <div class="panel-title">
+                <h2>Próximos vencimentos</h2>
 
-                <h2>
-                  Próximos vencimentos
-                </h2>
-
-                <button
-                  type="button"
-                  class="text-button"
-                  data-go="bills"
-                >
-                  <span>Ver contas</span>
+                <button type="button" class="text-button" data-go="bills">
+                  Ver contas
                   <i data-lucide="arrow-right"></i>
                 </button>
-
               </div>
-
               <div id="upcoming"></div>
-
             </article>
 
-            <!-- METAS -->
-
             <article class="panel">
-
               <div class="panel-title">
+                <h2>Metas em andamento</h2>
 
-                <h2>
-                  Metas em andamento
-                </h2>
-
-                <button
-                  type="button"
-                  class="text-button"
-                  data-go="goals"
-                >
-                  <span>Ver metas</span>
+                <button type="button" class="text-button" data-go="goals">
+                  Ver metas
                   <i data-lucide="arrow-right"></i>
                 </button>
-
               </div>
-
               <div id="goalOverview"></div>
-
             </article>
 
-            <!-- MOVIMENTAÇÕES -->
-
             <article class="panel">
-
               <div class="panel-title">
-
-                <h2>
-                  Últimas movimentações
-                </h2>
+                <h2>Últimas movimentações</h2>
 
                 <button
                   type="button"
                   class="text-button"
                   data-go="transactions"
                 >
-                  <span>Ver histórico</span>
+                  Ver histórico
                   <i data-lucide="arrow-right"></i>
                 </button>
-
               </div>
-
               <div id="recent"></div>
-
             </article>
 
           </div>
-
         </section>
 
         <!-- MOVIMENTAÇÕES -->
 
-        <section
-          class="page"
-          id="page-transactions"
-        >
+        <section class="page" id="page-transactions">
 
           <div class="section-top">
-
             <div>
               <h2>Movimentações</h2>
-              <p>
-                Receitas e despesas efetivadas.
-              </p>
+              <p>Receitas e despesas efetivadas.</p>
             </div>
 
             <div class="toolbar">
-
-              <button
-                type="button"
-                class="btn ghost"
-                id="csvBtn"
-              >
+              <button type="button" class="btn ghost" id="csvBtn">
                 <i data-lucide="download"></i>
                 <span>Exportar CSV</span>
               </button>
 
-              <button
-                type="button"
-                class="btn"
-                data-add="transaction"
-              >
+              <button type="button" class="btn" data-add="transaction">
                 <i data-lucide="plus"></i>
                 <span>Nova movimentação</span>
               </button>
-
             </div>
-
           </div>
 
           <div class="filters">
-
             <input
               id="txSearch"
               type="search"
@@ -470,29 +226,18 @@
             >
 
             <select id="txType">
-              <option value="">
-                Todos os tipos
-              </option>
-              <option value="Receita">
-                Receita
-              </option>
-              <option value="Despesa">
-                Despesa
-              </option>
+              <option value="">Todos os tipos</option>
+              <option value="Receita">Receita</option>
+              <option value="Despesa">Despesa</option>
             </select>
 
             <select id="txWallet">
-              <option value="">
-                Todas as contas
-              </option>
+              <option value="">Todas as contas</option>
             </select>
-
           </div>
 
           <div class="panel table-scroll">
-
             <table>
-
               <thead>
                 <tr>
                   <th>Data</th>
@@ -504,57 +249,31 @@
                   <th>Ações</th>
                 </tr>
               </thead>
-
               <tbody id="txRows"></tbody>
-
             </table>
-
           </div>
-
         </section>
 
-        <!-- CONTAS A PAGAR E RECEBER -->
+        <!-- CONTAS -->
 
-        <section
-          class="page"
-          id="page-bills"
-        >
+        <section class="page" id="page-bills">
 
           <div class="section-top">
-
             <div>
-
-              <h2>
-                Contas a pagar e receber
-              </h2>
-
-              <p>
-                Controle vencimentos e confirme quando
-                o dinheiro entrar ou sair.
-              </p>
-
+              <h2>Contas a pagar e receber</h2>
+              <p>Controle vencimentos e confirme os pagamentos.</p>
             </div>
 
-            <button
-              type="button"
-              class="btn"
-              data-add="bill"
-            >
+            <button type="button" class="btn" data-add="bill">
               <i data-lucide="plus"></i>
               <span>Nova conta</span>
             </button>
-
           </div>
 
-          <div
-            class="mini-stats"
-            id="billStats"
-          ></div>
+          <div id="billStats" class="mini-stats"></div>
 
           <div class="panel table-scroll">
-
             <table>
-
               <thead>
                 <tr>
                   <th>Vencimento</th>
@@ -565,338 +284,189 @@
                   <th>Ações</th>
                 </tr>
               </thead>
-
               <tbody id="billRows"></tbody>
-
             </table>
-
           </div>
-
         </section>
 
-        <!-- METAS FINANCEIRAS -->
+        <!-- METAS -->
 
-        <section
-          class="page"
-          id="page-goals"
-        >
+        <section class="page" id="page-goals">
 
           <div class="section-top">
-
             <div>
-
-              <h2>
-                Metas financeiras
-              </h2>
-
-              <p>
-                Separe dinheiro das suas contas para
-                conquistar objetivos.
-              </p>
-
+              <h2>Metas financeiras</h2>
+              <p>Guarde dinheiro para seus objetivos.</p>
             </div>
 
-            <button
-              type="button"
-              class="btn"
-              data-add="goal"
-            >
+            <button type="button" class="btn" data-add="goal">
               <i data-lucide="plus"></i>
               <span>Nova meta</span>
             </button>
-
           </div>
 
-          <div
-            class="tile-grid"
-            id="goalCards"
-          ></div>
-
+          <div id="goalCards" class="tile-grid"></div>
         </section>
 
-        <!-- CARTÕES DE CRÉDITO -->
+        <!-- CARTÕES -->
 
-        <section
-          class="page"
-          id="page-cards"
-        >
+        <section class="page" id="page-cards">
 
           <div class="section-top">
-
             <div>
-
-              <h2>
-                Cartões de crédito
-              </h2>
-
-              <p>
-                Controle limites, compras parceladas
-                e faturas.
-              </p>
-
+              <h2>Cartões de crédito</h2>
+              <p>Controle limites, compras parceladas e faturas.</p>
             </div>
 
             <div class="toolbar">
-
-              <button
-                type="button"
-                class="btn ghost"
-                data-add="purchase"
-              >
+              <button type="button" class="btn ghost" data-add="purchase">
                 <i data-lucide="shopping-bag"></i>
-                <span>Compra</span>
+                <span>Nova compra</span>
               </button>
 
-              <button
-                type="button"
-                class="btn"
-                data-add="card"
-              >
+              <button type="button" class="btn" data-add="card">
                 <i data-lucide="plus"></i>
                 <span>Novo cartão</span>
               </button>
-
             </div>
-
           </div>
 
-          <div
-            class="tile-grid"
-            id="creditCards"
-          ></div>
+          <div id="creditCards" class="tile-grid"></div>
 
           <article class="panel">
-
             <div class="panel-title">
-
-              <h2>
-                Faturas do mês selecionado
-              </h2>
-
-              <span class="muted">
-                Pague pela conta escolhida
-              </span>
-
+              <h2>Faturas do mês selecionado</h2>
+              <span class="muted">Pagamento pela carteira escolhida</span>
             </div>
 
             <div id="invoices"></div>
-
           </article>
-
         </section>
 
         <!-- GASTOS FIXOS -->
 
-        <section
-          class="page"
-          id="page-recurring"
-        >
+        <section class="page" id="page-recurring">
 
           <div class="section-top">
-
             <div>
-
-              <h2>
-                Gastos fixos e assinaturas
-              </h2>
-
-              <p>
-                Organize os compromissos mensais
-                e gere a cobrança do mês.
-              </p>
-
+              <h2>Gastos fixos e assinaturas</h2>
+              <p>Organize os compromissos mensais.</p>
             </div>
 
-            <button
-              type="button"
-              class="btn"
-              data-add="recurring"
-            >
+            <button type="button" class="btn" data-add="recurring">
               <i data-lucide="plus"></i>
               <span>Novo gasto fixo</span>
             </button>
-
           </div>
 
-          <div
-            class="mini-stats"
-            id="recurringStats"
-          ></div>
+          <div id="recurringStats" class="mini-stats"></div>
 
           <div class="panel table-scroll">
-
             <table>
-
               <thead>
                 <tr>
                   <th>Descrição</th>
                   <th>Categoria</th>
                   <th>Dia</th>
                   <th>Valor</th>
-                  <th>Situação no mês</th>
+                  <th>Situação</th>
                   <th>Ações</th>
                 </tr>
               </thead>
-
               <tbody id="recurringRows"></tbody>
-
             </table>
-
           </div>
-
         </section>
 
         <!-- CONTAS E CARTEIRAS -->
 
-        <section
-          class="page"
-          id="page-wallets"
-        >
+        <section class="page" id="page-wallets">
 
           <div class="section-top">
-
             <div>
-
-              <h2>
-                Contas e carteiras
-              </h2>
-
-              <p>
-                Veja saldos, organize suas contas
-                e transfira valores.
-              </p>
-
+              <h2>Contas e carteiras</h2>
+              <p>Controle seus saldos e transferências.</p>
             </div>
 
             <div class="toolbar">
-
-              <button
-                type="button"
-                class="btn ghost"
-                data-add="transfer"
-              >
+              <button type="button" class="btn ghost" data-add="transfer">
                 <i data-lucide="arrow-left-right"></i>
                 <span>Transferir</span>
               </button>
 
-              <button
-                type="button"
-                class="btn"
-                data-add="wallet"
-              >
+              <button type="button" class="btn" data-add="wallet">
                 <i data-lucide="plus"></i>
                 <span>Nova conta</span>
               </button>
-
             </div>
-
           </div>
 
-          <div
-            class="tile-grid"
-            id="walletCards"
-          ></div>
+          <div id="walletCards" class="tile-grid"></div>
 
           <article class="panel">
-
             <div class="panel-title">
-
-              <h2>
-                Transferências recentes
-              </h2>
-
+              <h2>Transferências recentes</h2>
             </div>
 
             <div id="transferList"></div>
-
           </article>
-
         </section>
 
       </main>
-
     </div>
-
   </div>
 
-  <!-- MODAL DE CADASTRO -->
+  <!-- MODAL -->
 
-  <div
-    class="modal-backdrop"
-    id="modal"
-    hidden
-  >
-
+  <div id="modal" class="modal-backdrop" hidden>
     <div
       class="modal"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modalTitle"
     >
-
       <div class="modal-head">
-
         <div>
-
-          <span class="eyebrow">
-            MINHAS FINANÇAS
-          </span>
-
-          <h2 id="modalTitle">
-            Novo registro
-          </h2>
-
+          <span class="eyebrow">MINHAS FINANÇAS</span>
+          <h2 id="modalTitle">Novo registro</h2>
         </div>
 
         <button
-          type="button"
           id="closeModal"
+          type="button"
           class="icon-btn"
           aria-label="Fechar"
         >
           <i data-lucide="x"></i>
         </button>
-
       </div>
 
       <form id="modalForm">
-
-        <div
-          id="modalFields"
-          class="form-grid"
-        ></div>
+        <div id="modalFields" class="form-grid"></div>
 
         <div class="modal-actions">
-
           <button
-            type="button"
             id="cancelModal"
+            type="button"
             class="btn ghost"
           >
             Cancelar
           </button>
 
-          <button
-            type="submit"
-            class="btn"
-          >
+          <button type="submit" class="btn">
             <i data-lucide="save"></i>
             <span>Salvar</span>
           </button>
-
         </div>
-
       </form>
-
     </div>
-
   </div>
 
-  <!-- FUNDO DO MENU MOBILE -->
+  <!-- FUNDO DO MENU -->
 
   <div
-    class="mobile-menu-backdrop"
     id="mobileMenuBackdrop"
+    class="mobile-menu-backdrop"
     hidden
   ></div>
 
@@ -909,87 +479,37 @@
     aria-live="polite"
   ></div>
 
-  <!-- MENU MOBILE -->
-
   <script>
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
-        const menuButton =
-          document.getElementById("mobileMenuToggle");
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("mobileMenuToggle");
+      const sidebar = document.getElementById("personalSidebar");
+      const backdrop = document.getElementById("mobileMenuBackdrop");
+      const nav = document.getElementById("nav");
 
-        const sidebar =
-          document.getElementById("personalSidebar");
-
-        const backdrop =
-          document.getElementById("mobileMenuBackdrop");
-
-        const nav =
-          document.getElementById("nav");
-
-        function refreshIcons() {
-          if (
-            window.lucide &&
-            typeof window.lucide.createIcons === "function"
-          ) {
-            window.lucide.createIcons();
-          }
-        }
-
-        function closeMenu() {
-          sidebar.classList.remove("mobile-open");
-          backdrop.hidden = true;
-
-          menuButton.setAttribute(
-            "aria-expanded",
-            "false"
-          );
-        }
-
-        menuButton.addEventListener(
-          "click",
-          () => {
-            const isOpen =
-              sidebar.classList.toggle("mobile-open");
-
-            backdrop.hidden = !isOpen;
-
-            menuButton.setAttribute(
-              "aria-expanded",
-              String(isOpen)
-            );
-          }
-        );
-
-        backdrop.addEventListener(
-          "click",
-          closeMenu
-        );
-
-        nav.addEventListener(
-          "click",
-          event => {
-            if (
-              event.target.closest("[data-page]")
-            ) {
-              closeMenu();
-            }
-          }
-        );
-
-        document.addEventListener(
-          "keydown",
-          event => {
-            if (event.key === "Escape") {
-              closeMenu();
-            }
-          }
-        );
-
-        refreshIcons();
+      function fecharMenu() {
+        sidebar.classList.remove("mobile-open");
+        backdrop.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
       }
-    );
-  </script>
 
+      toggle.addEventListener("click", () => {
+        const aberto = sidebar.classList.toggle("mobile-open");
+        backdrop.hidden = !aberto;
+        toggle.setAttribute("aria-expanded", String(aberto));
+      });
+
+      backdrop.addEventListener("click", fecharMenu);
+
+      nav.addEventListener("click", (evento) => {
+        if (evento.target.closest("[data-page]")) {
+          fecharMenu();
+        }
+      });
+
+      document.addEventListener("keydown", (evento) => {
+        if (evento.key === "Escape") fecharMenu();
+      });
+    });
+  </script>
 </body>
 </html>
