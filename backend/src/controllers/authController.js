@@ -1,4 +1,3 @@
-
 "use strict";
 
 const argon2 = require("argon2");
@@ -56,7 +55,7 @@ async function login(req, res, next) {
 
     const usuarioEncontrado = resultado.rows[0];
 
-    if (!usuarioEncontrado || !usuarioEncontrado.ativo) {
+    if (!usuarioEncontrado) {
       return res.status(401).json({
         erro: "Usuário ou senha inválidos."
       });
@@ -70,6 +69,12 @@ async function login(req, res, next) {
     if (!senhaValida) {
       return res.status(401).json({
         erro: "Usuário ou senha inválidos."
+      });
+    }
+
+    if (usuarioEncontrado.ativo !== true) {
+      return res.status(403).json({
+        erro: "Acesso expirado."
       });
     }
 
@@ -94,7 +99,6 @@ async function login(req, res, next) {
         });
       });
     });
-
   } catch (erro) {
     next(erro);
   }
@@ -118,23 +122,35 @@ async function verificarSessao(req, res, next) {
          nome,
          usuario,
          email,
-         perfil
+         perfil,
+         ativo
        FROM usuarios
        WHERE id = $1
-         AND ativo = TRUE`,
+       LIMIT 1`,
       [req.session.usuario.id]
     );
 
     const usuarioEncontrado = resultado.rows[0];
 
-    if (!usuarioEncontrado) {
+    if (
+      !usuarioEncontrado ||
+      usuarioEncontrado.ativo !== true
+    ) {
       return req.session.destroy((erro) => {
         if (erro) {
           return next(erro);
         }
 
+        res.clearCookie("wj.sid", {
+          path: "/",
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production"
+        });
+
         return res.status(401).json({
-          autenticado: false
+          autenticado: false,
+          erro: "Acesso expirado."
         });
       });
     }
@@ -147,7 +163,6 @@ async function verificarSessao(req, res, next) {
       autenticado: true,
       usuario: req.session.usuario
     });
-
   } catch (erro) {
     next(erro);
   }
